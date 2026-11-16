@@ -1,0 +1,27 @@
+# Only Laravel's public/ directory may be served from this project folder.
+# Real files outside public/ (.env, storage/, database/, config/, vendor/, tests/, root scripts, ...) return 403;
+# every other request (e.g. /admin, /book) is redirected into public/, where Laravel handles it.
+# Requests inside public/ are handled by public/.htaccess, which takes over for that directory,
+# so the website itself behaves exactly as before. (Production serves public/ as its document root.)
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Existing files outside public/ are never served.
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule !^public/ - [F,L]
+
+    # Everything else goes to the website in public/, keeping the path and query string.
+    # (OWT_BASE = this folder's URL prefix, e.g. /one-way-taxi/, so nothing is hard-coded.)
+    RewriteCond %{REQUEST_URI}::$1 ^(.*?/)(.*)::\2$
+    RewriteRule ^(.*)$ - [E=OWT_BASE:%1]
+    RewriteRule ^(?!public(?:/|$))(.*)$ %{ENV:OWT_BASE}public/$1 [R=302,L]
+</IfModule>
+
+# Fallback that also works without mod_rewrite (and inside public/): never serve dotfiles,
+# database/log/backup files, or project manifests. Kept narrow so public routes such as
+# /sitemap.xml and /robots.txt are unaffected.
+<FilesMatch "(?i)(^\.|\.(env|log|sqlite|sqlite3|db|sql|bak|swp)$|^(composer\.(json|lock)|package(-lock)?\.json|artisan|phpunit\.xml)$)">
+    Require all denied
+</FilesMatch>

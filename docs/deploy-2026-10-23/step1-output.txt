@@ -1,0 +1,401 @@
+** WARNING: connection is not using a post-quantum key exchange algorithm.
+** This session may be vulnerable to "store now, decrypt later" attacks.
+** The server may need to be upgraded. See https://openssh.com/pq.html
+== A. Group A: live vs local (OK = already identical, FAILED = differs, missing = new file)
+  app/Http/Controllers/Admin/CityController.php: FAILED
+  app/Http/Controllers/Admin/ContactMessageController.php: FAILED
+  app/Http/Controllers/Admin/CorporateEnquiryController.php: FAILED
+  app/Http/Controllers/Admin/DashboardController.php: FAILED
+  app/Http/Controllers/Admin/HeroSlideController.php: FAILED
+  app/Http/Controllers/Admin/MediaController.php: FAILED
+  app/Http/Controllers/Admin/NavigationController.php: FAILED
+  app/Http/Controllers/Admin/PageController.php: FAILED
+  app/Http/Controllers/Admin/PartnerEnquiryController.php: FAILED
+  app/Http/Controllers/Admin/TaxiRouteController.php: FAILED
+  app/Http/Controllers/Controller.php: FAILED
+  sha256sum: app/Http/Middleware/AdminSecurityHeaders.php: No such file or directory
+  app/Http/Middleware/AdminSecurityHeaders.php: FAILED open or read
+  app/Http/Requests/Admin/AdminRequest.php: FAILED
+  app/Http/Requests/Admin/CityRequest.php: FAILED
+  app/Http/Requests/Admin/FareRuleRequest.php: FAILED
+  app/Http/Requests/Admin/HomeSectionRequest.php: FAILED
+  app/Http/Requests/Admin/MediaUploadRequest.php: FAILED
+  app/Http/Requests/Admin/PageRequest.php: FAILED
+  app/Http/Requests/Admin/ServiceRequest.php: FAILED
+  app/Http/Requests/Admin/SettingsRequest.php: FAILED
+  app/Http/Requests/Admin/TaxiRouteRequest.php: FAILED
+  app/Http/Requests/Admin/VehicleRequest.php: FAILED
+  bootstrap/app.php: FAILED
+  config/icons.php: FAILED
+  public/css/admin.css: FAILED
+  sha256sum: public/images/demo/admin-login-scene.webp: No such file or directory
+  public/images/demo/admin-login-scene.webp: FAILED open or read
+  public/js/admin.js: FAILED
+  resources/views/admin/auth/login.blade.php: FAILED
+  resources/views/admin/bookings/show.blade.php: FAILED
+  resources/views/admin/cities/index.blade.php: FAILED
+  resources/views/admin/dashboard.blade.php: FAILED
+  resources/views/admin/enquiries/index.blade.php: FAILED
+  resources/views/admin/homepage/index.blade.php: FAILED
+  resources/views/admin/layout.blade.php: FAILED
+  resources/views/admin/media/index.blade.php: FAILED
+  resources/views/admin/messages/index.blade.php: FAILED
+  resources/views/admin/routes/form.blade.php: FAILED
+  resources/views/admin/routes/index.blade.php: FAILED
+  routes/web.php: FAILED
+  sha256sum: WARNING: 2 listed files could not be read
+  sha256sum: WARNING: 37 computed checksums did NOT match
+== B. Live details for Group A files (live sha256 prefix, size, mtime)
+  ebd2bc58ba536a16     2021 2026-10-10 12:48  app/Http/Controllers/Admin/CityController.php
+  753899a4d10e3144     1381 2026-10-10 12:48  app/Http/Controllers/Admin/ContactMessageController.php
+  2f6f1d6e50b58aa9     1690 2026-10-10 13:37  app/Http/Controllers/Admin/CorporateEnquiryController.php
+  6ce070604147e4e0     1249 2026-10-10 12:07  app/Http/Controllers/Admin/DashboardController.php
+  bb69e9e09cf28976     2177 2026-10-10 13:37  app/Http/Controllers/Admin/HeroSlideController.php
+  1304ea1ab3a589ed     3419 2026-10-10 12:45  app/Http/Controllers/Admin/MediaController.php
+  2c1dfc7a6af94a80     1500 2026-10-10 12:48  app/Http/Controllers/Admin/NavigationController.php
+  375dd8868738d717     4462 2026-10-10 12:46  app/Http/Controllers/Admin/PageController.php
+  1a6c429aa9af0064     1680 2026-10-10 13:37  app/Http/Controllers/Admin/PartnerEnquiryController.php
+  9fcb777f1b6ff42b     4356 2026-10-10 12:48  app/Http/Controllers/Admin/TaxiRouteController.php
+  25d1c1ef8e6cc8a3       77 2025-02-23 14:49  app/Http/Controllers/Controller.php
+  MISSING                 - -                 app/Http/Middleware/AdminSecurityHeaders.php
+  5bc1cbb1eca45cbf      616 2026-10-10 12:43  app/Http/Requests/Admin/AdminRequest.php
+  8cc15f051f0669d1     1143 2026-10-10 12:47  app/Http/Requests/Admin/CityRequest.php
+  a592f31fe424ee99     2324 2026-10-10 12:47  app/Http/Requests/Admin/FareRuleRequest.php
+  d5223a629cbe1073     2371 2026-10-10 12:45  app/Http/Requests/Admin/HomeSectionRequest.php
+  20e06bf38998504e     1069 2026-10-10 12:45  app/Http/Requests/Admin/MediaUploadRequest.php
+  59f03d68c9f8d774     2110 2026-10-10 12:46  app/Http/Requests/Admin/PageRequest.php
+  0d99271bb5eb7ee3     1595 2026-10-10 12:47  app/Http/Requests/Admin/ServiceRequest.php
+  2e3ef5ef68412ce7     1120 2026-10-10 12:45  app/Http/Requests/Admin/SettingsRequest.php
+  17f2e26c66c8fb17     3120 2026-10-10 12:47  app/Http/Requests/Admin/TaxiRouteRequest.php
+  5133ed193d6f41ec     1751 2026-10-10 12:47  app/Http/Requests/Admin/VehicleRequest.php
+  77de8e02fa9608a0      757 2026-10-10 11:52  bootstrap/app.php
+  ceee17f1e5c92924    10980 2026-10-17 10:38  config/icons.php
+  e805bb36b09b7445    18988 2026-10-10 13:16  public/css/admin.css
+  MISSING                 - -                 public/images/demo/admin-login-scene.webp
+  3409bf98b80e83ff    15745 2026-10-10 13:38  public/js/admin.js
+  fedce8f3151db93d     2276 2026-10-10 13:05  resources/views/admin/auth/login.blade.php
+  fda78430f9930810     6878 2026-10-10 16:02  resources/views/admin/bookings/show.blade.php
+  c6f7b3728e3520af     1909 2026-10-10 13:07  resources/views/admin/cities/index.blade.php
+  d4b6ea6a1a2db3c7     5800 2026-10-10 16:02  resources/views/admin/dashboard.blade.php
+  eaa409a36ee64337     2835 2026-10-10 16:01  resources/views/admin/enquiries/index.blade.php
+  0221603d4a25ba40     3506 2026-10-10 16:01  resources/views/admin/homepage/index.blade.php
+  c99546500fe9d218     6414 2026-10-10 16:01  resources/views/admin/layout.blade.php
+  7e5d1bbc55dcb579     2436 2026-10-10 13:06  resources/views/admin/media/index.blade.php
+  06f8256948608eb7     1811 2026-10-10 13:08  resources/views/admin/messages/index.blade.php
+  b357dd9c39c288b0     6070 2026-10-10 13:07  resources/views/admin/routes/form.blade.php
+  4c4ae18aa9357543     2924 2026-10-10 13:07  resources/views/admin/routes/index.blade.php
+  442667cab4a0ace9     7309 2026-10-10 13:37  routes/web.php
+== C. Live-only changes: app files modified on the server after the 2026-10-18 release (names + dates only)
+== D. Context
+PHP 8.3.35 (cli) (built: Oct 21 2026 21:59:55) (NTS)
+packages.php
+services.php
+  2026_10_11_000003_create_business_enquiries_tables ................. [4] Ran  
+  2026_10_12_000001_add_subheading_to_hero_slides_table .............. [5] Ran  
+
+== E. Live sha256 of all app files
+E 24449f6d4a2964508dd58beac5d3172d5e79a9921e07b73fc0b862594d918ddf  app/Enums/BookingStatus.php
+E 132aef8aa747d40b6d054524aed58f3f2817d0a482dc24920be74a4509447efb  app/Enums/EnquiryStatus.php
+E d891656c492dde655124863d9fa25c27f7bbb2310bc979646077204f28266976  app/Enums/TripType.php
+E ca1c2ab7eaea50b019077b54ac5e46c42ebed886636bbcba2a5f6954edf93092  app/Http/Controllers/Admin/AccountController.php
+E 582d778a8977008a3ad5323f20547bda3e19fa13e355a60d091106c899dd3b03  app/Http/Controllers/Admin/AuthController.php
+E 719eede325cbe4c5e5e939855a41f0f6cc12fb0849519fcddf3de1c926b49960  app/Http/Controllers/Admin/BookingController.php
+E ebd2bc58ba536a16c9e183e06ec682967d3f5a340082dc83af59afee87e0824e  app/Http/Controllers/Admin/CityController.php
+E 753899a4d10e3144afe79abdafaad3ada29825a5c9454655aff2e0e09aee3987  app/Http/Controllers/Admin/ContactMessageController.php
+E 2f6f1d6e50b58aa93c6b106902fb53d3cf26b3d4dd1ec1e2a7fc7f44c8594b0e  app/Http/Controllers/Admin/CorporateEnquiryController.php
+E 6ce070604147e4e0686d09f8ad4f4ab8cbdb86d48dff28dd55e20a5679ebb02a  app/Http/Controllers/Admin/DashboardController.php
+E f035da565be2bf4c38e6de63b91b29beca830499fb42f5fdf626bdab403a136a  app/Http/Controllers/Admin/FaqController.php
+E 7c6a82fd332dc344d0fb94ddabe10e8750945631f83b92df01887fdce23aff32  app/Http/Controllers/Admin/FareRuleController.php
+E bb69e9e09cf289763b22800705bfcb9aa25c7f49ad0c5ec4cd132b74bc5d6033  app/Http/Controllers/Admin/HeroSlideController.php
+E c242e730735e69661de41c370d33eddd1c29a42f9e6239d670de2c3d4f36253d  app/Http/Controllers/Admin/HomeSectionController.php
+E 1304ea1ab3a589ed0a1428044d0fd6b3036e22ba3e38a0e097cde4c784d03e02  app/Http/Controllers/Admin/MediaController.php
+E 2c1dfc7a6af94a809bff60060b065343da611aca40a8fb9bf82c52c7ae0cc77a  app/Http/Controllers/Admin/NavigationController.php
+E 375dd8868738d717f8cc0810f8bda3a42a3fce4dcad6cfa914031c2860320dfa  app/Http/Controllers/Admin/PageController.php
+E 1a6c429aa9af00647ac21e86095932bf4a770ba7656121995e124bd7b8b86df0  app/Http/Controllers/Admin/PartnerEnquiryController.php
+E d9da5a53e13d9d3e16a04e2c84558f60afbc34e30d26624ae6c0e6985c2c54b0  app/Http/Controllers/Admin/ServiceController.php
+E b1f812cf017d1e1d3263fadee52defcf78f81eacbfe954ca4227c9f864a67e2a  app/Http/Controllers/Admin/SettingController.php
+E 9fcb777f1b6ff42bacd4e90681007641e3d1a69ea644f2ae53a5b7e1ab308174  app/Http/Controllers/Admin/TaxiRouteController.php
+E 88789e38531c5947383018643260c3a289437901e973af3a6cfd3f24c7c1ebc5  app/Http/Controllers/Admin/TestimonialController.php
+E 3c875dc06489475340174a2cad817c9bd9388ef710f512a43e3661030610012a  app/Http/Controllers/Admin/VehicleController.php
+E 74081e4e3f4331da144e329d8aedfd9b7c3d62c8bb12440a79b2102e916e6b49  app/Http/Controllers/BookingController.php
+E c74ef4748142845b960a0b6686c24eef6599603f6c98fd0935331880e978b949  app/Http/Controllers/BusinessEnquiryController.php
+E 4a5329a50a409d5c98a342e68e751687c731fd237bcb7f45443caeee5da58ffd  app/Http/Controllers/ContactController.php
+E 25d1c1ef8e6cc8a376553faacfba2b07d9dfaee9bdbb84f14f77517580e9deb1  app/Http/Controllers/Controller.php
+E b554067a75ecfc26adc361ef7c629597ea867f50622fd666dc8f1d9a8c32d524  app/Http/Controllers/FaqController.php
+E 9d120749d27e4518672040abf9febc289fecf61e098a10e145a31f59412968eb  app/Http/Controllers/FleetController.php
+E 0c25ece0920dc38529dc94ad630e76c442c7bdfc1987086d417c5b0e7510cc75  app/Http/Controllers/HomeController.php
+E 0b18a46fc799666f24e58abb01f9fe520af79d96d1153b3666877a921d324ccc  app/Http/Controllers/PageController.php
+E c3da1d2c6e85ea601893843ee08df4748e0ba743b58b09c6f853ea890719e6e3  app/Http/Controllers/RouteController.php
+E 1c6a1bc58af1dddadddac5a6cfe4dd6a712561cdf83af0640e8bb03d4577b618  app/Http/Controllers/SeoController.php
+E ec3c33ff2bee3cc86e68fd042f02570df4133f32ddc6a7c2ab9fd92d35dd6475  app/Http/Controllers/ServiceController.php
+E 437f45ac04a4e3914f76c0b4057fe99015a7da2bd65ea471e4e120427e8c35db  app/Http/Middleware/EnsureUserIsAdmin.php
+E 5bc1cbb1eca45cbf5209bd0d5d663caa33e16107893c1df685674d48b30fd3c8  app/Http/Requests/Admin/AdminRequest.php
+E a81aa10ed33a8b1aece5b19d52cfa592300cb9b6573dac8d50672bf8afeb19b6  app/Http/Requests/Admin/BookingUpdateRequest.php
+E 8cc15f051f0669d112fdd7017deb733cb52272b70610747d070870fcddac0b4c  app/Http/Requests/Admin/CityRequest.php
+E 6223b03627cee5827230984555fd48280549286bcd0683b1e346e53eed921ae8  app/Http/Requests/Admin/EnquiryUpdateRequest.php
+E d3367c6439c87b412a49732cdab4a3192b3f6c3592d427de1c27f2f34c2a3d8f  app/Http/Requests/Admin/FaqRequest.php
+E a592f31fe424ee999b9002ab4a0a9a6a466367d07f51cbfe787f7e0b7016e6b6  app/Http/Requests/Admin/FareRuleRequest.php
+E 09dc104085c30769434b78e6c5f9edd3d81f3cff4e90fe28a8dc71fdc6e14d7d  app/Http/Requests/Admin/HeroSlideRequest.php
+E d5223a629cbe1073c939242e4db16a4254e9938103e956beebd29af6b1c9526d  app/Http/Requests/Admin/HomeSectionRequest.php
+E 2ffe30606533403764f97133285a2193565a7b7627f557d8a3f595b2215f7c72  app/Http/Requests/Admin/MediaUpdateRequest.php
+E 20e06bf38998504e95750b1acaf5e7b92075e88536ffba61fdda24a9e0a95b13  app/Http/Requests/Admin/MediaUploadRequest.php
+E 9a2fd48c40944757def9a852c04fbd3f6714d59957bdf12f30bda944c1f72ace  app/Http/Requests/Admin/NavigationItemRequest.php
+E 59f03d68c9f8d774a81a311f87403ebc0e2b60aab3bce6efe77848d475a4e55f  app/Http/Requests/Admin/PageRequest.php
+E 0d99271bb5eb7ee3f37d9ffed12abf789e588256e95cc7e501368bab36228eab  app/Http/Requests/Admin/ServiceRequest.php
+E 2e3ef5ef68412ce78934b87d6dbc6f32ebfc5e4b0ad1608d6965eb8f9ec80b87  app/Http/Requests/Admin/SettingsRequest.php
+E 17f2e26c66c8fb17203163ce8e3a46ef6cad47118f983bc0ca491e87c4be4359  app/Http/Requests/Admin/TaxiRouteRequest.php
+E 0428861d35c97ecb3b44e5dd8a4a3b1efb0cfc43d617060896a57a1810aeb7e8  app/Http/Requests/Admin/TestimonialRequest.php
+E 5133ed193d6f41ec3f3f33cf5cc4a11710202c049d2ace1c0e60f9b41f6f3ba3  app/Http/Requests/Admin/VehicleRequest.php
+E 449b1d63b8b1ca10bba57aec1250caf4ecd29aa995018a9dced26316994c92df  app/Http/Requests/ContactRequest.php
+E 436df3c09a1bedcc80a5fc0efbf4bee548d058eca10ceb7b630aff345dde7921  app/Http/Requests/CorporateEnquiryRequest.php
+E e11b9b641fb87989e4ce31e603678d611520d129a87f00cceababfde3f979746  app/Http/Requests/FareEstimateRequest.php
+E ba49e983be02bffb24a59b570ae131286bf37175a69710aacc894917cba83281  app/Http/Requests/PartnerEnquiryRequest.php
+E a0a9951f9a68c125fea8995de07379a444ad8c26e2d388532f9f283fb55149b1  app/Http/Requests/StoreBookingRequest.php
+E 0c7a3554c15b8f4c67f6a209b7535533190142a282c254a616e7183107a37dc9  app/Models/Booking.php
+E 18efbda7cf85b5322a4be2f359adf3d562aa3dc72673c3abb4d6983c5e5c04d8  app/Models/City.php
+E 2048b66ff12030c7077054d0168291e66f9537dae3e0ac8822ca4be82988154c  app/Models/ContactMessage.php
+E 9da51b9ead1ebd09b258443909521d2d12cdc54878af1071b53b7e11aacbe011  app/Models/CorporateEnquiry.php
+E 1bfef89ba78ae9c7471be4f13281af7453b7d1719451d9241c63174995ddc7b7  app/Models/Faq.php
+E d6e7be8454ee888302700f45f8e9a82d2b4e880f9d2cd2c0ae72c8e36a2f9ad4  app/Models/FareRule.php
+E 71d124d5283a25fb9d25af4f008770953142a5e32e90de1117eb959385cdfaa8  app/Models/HeroSlide.php
+E 1b9b2b5de9abb32da1cd5fee4cee69ea4eb86f0004ef1d1c3dc770c6eb8fe553  app/Models/MediaAsset.php
+E 1c06375b5fcf00020f54f5904b08ffeba6d0284f4a139493274851eadb592ea0  app/Models/NavigationItem.php
+E b677f2d9809b38a91d714d2cf89f2921a8dcd50d9891b2164ac202349ee0c121  app/Models/Page.php
+E 2ed1f4a9875c7fdd08cc34278bf2e715c5892296aa1745c985c83ebb29198ce1  app/Models/PageSection.php
+E 7f2e509421c9168627d8f06b49f2969ff9f6cd09de43546b9205a1234e2d07d1  app/Models/PartnerEnquiry.php
+E 7ae9647dd8dcfeb0e40aca073318c2aec0028d46068b349beb5cd6d3dad302a4  app/Models/RouteFare.php
+E 77be25d41892294829460f2d82593603c93e805d177d96bfb7a9b9411e456492  app/Models/Service.php
+E 29646546263c95ea8ca211f1a4ccceac278b048488ed639ea1fb0f199bfcb23c  app/Models/SiteSetting.php
+E 60de90cf81e7a4fff151351b0cafe84e0f298cbc471a3797a5d3461930f92205  app/Models/TaxiRoute.php
+E a2d42fcbf1c0bb0d0097ef43f6f3104f0270b6bcc81834afd559a6438679b0b7  app/Models/Testimonial.php
+E 7330c01671920eed30a5f9f9240b256f8861c192c96792bdd5521a9d3f6b0df2  app/Models/User.php
+E 2b88e682609ee958ccb9ed4f3c9cd67186cf0208a9c09f6eee2383d13b5b903d  app/Models/VehicleCategory.php
+E 68f248faba93d75e8c4e32cda82199a25631fb1f98dc57e1d058d9779c8bbdd2  app/Providers/AppServiceProvider.php
+E da538afa18c7b4b04e674ad6d642f00ae4967929d1ea7a9978134314d09c373b  app/Rules/IndianMobile.php
+E 18aa0bd8ba14fa5503dd814815344567f95ed1198771d4d3d146d71374ff7217  app/Services/FareCalculator.php
+E fc46a7dd8bb9ea208717f7fe2cdabd56a79e2f39b287c0e3a05fe8ff5cd37db9  app/Services/MediaUploader.php
+E 7ec1a70a512ee65d64dab96aecd7d33ff1dec2ab8fcd0d02f8031f72a5324f2a  app/Support/AppLinks.php
+E 32c22fc5a57cacab3437d2cf868338c3d84c553f4cc9ff5d12472edb896e1fbb  app/Support/HtmlSanitizer.php
+E 2c0cd56d0000ccccfed820a6a89f8f3f522afd246495a1137feaaabff35d910d  app/Support/Money.php
+E 531cd10f16624cc9c6a25a90f27a7aec8faa1521db04197b83d604351ff676fa  app/Support/Ordering.php
+E 4fb19ed9e300574a960d7a1089494eb6f0992354f078de3be9b461f381723400  app/Support/Reference.php
+E 1cbda47936565502442e5abe86474d5eaa49b4660ad9db6669721a1bff393baf  app/Support/Seo.php
+E a7a874b3743dc900a2420b74d7d804e656c028efe2e8168aaa6b391805806190  app/Support/Settings.php
+E a6d7e4d9f7ccd6329fc20e1e6095ff990d7e6347ecbc536e7999ee256f33d85e  app/helpers.php
+E 77de8e02fa9608a0e1110802d3abc2bc362912bc97fe366b18a72fe7f79f675d  bootstrap/app.php
+E fb23c33047befed4c56f4b0429a9f9a8aaf44be44965708149c874c416fc8ce7  composer.json
+E faef6ee814e05014f22f6a023051ef32549a030c3f1a60a0d0c7e951479ab7ed  composer.lock
+E 4c0c62e93417928f00ac126dc1f9ba2fdc7b034a836bb69682f13d643ebccfd8  config/app.php
+E d5bd78db15ec31df30248bb56dff53d385d7826d9ab0cfb2846dc6ce06d531c0  config/auth.php
+E dc3a64749bc19946ba6a054be0b67ae8c450c9401799cb176ac0a0b8d4756664  config/cache.php
+E 4c831a869f4335805c6ca67c3f583e71329622ee8f70dbdc70c57a523a6b6021  config/database.php
+E cfe041840959dbd0cd1e650e032dbe0b6e7ab09bb5b27bbfc28e46589dd443da  config/filesystems.php
+E ceee17f1e5c929245e1988480eae58ba56d48d407f89d56045da709d3ccae8b7  config/icons.php
+E 6e0885a09b96f9e3e9ccfae9e536da3c33dbd53a7710a518c05ac0f2b6808fb8  config/logging.php
+E 433acc0d5342a074b32e44b3d7ffba153c3eaf292a5a2fc94d7cb6ee0addb147  config/mail.php
+E a185a3e86b65db26938204f4f50cf0c0ca99974e9926b9cdcef6b7743feea482  config/queue.php
+E b814022ac89eb84489208fee2a3233039421566edf6f64ccd3238a57cccada43  config/sections.php
+E 2226be3fa0e560fc8cd628f3e8f50fcd78639a24375f5e931d0c656eaf1d4ce8  config/services.php
+E c7f637c49f3e61d5488a11653b06a6b5a8a73b335d1dadbd84666be5ec4f6de6  config/session.php
+E 471a1adf5a3850d4a2a2000a174d56594c6bc0f42cc47b3ddc29ccc3bf4736b1  config/settings.php
+E 10d79883bc08ce46510f9ad8b1830b4d06d586dc56ae2c8bac3b3e491f69a90f  database/migrations/0001_01_01_000000_create_users_table.php
+E 20f769d3c11748c1cc42c41cd3789b0b9b2cd0db44ee22d378addac3ff8aed4f  database/migrations/0001_01_01_000001_create_cache_table.php
+E 7c9c712adf4091c87bf2612f4d0dccdfa1df4501553e4ac068b83d7bd5462fa5  database/migrations/0001_01_01_000002_create_jobs_table.php
+E f442746d1541872e5e8005576b911387a70e194894dcc31ec72e0773528d78b8  database/migrations/2026_10_10_000001_add_is_admin_to_users_table.php
+E c66f7bea43eed6f5e85c0961a9dfb23e1b3dd57f968ff2b45e4c0285b67e38be  database/migrations/2026_10_10_000002_create_media_assets_table.php
+E 29ad9e06206f321b5f653efcf6e519f4ff95e0cc14a13efcb983935b332146a7  database/migrations/2026_10_10_000003_create_site_settings_table.php
+E c579e7dfeac74670e01b26542031f7a70a73b049431b3408ead702e7069d56f7  database/migrations/2026_10_10_000004_create_pages_table.php
+E 48aafbaa51f7da6db269dc5af58e2bc2ea89419ec5dcda4ba12a077f1bc1231c  database/migrations/2026_10_10_000005_create_cities_table.php
+E 9c014e64a329e99f1ec7ca7268b00f04e5579e3079d9f09d281edab9faf78992  database/migrations/2026_10_10_000006_create_vehicle_categories_table.php
+E ad284e745720ce7b2f7156c1c211d5a2692f66946ffb375c41ea46809ad2c423  database/migrations/2026_10_10_000007_create_taxi_routes_table.php
+E 8a20be4ce6666bdbd0e87db13031381a97547be59fb0f6b01ab89dbf9fad1716  database/migrations/2026_10_10_000008_create_bookings_table.php
+E ae92cb074ecc78667eb30e4499ee8f4847ec3c6a6114b6c3a289d975631347b3  database/migrations/2026_10_10_000009_create_content_tables.php
+E 45ac42e7ee6745f74bbc325848156a924641a3613c63e0e940868d46ad56fc85  database/migrations/2026_10_10_000010_create_testimonials_table.php
+E a3173033ec4b69852fdb639388c4746387f176c6ba8dd3123521a16297199b23  database/migrations/2026_10_10_000011_add_location_text_to_bookings_table.php
+E 098d215aff7910ed0bc3b1dd8859dad392fe39998fe7bf76f43e071afbf8e676  database/migrations/2026_10_11_000001_create_hero_slides_table.php
+E e42eddf0d0bd4fa15ac85e4470e6a1a0cf00d978f2ba26b967e5b5e0f98f0b70  database/migrations/2026_10_11_000002_add_trip_type_to_bookings_table.php
+E e27bd7f4e3b929b5b1bfb62cdb5e9e8ae3c2554fd6d20d1397c5c59ba4ba03ce  database/migrations/2026_10_11_000003_create_business_enquiries_tables.php
+E 3b0528e4847a15ce79b06ecc65f2d8e8fbbfd353e36ed1694874a9495850bfcf  database/migrations/2026_10_12_000001_add_subheading_to_hero_slides_table.php
+E 0fd847273074aade0f95521fffe01ee7fa39433abbe395115bbb778508a059e2  database/seeders/AdminUserSeeder.php
+E 72e13d18b6cecb566f12e60ba73fd60fcb9abd02c41399e5c45743bc7a556eed  database/seeders/CatalogSeeder.php
+E 08ad694d2a6c8918e58821d6464bc93c304c37f49f1c49ac17b1bf82c108e837  database/seeders/ContentSeeder.php
+E e47166771b79df925f4a40ae6937918ea855beb71c928390ea101472195c0757  database/seeders/DatabaseSeeder.php
+E 566736453c0910e6dc359489d87a6e4925b58da5a80dd9ab5f7961184183a079  database/seeders/HomepageLayoutSeeder.php
+E cafaccdec23c7bd393a98ef95ac3788ec5d3004bc155f6b188af7b01d89f838e  database/seeders/MediaSeeder.php
+E 86a43f5acc8e28befb657b6a04c90aaf4076de70770b205917c236b89bc4cbcf  database/seeders/SettingsSeeder.php
+E ed6f26a82f1c47918af55d9fcecff61e703fc056b236522622ae779189ec74f1  database/seeders/data/image-credits.json
+E b7e379c77639fd56144947dbae84c84eb466d9c686ea81f2f013ae85421da923  public/.htaccess
+E 14ac7b97a78a020847ff9fbd8bdcc7a4b4d5a1377d3f334ccb336827a92d54ef  public/build/assets/app-Bw1IlDvh.css
+E 0205407ac8969ed5eac571f42034c0514c8ca60879646b22400cc0e3261da3be  public/build/assets/app-CgV-kICm.css
+E c2b5647ba8c7cb7b7b0550c7df866abb58a7c63875ea875d78798e8d80e7a545  public/build/assets/app-DzB81kzm.js
+E cc45036e84d7b26b377c3f0bc8fb07a110cb163eaa105c18a1d40ab76ba518e1  public/build/manifest.json
+E e805bb36b09b7445e9513bc593494212c8a6fbd3f2f958829feba77405f9ec0e  public/css/admin.css
+E e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  public/favicon.ico
+E 2611fc2d79afbc581f77c9225d578f1875c0462d04c9c9c28ae2912f7344bcc3  public/images/demo/airport-chennai.jpg
+E 63e177e4c3f6b134ff79d746d21c721da0ad590edcf4b72640cc368f2ae43707  public/images/demo/booking-airport-runway-sunrise.jpg
+E 2d46efd3a6ceb72942fcd7c85b0c5666b5ed6c64281160a72e1010cd513d98cc  public/images/demo/city-bengaluru.jpg
+E 9b8ba33d07b8fa5ece1883264a873502e7964a31e885e228ff7c9496ce380707  public/images/demo/city-chennai-central.jpg
+E f27f3c979d0dcb9418ef8da93ad726e2e9601d0a2b4ca067afe2778377b478b1  public/images/demo/city-chennai.jpg
+E 8f1f5d9c0f519898c17f613a0b55500f219bb3a1b50727ec180fb379dc26d8ee  public/images/demo/city-coimbatore.jpg
+E ed4ef14088d0f130c1451cfd43e79150314851b34190cf913b22c22d85aa8367  public/images/demo/city-kodaikanal.jpg
+E 4f7b7b4fa24b7fbbf352a650c08ea456dd6bb86ec68fe8ae06bedc42f967a0e0  public/images/demo/city-madurai.jpg
+E 8c65fb64577886b6d87eb880e3edccf71e5ad53be6cafdf1d50644ac173b94f0  public/images/demo/city-mysuru.jpg
+E ee1a93f60f6332042f052514b0fa0161df330b3e49f4eeb79ab18c4ef400d59b  public/images/demo/city-ooty.jpg
+E bc75341cfd0787ba814ea17e85b4a4784530fe8ff526db38242fb2bad95f78bc  public/images/demo/city-puducherry.jpg
+E 6fcf043a293a5c8d62da6ea1cc46667abb6f615ceb86b0cc713f00e048e27d8e  public/images/demo/design-fleet-hatchback.png
+E 05fec09fdb2f6ff23177d72a32289734fba42b31816b34d19a96dfff1020e121  public/images/demo/design-fleet-innova.png
+E f69d8ad5b5feb2f5c824e6619f842c45356ce73d4bb4ee80b81058cf763f1e48  public/images/demo/design-fleet-sedan.png
+E 9a6af7a2c67d07f036eab453f3686457b3104289f178547bb5fb5fa4d5f29f49  public/images/demo/design-fleet-suv.png
+E f4b67fb736f48bf0e97c4b26d042d40ab0d89592ada42caf64f389c6a941dc1d  public/images/demo/design-fleet-tempo.png
+E eb6f0c19e552cdb1cbbb7612a1dc5266ce8ceb92fa74a6e93b99fe3145735e6d  public/images/demo/design-hero-scene.webp
+E 3b82e89b01b48f52e138f1e11fa907f595bc66e86500cf4eb74f69856b27881a  public/images/demo/design-india-map.png
+E 062098a1b1a229961d8e6901bec783fc94b8b6365d458cd52a1e0063fedea368  public/images/demo/design-scenic-journeys.webp
+E 461696bf97c54c1e5712a1e9182478478effb170510c4bdd94590e0a4a8d8523  public/images/demo/fleet-economy-sedan.jpg
+E bb44ea4e13f7e9c8e00e18221e0b8e3f754818632e0d759f3bee99d058dd6f88  public/images/demo/fleet-innova.jpg
+E d8ec1916d834f064fb65793a39e73a87148d5fce571b787af25cfea67d91ba64  public/images/demo/fleet-mini.jpg
+E b4768431bf1c05030215e4878423f887fe6180f171f56ce97e831c98bad745db  public/images/demo/fleet-premium-sedan.jpg
+E ef8d0318163130dedd3e120c39ed1a0e7b9cfef5c1ac46cfed39dfa17aa24a3e  public/images/demo/fleet-suv-fortuner.jpg
+E d9e9051f8163cb7b8ecd2639fb2cd35855840a11455fb6b501e5ebeb457e87ef  public/images/demo/fleet-suv-rav4.jpg
+E e14084046719a63688b1971e0bd5c1f14815b5ee9a94738e93843683e68b035e  public/images/demo/fleet-tempo-traveller.jpg
+E 4f4ded107d6e0dde90860785b79dc629257d6058b09c9e1621dd04e981b61803  public/images/demo/hero-airport-sunset-landing.jpg
+E 817150856d164a58a004f8e409727827d428f8be036d3723616157205486d093  public/images/demo/hero-airport-takeoff-golden-hour.jpg
+E f6a46be9e9f824c3d4847226db5bdefc6a71dfc829def01f1998eee4496d0e91  public/images/demo/hero-airport-taxi-golden-hour.jpg
+E b5fb6eeaa3b48a95159f929c8c6e0e0fa82404d7506a76ac323d7653153639d4  public/images/demo/hero-airport-taxi-golden-hour1.jpg
+E f87f11e33fd5b141c829f1fd6407686df9a109ee2db2b698153923dcc33e23da  public/images/demo/hero-airport-taxi-golden-hour11.jpg
+E 0229ac3c8d224540de285fc13a13528d57c568146154555f7e0fa8e1fdb1b5ad  public/images/demo/hero-airport-terminal-golden-hour.jpg
+E c406e14cc0aad8fa35ba5fe618789720364980cfc6b2f5ea5870deab289a527c  public/images/demo/hero-airport-terminal-sunset.jpg
+E 546e6b7b9c656fd40cd4b8af12e02e500d3d4d0ed0120dae2c5a789dc7a6c1fd  public/images/demo/hero-munnar-highway.jpg
+E 5ac064099219a5a1e2a352cd8cf1106bf742e6824161e5a07a3de7c97c43c31a  public/images/demo/hero-sunset-mountains.jpg
+E 325ae475be3f04c65bc57af4dbe9cb50147fca2a668af6401ff7a350a7fa51fc  public/images/demo/hero-suv-black.webp
+E f543ea14480b75210fcb40464b72aabe3c0418ff5b836497c56db161ae873fb4  public/images/demo/hero-white-suv-mountains.jpg
+E d8b3aab05da06d5fd7f1fdb30004d4f03cc64fe649fd3dfb83e6cf63711f6d12  public/images/demo/india-map-hd.png
+E dfd577376be7301899a815e3b40102c6a52c41fb1dd6b7cd08df086f9b0028b1  public/images/demo/partner-driver.jpg
+E 8eb5fdb282bac361b6987c23db8a70b99aeafe084048b5346b1d04ad48b043e4  public/images/demo/scenic-city-highway.jpg
+E 7112c697ff3ddac6fdee2668c87e9ad7cb0dc48523acaf2a38b43c622d2a3b0f  public/images/demo/scenic-driving.jpg
+E 0721a58abc54db0277c3ed85c56a34e44d18d64679ac135388d9adb9e24bdebc  public/images/demo/scenic-hairpin-aerial.jpg
+E 000cf6605174456e2ea330cec54e6c862eaea8c11209d84ddb262541184b8081  public/images/demo/scenic-suv-misty.jpg
+E 4a925a453ef541c80021a34a6ca85c8ca2e7e511535c9a70604dd6371a2d135e  public/images/demo/scenic-western-ghats.jpg
+E df37c60cf3b46c84a6dc02987820af951dab8ca91971bf0022b9b37fb8d471ec  public/images/demo/scenic-yercaud-ghat-road.jpg
+E 8007a24abdabaa2b2e58f26afda6c10d06247e2257a6c688bfc1c00559ba7840  public/images/demo/service-auto-taxi.jpg
+E e4f6d82b506adc565921807c4c949382beeea73a1156448b058f97f17aae3953  public/images/demo/service-bike-taxi.jpg
+E 5f1ab7d11642e67d70d85223d78decf167c9fee7b124c43d2d026c04d0c9685d  public/images/demo/trip-one-way-sedan.jpg
+E d03725d9b6be3164e96f8cb0392b1e0b79a8816443469aa724f2fa68339d9aa8  public/images/demo/trip-one-way-white-sedan-sunrise.jpg
+E c73d4bf30ba4c36a8d44cac1df222af59f7ce5d2ba5c3db2334833c751bf5a4b  public/images/favicon.svg
+E 3cb064eef2158a1bb90283a89f2bf90815cd7eacc1772ba8c8bb58ed3a46220f  public/images/placeholder.svg
+E eba77cba39695b6bd091fe5211d481f7ebb2ce2d8d26230b5a609465d0a4aff9  public/index.php
+E 3409bf98b80e83ffeaed5812200c4e964c450a3624a755e80eb472836c0cb00c  public/js/admin.js
+E cb80e026746d488a1eccbd66d5e73f70fc2110df4bc62dabbea7f384eef189c5  resources/css/app.css
+E 50b265c63ba881f8a216b4377014f810ca55a632d810e059074b8b8aa20f32b8  resources/js/app.js
+E 6fd9fc82e68fa915a882f4e227b9faacbe7bfd66cb953c628840e83bda6b72f4  resources/js/bootstrap.js
+E 5adc371f9e29676d4053ac4ab0dcf32576e94e49d6a541ba1d4d44c2e2078f4c  resources/js/site.js
+E ce6c0bf1392b3653eaf987b176e9b0fd3fe74ecfc3c8d1237f50418755ca41d3  resources/views/admin/account/edit.blade.php
+E fedce8f3151db93d8b4babf88d70f6b32d0725ea40aed8ec149c829295464903  resources/views/admin/auth/login.blade.php
+E 8a3c0f4cb62ffaa61d8f38c572e8158877824a47d0d2cb0c12f70d0488452625  resources/views/admin/bookings/index.blade.php
+E fda78430f9930810a9342e315807d616dc1263eddc32cb1e95b10d326d132695  resources/views/admin/bookings/show.blade.php
+E 59f49a3cd5fb4f76d4b23a6bda86ac5fb84ed8a4231bdfcb3d2c9fa0d8146012  resources/views/admin/cities/form.blade.php
+E c6f7b3728e3520af45eb577bc8caba09c1b8d8f6ac67f2298df714ab9a19fb58  resources/views/admin/cities/index.blade.php
+E d4b6ea6a1a2db3c7aa024b28450586ecc5b02bda565e84c71086a3fa55e7137f  resources/views/admin/dashboard.blade.php
+E eaa409a36ee643370378e24f0e9be2240bda3fa19678cef9324afede7de820bf  resources/views/admin/enquiries/index.blade.php
+E 7f612cd281ab136d0a2bb523d20588999c65a20c6926bfbb874fbd273f7ebb8f  resources/views/admin/enquiries/show.blade.php
+E 19cef1f241f77790f20f7a647a66a32db2541f9f61d6fa41d615aa32fcb198bc  resources/views/admin/faqs/form.blade.php
+E 65f16c3f0250ace47aa57b063d3e9db21e919ef841c5d528f318fecbfe697412  resources/views/admin/faqs/index.blade.php
+E b90a9bfd6e9af4fa2b4a64077e49af22aa058976feada006aff97f3fa16a9038  resources/views/admin/fares/edit.blade.php
+E c0e48bcebad9a899efe10d513dacc525bb43884dd5f96939aabb3b734568c2d3  resources/views/admin/fares/index.blade.php
+E 9507ae81b43cb6e0485019e4a5190febf2fbc1a4df80e931340d9821189fe2a6  resources/views/admin/homepage/edit.blade.php
+E 0221603d4a25ba403d612df3bed07ac55e01e43cc388a0bc9fa090547cc0ba6e  resources/views/admin/homepage/index.blade.php
+E c99546500fe9d218e3fe525e76c05bad2c280fd2bfd231507dcbcb0a27ed4a28  resources/views/admin/layout.blade.php
+E 0a8c60a5d011f4a89d4566218ab9540886be965e386174b91c7911aa73b67667  resources/views/admin/media/edit.blade.php
+E 7e5d1bbc55dcb579b840b6da724d97b696e2043c34c8d22ccae3027021e45922  resources/views/admin/media/index.blade.php
+E 06f8256948608eb738a9364892d8063ed09dd007ef67349bafd0c524aa5f65a9  resources/views/admin/messages/index.blade.php
+E d39a26d9ef250e60cf21a4b89aafbc838417e21ec076e8a77bae9c594f951e1b  resources/views/admin/messages/show.blade.php
+E b73345aa53fc0f0e524ffae8fd2f95e150621e459837290ef9cdd83c42a25126  resources/views/admin/navigation/form.blade.php
+E 0c797cc399670eb5011973365f012215ca0e2f29248cf42625bd58d49fa48d41  resources/views/admin/navigation/index.blade.php
+E 59d5bd916956eb5bef9f73c82e9f454a8870420209f72bb0d526401979f3bf9b  resources/views/admin/pages/form.blade.php
+E f42dff444102276969c1fb99be4680cfa767c94216aca14e2292273edffd300a  resources/views/admin/pages/index.blade.php
+E fc928f12d8742b11d349ba35278f502800021c6f4c9d3754aff5e13ddc4210f7  resources/views/admin/partials/field.blade.php
+E 6d68505f9d26ab95e3dcd6caf4948600a88879185d70c26d1bae5afa5eb51407  resources/views/admin/partials/media-modal.blade.php
+E a4ec0603e71d2ead41859b05ce5f9f7c546658a358373f5c79b5127ddb0f1327  resources/views/admin/partials/repeater.blade.php
+E b357dd9c39c288b00eb043dbc0c3199d4325fd4cf0e7f34e1a76f944cc719be3  resources/views/admin/routes/form.blade.php
+E 4c4ae18aa9357543356e51461aa7299ac300c2d190607fb12c20e202096c98d8  resources/views/admin/routes/index.blade.php
+E 2abf4849dcb65482b02eeca8c5efa8d8f7b24a47265762ba8225bc86c5daf2b5  resources/views/admin/services/form.blade.php
+E b75f24d267a06e9325dfb326c99ed5391fc1a36270c304b4ae9e44c5d20d4ce3  resources/views/admin/services/index.blade.php
+E 63d77daf45e5e33bad178b6bd6393817cd4600f3bd1dcc84d3f461c5b4564472  resources/views/admin/settings/edit.blade.php
+E f0dfc4b2b14e8cf7e6fab9712128a79de6bfa11f03c1d4e76df5ec2871ea04ea  resources/views/admin/slides/form.blade.php
+E 27c781d8e63400791cd411216d7dbbcf18ec6148d773d708e719475b8b43264f  resources/views/admin/slides/index.blade.php
+E 9695292edd7ffcc962a20dc81c439aab552307f410ae7795f0929d923a8859e1  resources/views/admin/testimonials/form.blade.php
+E 672bfb93186bb713d31bb17606f6acb0a06cd9d9456cb59d79706a17ed466204  resources/views/admin/testimonials/index.blade.php
+E ac984a9f57f643593ab201455b39df731645652cc64cf48b9c97804bcc43039e  resources/views/admin/vehicles/form.blade.php
+E 22d6be9c628da021b5755b867d9a00c7863743f8739b6f1405995611f1f4c20e  resources/views/admin/vehicles/index.blade.php
+E 5b775130604559b0ffc1bd6da56f175d7a9a66dde19286c96b9d1f3b73a77478  resources/views/booking/confirmation.blade.php
+E 3fb67d2be97fb6f2509d3808b357b1947f79a529a29dc7202f39a7fa123e963e  resources/views/booking/create.blade.php
+E 3b6695521f2ac1321ceac607efb939df83b6cabc212ae2055138236753afe4d5  resources/views/business/app.blade.php
+E 70f5fcb369a0a558d2375a8ac6cddd7874b7695c8622250acbe3c6fa7063b902  resources/views/business/corporate.blade.php
+E a50d75e90a2eed37799789210d6e0c7d828787530a221669feffaa5b691ae46f  resources/views/business/partner.blade.php
+E b44dafe4d2a7376eb7bfdd64ceade458e53394f3ddcc6006ab61f3ed5dc17df4  resources/views/components/admin/badge.blade.php
+E d47be3e93714c98340fd546d7ff68e21daa89eee1565c4055eb15ce6beae9f84  resources/views/components/admin/checkbox.blade.php
+E 9bc7d59f671eace5bab6fc0c9c97dd06247c246419292746b592e015e33410df  resources/views/components/admin/delete.blade.php
+E 854366e421da30367346698e9394dbbd155f13e56b76202cac0d35d687afb4e2  resources/views/components/admin/icon-select.blade.php
+E b3b48709852079f1daa68b31e5be9b97adf741012d1b1c9bde00507244ff2b2a  resources/views/components/admin/input.blade.php
+E 64ec614d8baab85510378993a7f17353ff83d9203fbecb93667c99059e69758e  resources/views/components/admin/lines.blade.php
+E c78b4dcecfaacaa2f75c9705694c80434a491297a00836805d0f19381e99aca9  resources/views/components/admin/media.blade.php
+E 0bcf1bb86d6cd329fb9e2f6f71425593a6163d9efb37aacf61384dacbf205c00  resources/views/components/admin/rich.blade.php
+E 76997f5a44da1f47431a63e38d0e058426ef1cf64683e9d1b48c44d7551ab1de  resources/views/components/admin/select.blade.php
+E 6f649cc39edcd982bc7b7d472a1eb4c90d391d2007e9a0a0bc1d7d45e9d38c23  resources/views/components/admin/status.blade.php
+E 2b252154bfc1efc8d6239939d06953e9c1218a51686e4433a8c24397d2b14692  resources/views/components/admin/textarea.blade.php
+E c6879591a70be0a2edfe0be70d498f1b86db2900bdef0164c6cf91af44b11e75  resources/views/components/app-download.blade.php
+E 26d09ed315756734a2c5ed260812bdf02921c1de04e52d344ea7496b70cc4e4a  resources/views/components/booking-card.blade.php
+E 700e86db4c5b6edf7f9938d560cd34988e9433c92328b1dc578afcc45afa86ce  resources/views/components/booking-panel.blade.php
+E aaa805a49a9f5e4b601a283f318eaf4391d84dba5694eb6a4095594d03aeacb2  resources/views/components/cta-band.blade.php
+E 38357e2a6c4af687bcab7c88dcaabba0e68d4a8454542756716bb7feca057816  resources/views/components/estimate-panel.blade.php
+E 4bb96933f105b6e76edebe25ef53037e136065dfa76b630921ebbeda8a6995ec  resources/views/components/faq-list.blade.php
+E 6657861f1979905a8323f94ce4f4142f96cc6e6ec871f0c973658b7b0da5d20a  resources/views/components/form/field.blade.php
+E dfd0a705066557f8d19870f18bc442f311c2e63370b72396662628f03ede36e4  resources/views/components/hero-slider.blade.php
+E 9472906f567e697d8e39ea140fcf08e0b1ce10b6b9dd1bfc806eb2c61f6db4a0  resources/views/components/home-heading.blade.php
+E 8009a02c9f20aec51ad16065a4a6939a1dea5fa3c910942bf3963df6be6ab737  resources/views/components/icon.blade.php
+E 3898391f293a06f9e29b8297a4613e4375051ee37cc32d2b3c6f38d60dee2e22  resources/views/components/img.blade.php
+E e0c77baf378e669919aabfef562aaaeb3f97b4ee55db0c3e325e42714a319503  resources/views/components/page-banner.blade.php
+E a6e58736af7cd910dddf600a2f604081785f637953498d5d9f139619f276c8c4  resources/views/components/route-card.blade.php
+E 96254789a2ec65afeac473112945e1bc51b1122a1e4408410311f34a167b0a78  resources/views/components/sample-badge.blade.php
+E 07cfe76a2921ba9ef7810a4562a98c639a761d1e0fdebb5b1acfe5b2e168ff41  resources/views/components/section-heading.blade.php
+E 5ff3c47e6c930e6264f77c661d47e529dd4399717e0ddf31584b7f2616f954ae  resources/views/components/vehicle-card.blade.php
+E 906193a8f97e63ccd7ffe699b140081d47029995c019b49a9a85c9756b89cd9e  resources/views/contact.blade.php
+E f689a41a7f656ed0b42f6d8f6d08451821e9add5b2485d35ea246b1748fb0c51  resources/views/errors/404.blade.php
+E f9836bb15de8de11f1deee7353e985969f2dc88b0e41f032b903917babba749d  resources/views/faqs.blade.php
+E 930ef88998b3af2cb523a8e26a390e5c992b751206404bb1ef57f567b7f6befd  resources/views/fleet/index.blade.php
+E a4dd8c58679152976d2179ac35f4c8b1990707f460c169869b63c9d011f49e6a  resources/views/fleet/show.blade.php
+E 112994fbc365af35f9f07194322449116f2101fd25feabc3eb61f9f3f19cef08  resources/views/home.blade.php
+E 2e710c97f6e1fffc179a087bc461512de832c7d934b5adaeb90adec545431416  resources/views/home/sections/about.blade.php
+E 97f859fee28b5d02ac983cfde3c66aa71e2e0cc000cf18aa1dadcd35726fa043  resources/views/home/sections/app.blade.php
+E 23e946400d5bb1ebb696a1e1fc03fcb5ab80461170bae636fb4b44a240a289b0  resources/views/home/sections/benefits.blade.php
+E 3d579e743781d39a04d9a631e35ccc3906164ed1ef7beee39a64e18d316247bf  resources/views/home/sections/contact.blade.php
+E 61f3087adcfb7b7140260109da20c5f84ca548d84b11961d458bbd8b3a6ca761  resources/views/home/sections/corporate.blade.php
+E 0302bb2bf278c2da6acd2733499505bec754fda5aa4d93273873d4c112019bab  resources/views/home/sections/cta.blade.php
+E 29948e166ef90547c12755e5f4970b4c20e9ca950da02860e652a6e3a5fd731b  resources/views/home/sections/destinations.blade.php
+E 553f85724b1074a841f870c446e317e0f874b89da01b3a27b61f9c18640b1b64  resources/views/home/sections/faqs.blade.php
+E cfcb32d54c0aec6df0a8c85ff1fb4ada2935f687380fa3e4fb35bf0c015ce353  resources/views/home/sections/fleet.blade.php
+E 1250308b167759a5e6b1e256688884c5556d4cf87fbaf60baa4fd7249eb90a2a  resources/views/home/sections/how_it_works.blade.php
+E bd4e8db946d3101a2d892457d976f463c95eddf8f243970da6d39c8cbcf1e8a6  resources/views/home/sections/partner.blade.php
+E cfd53ab71b290a918bb9b8be4fbca93535550e5b3cfc9b266044663339814d6f  resources/views/home/sections/routes.blade.php
+E 8b87d951c64c69e9db472121929de182f24ac93d8d5b3bbbfcbf19ef673e710a  resources/views/home/sections/safety.blade.php
+E 95259f57bc8019b643b06d6efd0761cc97956f191400169b00fe473c58624b34  resources/views/home/sections/service_areas.blade.php
+E 051a2f8da2441b0dc87422052c4e6da4f82b2c7c8202756fdba75355c2631152  resources/views/home/sections/services.blade.php
+E 0cf6ddd334e6efa4f7539c92add3b564af5e6b7a18080b46dd004a2d40bc8f3c  resources/views/home/sections/stats.blade.php
+E 72d697f6bfa276c8ffee8f9c8dc8e11e4bb020f3daea9f357a248529e6826bf1  resources/views/home/sections/testimonials.blade.php
+E da27479bbf82497b33b36890350a9c1127ca9d8c675cc2417ca87572eaa49061  resources/views/home/sections/vehicle_carousel.blade.php
+E d2c1d58156ad3fbca2b6d5e622fb6d1cb512c99e6e4bcb75c07c3d1656a892ec  resources/views/home/sections/why_choose.blade.php
+E eca6b40bbb01c42806949b7203627387f550fdfd7a0a6e3744dc63c49c2e9f6a  resources/views/layouts/app.blade.php
+E 823fa1f9c395c5319dd40ecf46bea2418274f2f762206568938dc1b22f4d82bb  resources/views/pages/credits.blade.php
+E 940f45854a24daa896b8cd5f729a5c1658685d579f858bd44f25df750a24b672  resources/views/pages/show.blade.php
+E 14d37445df1338b901e79fa0ae26b9b71970d00b4d28300354319bb5ac59f770  resources/views/partials/brand.blade.php
+E 371ee5589dd9906124283c641465aae25a8ed7134141e9404a2fe0240876a9d0  resources/views/partials/footer.blade.php
+E 0386cce5575176ebf8359819538065ac4154f08f7bd21fcb2a7541ca8c4f10df  resources/views/partials/header.blade.php
+E 9cad613b1ba397f036f38505f5b7ecb6a537fba791155b7c3953ddc66905a47b  resources/views/partials/pagination.blade.php
+E 4c7da55389624eb1a030c19593c649786352a9d2f5136360dff08cf03e8927d8  resources/views/routes/index.blade.php
+E 9cffe46301f7cf5bcc56aed39658ee6cf70fe6a76d92b53cacf9b9bb0acca63b  resources/views/routes/show.blade.php
+E 0b3baece2b52d42b6a4c25a9b4325aab1c3e741acccdc5d0cfb55ad49aa18a51  resources/views/seo/sitemap.blade.php
+E 0dddef55753890e6001e4a35f8f2d5a495c58a1726f6a2873e23b4fad0c61db8  resources/views/services/index.blade.php
+E f288bcac2025feeabaf0b33da6fae8781ac04f8f33cfb4797f866ebe5a14f790  resources/views/services/show.blade.php
+E 2712f5909e694cf0676ace8a9b9da3e190293e7a6cb5995fde756491c8385521  resources/views/welcome.blade.php
+E 9adccc33e7dd400683e434774077c7fdb2f299c5712cedf16a43fdf56f2850fa  routes/console.php
+E 442667cab4a0ace9a515a9a0ec487a8eae6a7e1600d635834a3ac5105005f8f0  routes/web.php
+== END
