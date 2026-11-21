@@ -1,21 +1,31 @@
 @if ($services->isNotEmpty())
 @php($cards = $services->take((int) ($section->get('limit') ?: 4)))
-<section class="home-section bg-ivory pt-14! sm:pt-16!" id="services" aria-labelledby="services-title">
-    <div class="container-site">
-        <x-home-heading :eyebrow="$section->get('eyebrow') ?: 'What we offer'" :title="$section->title" :subtitle="$section->subtitle" id="services-title" />
-        <ul class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+{{-- Services (CMS: Admin → Website Settings → Services, "Show on homepage"): vehicle photo cards linking to each service page --}}
+<section class="svc-band bg-ivory" id="services" aria-labelledby="services-title">
+    <div class="container-site svc-wide">
+        <div class="svc-head">
+            <div class="svc-head__title">
+                <span class="kicker">{{ $section->get('eyebrow') ?: 'Our services' }}</span>
+                <h2 id="services-title" class="intro-title intro-title--lg">{{ $section->title }}</h2>
+            </div>
+            @if ($section->subtitle)
+                <p class="svc-head__lead">{{ $section->subtitle }}</p>
+            @endif
+            <a href="{{ route('services.index') }}" class="text-link shrink-0">All services <x-icon name="arrow-right" :size="18" /></a>
+        </div>
+
+        <ul class="svc-grid">
             @foreach ($cards as $service)
                 <li>
-                    <a href="{{ route('services.show', $service->slug) }}" class="service-card group">
-                        <span class="service-card__media">
-                            <x-img :media="$service->media" alt="" class="size-full transition duration-500 group-hover:scale-105" />
+                    <a href="{{ route('services.show', $service->slug) }}" class="svc-tile">
+                        <span class="svc-tile__media">
+                            <x-img :media="$service->media" alt="" class="size-full" sizes="(min-width: 1024px) 300px, (min-width: 640px) 50vw, 100vw" />
                         </span>
-                        <span class="service-card__icon" aria-hidden="true"><x-icon :name="$service->icon" :size="24" :stroke="2.1" /></span>
-                        <div class="flex flex-1 flex-col px-5 pt-3 pb-5">
-                            <h3 class="text-lg font-bold">{{ $service->title }}</h3>
-                            <span class="mt-2 flex-1 text-sm leading-relaxed text-ink-soft">{{ $service->short_description }}</span>
-                            <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-gold">Learn More <x-icon name="arrow-right" :size="16" class="transition group-hover:translate-x-1" /></span>
-                        </div>
+                        <span class="svc-tile__bar">
+                            <span class="svc-tile__icon" aria-hidden="true"><x-icon :name="$service->icon" :size="22" :stroke="2.1" /></span>
+                            <h3 class="svc-tile__name">{{ $service->title }}</h3>
+                            @if ($service->short_description)<span class="sr-only">— {{ $service->short_description }}</span>@endif
+                        </span>
                     </a>
                 </li>
             @endforeach

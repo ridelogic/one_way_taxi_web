@@ -31,7 +31,7 @@
                     @foreach (\App\Enums\TripType::cases() as $type)
                         <label class="trip-tab">
                             <input type="radio" name="trip_type" value="{{ $type->value }}" @checked($trip === $type->value) data-trip-type>
-                            <span>{{ $type === \App\Enums\TripType::OneWay ? 'One Way' : $type->label() }}</span>
+                            <span>{{ $type->label() }}</span>
                         </label>
                     @endforeach
                 </div>
@@ -43,17 +43,17 @@
 
         <datalist id="{{ $uid }}-cities">
             @foreach ($cities as $city)
-                <option value="{{ $city->name }}">{{ $city->state }}</option>
+                <option value="{{ $city->name }}">{{ $city->suggestionHint() }}</option>
             @endforeach
         </datalist>
 
         <div @class(['mt-5 grid gap-4', 'sm:grid-cols-2' => $hero])>
-            <x-form.field name="pickup_location" for="{{ $uid }}-pickup" label="Pickup City" icon="map-pin" :error="$err('pickup_location')">
-                <input id="{{ $uid }}-pickup" type="text" name="pickup_location" list="{{ $uid }}-cities" placeholder="Enter pickup city" autocomplete="off" required maxlength="120" value="{{ $val('pickup_location') }}" class="form-control form-control-icon" data-estimate-input>
+            <x-form.field name="pickup_location" for="{{ $uid }}-pickup" label="Pickup Location" icon="map-pin" :error="$err('pickup_location')">
+                <input id="{{ $uid }}-pickup" type="text" name="pickup_location" list="{{ $uid }}-cities" placeholder="Enter pickup city or area" autocomplete="off" required maxlength="120" value="{{ $val('pickup_location') }}" class="form-control form-control-icon" data-estimate-input>
             </x-form.field>
 
-            <x-form.field name="destination_location" for="{{ $uid }}-destination" label="Destination City" icon="flag" :error="$err('destination_location')" data-trip-show="one_way outstation">
-                <input id="{{ $uid }}-destination" type="text" name="destination_location" list="{{ $uid }}-cities" placeholder="Enter destination city" autocomplete="off" required maxlength="120" value="{{ $val('destination_location') }}" class="form-control form-control-icon" data-estimate-input>
+            <x-form.field name="destination_location" for="{{ $uid }}-destination" label="Drop Location" icon="flag" :error="$err('destination_location')" data-trip-show="local one_way outstation">
+                <input id="{{ $uid }}-destination" type="text" name="destination_location" list="{{ $uid }}-cities" placeholder="Enter drop city or area" autocomplete="off" required maxlength="120" value="{{ $val('destination_location') }}" class="form-control form-control-icon" data-estimate-input>
             </x-form.field>
 
             @unless ($hero)
@@ -69,6 +69,10 @@
 
             <x-form.field name="travel_date" for="{{ $uid }}-date" label="Travel Date" icon="calendar" :error="$err('travel_date')">
                 <input id="{{ $uid }}-date" type="date" name="travel_date" min="{{ now()->toDateString() }}" max="{{ now()->addYear()->toDateString() }}" value="{{ $val('travel_date') }}" required class="form-control form-control-icon">
+            </x-form.field>
+
+            <x-form.field name="return_date" for="{{ $uid }}-return" label="Return Date" icon="calendar" :error="$err('return_date')" data-trip-show="outstation">
+                <input id="{{ $uid }}-return" type="date" name="return_date" min="{{ now()->toDateString() }}" max="{{ now()->addYear()->toDateString() }}" value="{{ $val('return_date') }}" class="form-control form-control-icon">
             </x-form.field>
 
             <x-form.field name="travel_time" for="{{ $uid }}-time" label="Travel Time" icon="clock" :error="$err('travel_time')">

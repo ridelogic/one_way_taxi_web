@@ -111,6 +111,10 @@ class MediaAsset extends Model
             + VehicleCategory::where('media_id', $this->id)->count()
             + Service::where('media_id', $this->id)->count()
             + HeroSlide::where('media_id', $this->id)->orWhere('foreground_media_id', $this->id)->count()
+            + GalleryPhoto::where('media_id', $this->id)->count()
+            + DistrictVehicle::where('media_id', $this->id)->count()
+            + PromoVideo::where('thumbnail_media_id', $this->id)->count()
+            + DistrictPage::where('hero_media_id', $this->id)->orWhere('card_media_id', $this->id)->orWhere('og_media_id', $this->id)->count()
             + SiteSetting::whereIn('key', ['logo_media_id', 'favicon_media_id', 'default_og_media_id', 'app_qr_media_id'])
                 ->where('value', (string) $this->id)->count();
     }

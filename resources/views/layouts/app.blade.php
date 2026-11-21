@@ -16,29 +16,36 @@
     <meta name="description" content="{{ $seo->metaDescription($settings) }}">
     <link rel="canonical" href="{{ $seo->canonicalUrl() }}">
     <meta name="robots" content="{{ $indexing ? 'index, follow' : 'noindex, nofollow' }}">
-    <meta name="theme-color" content="{{ $hex('brand_green', '#062B55') }}">
+    @if ($seo->keywords)<meta name="keywords" content="{{ $seo->keywords }}">@endif
+    <meta name="theme-color" content="{{ $hex('brand_green', '#080D18') }}">
 
     <meta property="og:site_name" content="{{ $businessName }}">
     <meta property="og:type" content="{{ $seo->type }}">
-    <meta property="og:title" content="{{ $seo->fullTitle($settings) }}">
-    <meta property="og:description" content="{{ $seo->metaDescription($settings) }}">
+    <meta property="og:title" content="{{ $seo->ogTitle ?: $seo->fullTitle($settings) }}">
+    <meta property="og:description" content="{{ $seo->ogDescription ? str($seo->ogDescription)->squish()->limit(200) : $seo->metaDescription($settings) }}">
     <meta property="og:url" content="{{ $seo->canonicalUrl() }}">
     <meta property="og:image" content="{{ $seo->imageUrl($settings) }}">
     <meta property="og:locale" content="en_IN">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $seo->ogTitle ?: $seo->fullTitle($settings) }}">
+    <meta name="twitter:description" content="{{ $seo->ogDescription ? str($seo->ogDescription)->squish()->limit(200) : $seo->metaDescription($settings) }}">
+    <meta name="twitter:image" content="{{ $seo->imageUrl($settings) }}">
 
     @if ($favicon)
         <link rel="icon" href="{{ $favicon->safeUrl() }}">
     @else
-        <link rel="icon" href="{{ asset('images/favicon.svg') }}" type="image/svg+xml">
+        {{-- /favicon.ico (16/32/48px, same mark) is picked up by browsers automatically --}}
+        <link rel="icon" href="{{ asset(config('branding.favicon_32')) }}" type="image/png" sizes="32x32">
+        <link rel="icon" href="{{ asset(config('branding.favicon_512')) }}" type="image/png" sizes="512x512">
     @endif
+    <link rel="apple-touch-icon" href="{{ asset(config('branding.apple_touch_icon')) }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- Brand colours from Admin → Settings → Business --}}
-    <style>:root{--color-gold:{{ $hex('brand_gold', '#0D6EFD') }};--color-forest:{{ $hex('brand_green', '#062B55') }};--color-fresh:{{ $hex('brand_green_fresh', '#0D6EFD') }}}</style>
+    <style>:root{--color-gold:{{ $hex('brand_gold', '#E60000') }};--color-forest:{{ $hex('brand_green', '#080D18') }};--color-fresh:{{ $hex('brand_green_fresh', '#B8030F') }}}</style>
     @stack('head')
 
     @if ($settings->bool('structured_data_enabled'))

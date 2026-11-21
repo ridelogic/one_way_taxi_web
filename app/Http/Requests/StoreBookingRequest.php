@@ -93,11 +93,15 @@ class StoreBookingRequest extends FareEstimateRequest
     {
         parent::prepareForValidation();
 
-        // Rental trips have no destination or return date.
-        if ($this->input('trip_type') === TripType::Rental->value) {
-            $this->merge(['destination_location' => null, 'return_date' => null]);
+        // Rental has no destination; only Round Trip ('outstation') has a return date; only Rental has a package.
+        $type = $this->input('trip_type');
+        if ($type === TripType::Rental->value) {
+            $this->merge(['destination_location' => null]);
         }
-        if ($this->input('trip_type') !== TripType::Rental->value) {
+        if ($type !== TripType::Outstation->value) {
+            $this->merge(['return_date' => null]);
+        }
+        if ($type !== TripType::Rental->value) {
             $this->merge(['rental_package' => null]);
         }
     }

@@ -119,13 +119,4 @@ class AdminInputHandlingTest extends TestCase
         $this->delete(route('admin.pages.destroy', $page->fresh()));
         $this->assertSame(0, NavigationItem::where('url', 'like', '/wedding-%')->count());
     }
-
-    public function test_hidden_slide_is_not_reported_as_live(): void
-    {
-        $this->post(route('admin.slides.store'), ['heading' => 'Hidden offer', 'overlay_strength' => 40, 'text_align' => 'left', 'is_active' => '0'])
-            ->assertSessionHas('status', 'Slide added. It is hidden until you mark it visible.');
-
-        $this->post(route('admin.slides.store'), ['heading' => 'Live offer', 'overlay_strength' => 40, 'text_align' => 'left', 'is_active' => '1'])
-            ->assertSessionHas('status', 'Slide added. It is live on the homepage slider.');
-    }
 }

@@ -53,21 +53,25 @@ class BookingFlowTest extends TestCase
     public function test_homepage_booking_panel_has_tabs_and_requested_fields(): void
     {
         $html = $this->get('/')->assertOk()
-            // The hero (navy gradient, airport taxi scene, three benefits) ends with the taxi search panel
-            ->assertSeeInOrder(['class="home-hero"', 'Comfortable Rides', 'Every Journey',
-                'Safe &amp; Secure Travel', '24/7 Customer Support', 'Pan India Service', 'id="book-ride" class="booking-panel', 'One Way', 'Round Trip', 'Outstation'], false)
-            ->assertSee('images/demo/hero-airport-taxi-golden-hour.jpg')->assertDontSee('hero-airport-takeoff-golden-hour.jpg')
-            ->assertSee('<h2 id="book-ride-title" class="sr-only">Search for a Taxi</h2>', false)
+            // The dark automotive hero (heading, three highlights) contains the taxi search panel at its bottom
+            ->assertSeeInOrder(['class="home-hero"', 'Find Your Perfect Taxi', 'Every Journey',
+                'Safe &amp; Secure', 'Verified Drivers', 'On-Time Service', 'id="book-ride" class="booking-panel', 'One Way', 'Round Trip', 'Local', 'Rental'], false)
+            ->assertSee('images/demo/onewaytrip-hero-banner.jpg')->assertDontSee('hero-airport-takeoff-golden-hour.jpg')
+            ->assertSee('<h2 id="book-ride-title" class="booking-form__title">Search for a Taxi</h2>', false)
             // A GET search that opens the full booking page
             ->assertSee('method="GET" action="'.route('booking.create').'"', false)
             ->assertSee('name="trip_type" value="one_way" class="sr-only" checked', false)
-            ->assertSee('name="trip_type" value="round_trip"', false)
-            ->assertSee('name="trip_type" value="outstation"', false)
-            ->assertDontSee('name="trip_type" value="rental"', false)
+            ->assertSee('name="trip_type" value="local"', false)      // Local: rides within the city
+            ->assertSee('name="trip_type" value="rental"', false)     // Rental: hourly / package hire
+            ->assertSee('name="trip_type" value="round_trip"', false) // Round Trip (stored as outstation)
+            ->assertDontSee('name="trip_type" value="airport"', false) // Airport is a service, booked as One Way
             ->assertSee('data-lead-hours="2"', false)
-            ->assertSee('data-trip-show="round_trip"', false)
-            ->assertSeeInOrder(['Pickup Location', 'Drop Location', 'Journey Date', 'Return Date', 'Pickup Time', 'Search Taxi'])
+            ->assertSee('data-trip-show="round_trip"', false)       // return date only for round trips
+            ->assertSee('data-trip-show="local one_way round_trip"', false) // no drop location for rentals
+            ->assertSee('Chennai, Chennai International Airport (MAA)', false) // airports offered as drop locations
+            ->assertSeeInOrder(['Pickup Location', 'Drop Location', 'Pickup Date', 'Return Date', 'Pickup Time', 'Search Taxi'])
             ->assertSee('list="bp-cities"', false)
+            ->assertDontSee('Sign Up')
             // Contact details, vehicle and consent are collected on the booking page
             ->assertDontSee('name="customer_email"', false)
             ->assertDontSee('name="vehicle_category_id"', false)
@@ -86,7 +90,7 @@ class BookingFlowTest extends TestCase
             'travel_date' => $date, 'return_date' => $return, 'travel_time' => '09:30']))
             ->assertOk()
             ->assertSee('name="trip_type" value="outstation" checked', false)
-            ->assertSee('Round trips are booked as an Outstation trip with your return date.')
+            ->assertSee('Round Trip selected — add your return date.')
             ->assertSee('value="'.$date.'"', false)
             ->assertSee('value="'.$return.'"', false)
             ->assertSee('value="09:30"', false)
@@ -96,7 +100,23 @@ class BookingFlowTest extends TestCase
         $this->get(route('booking.create', ['trip_type' => 'round_trip', 'travel_date' => $return, 'return_date' => $date]))
             ->assertOk()->assertDontSee('value="'.$date.'"', false);
         $this->get(route('booking.create', ['trip_type' => 'one_way', 'return_date' => $return]))
-            ->assertOk()->assertDontSee('value="'.$return.'"', false)->assertDontSee('Round trips are booked');
+            ->assertOk()->assertDontSee('value="'.$return.'"', false)->assertDontSee('Round Trip selected');
+    }
+
+    public function test_airport_and_local_tabs_open_the_existing_booking_flow(): void
+    {
+        // Airport: booked as a one-way trip; the "City, Airport" value still resolves the city for the fare estimate.
+        $this->get(route('booking.create', ['trip_type' => 'airport', 'pickup_location' => 'Coimbatore', 'destination_location' => 'Chennai, Chennai International Airport (MAA)']))
+            ->assertOk()
+            ->assertSee('name="trip_type" value="one_way" checked', false)
+            ->assertSee('value="Chennai, Chennai International Airport (MAA)"', false)
+            ->assertSee('Coimbatore to Chennai');
+
+        // Local: the existing hourly rental trip type, no drop location needed.
+        $this->get(route('booking.create', ['trip_type' => 'rental', 'pickup_location' => 'Madurai']))
+            ->assertOk()
+            ->assertSee('name="trip_type" value="rental" checked', false)
+            ->assertSee('value="Madurai"', false);
     }
 
     public function test_homepage_panel_enquiry_is_stored_without_time_or_vehicle(): void
@@ -151,7 +171,7 @@ class BookingFlowTest extends TestCase
         $this->assertNotNull($booking->taxi_route_id);
 
         $this->get(route('booking.confirmation', $booking->reference))
-            ->assertOk()->assertSee($booking->reference)->assertSee('Enquiry received')->assertSee('One Way Trip');
+            ->assertOk()->assertSee($booking->reference)->assertSee('Enquiry received')->assertSee('One Way');
 
         $this->flushSession();
         $this->get(route('booking.confirmation', $booking->reference))->assertNotFound();

@@ -24,7 +24,22 @@ use Illuminate\Support\Facades\DB;
  */
 class HomepageLayoutSeeder extends Seeder
 {
-    private const VERSION = 16;
+    private const VERSION = 37;
+
+    /**
+     * About Us banner photo (v35–v37): a young Indian woman travelling comfortably in a car. Safe to call on its own —
+     * replaces only previously seeded banner photos (chauffeur, Munnar taxi, Kodaikanal taxi), never an admin choice.
+     */
+    public static function applyAboutBannerPhoto(): bool
+    {
+        $new = MediaSeeder::id('about-banner-woman-passenger.jpg');
+        $previous = array_values(array_filter([MediaSeeder::id('why-chauffeur-opening-door.jpg'), MediaSeeder::id('hero-munnar-highway.jpg'), MediaSeeder::id('about-banner-kodaikanal-innova.jpg')]));
+        if (! $new || $previous === []) {
+            return false;
+        }
+
+        return Page::where('slug', 'about')->whereIn('hero_media_id', $previous)->update(['hero_media_id' => $new]) > 0;
+    }
 
     public function run(): void
     {
@@ -79,6 +94,114 @@ class HomepageLayoutSeeder extends Seeder
         }
         if ($applied < 16) {
             $this->applyReferencePalette();
+        }
+        if ($applied < 17) {
+            $this->applyLogoPalette();
+        }
+        if ($applied < 18) {
+            $this->applyPremiumRedesign();
+        }
+        if ($applied < 19) {
+            $this->applyFleetRemovalAndCorporatePhotos();
+        }
+        if ($applied < 20) {
+            $this->applyDistrictPages();
+        }
+        if ($applied < 21) {
+            $this->applyPremiumAutomotiveHero();
+        }
+        if ($applied < 23) {
+            // v22 introduced the standard names; v23 extends the same (idempotent) step to the service SEO fields.
+            $this->applyStandardTripTypeNames();
+        }
+        if ($applied < 24) {
+            $this->applyCleanerHomepage();
+        }
+        if ($applied < 25) {
+            // v25 — the site owner's own hero banner replaces the stock hero photo (only if the previous one is still set).
+            $slide = HeroSlide::query()->ordered()->first();
+            $banner = MediaSeeder::id('onewaytrip-hero-banner.jpg');
+            $previous = array_filter([MediaSeeder::id('hero-black-sedan-city-skyline.jpg'), MediaSeeder::id('hero-airport-taxi-golden-hour.jpg')]);
+            if ($slide && $banner && in_array((int) $slide->media_id, array_map('intval', $previous), true)) {
+                $slide->update(['media_id' => $banner]);
+            }
+        }
+        if ($applied < 26) {
+            // v26 — About section photo: a smiling woman passenger (only if the previous seeded photo is still set).
+            $home = Page::where('slug', 'home')->first();
+            $about = $home ? PageSection::where('page_id', $home->id)->where('key', 'about')->first() : null;
+            $new = MediaSeeder::id('about-woman-passenger.jpg');
+            $previous = array_filter([MediaSeeder::id('about-indian-taxi-driver.jpg'), MediaSeeder::id('about-driver-with-passenger.jpg')]);
+            if ($about && $new && in_array((int) $about->media_id, array_map('intval', $previous), true)) {
+                $about->update(['media_id' => $new]);
+            }
+        }
+        if ($applied < 27) {
+            // v27 — light footer: Quick Links and Taxi Services trimmed to the agreed lists. Extra items are only
+            // hidden (still editable in Admin → Menus); nothing is deleted and no URL changes.
+            NavigationItem::where('menu', 'footer_company')->whereIn('url', ['/download-app', '/tamil-nadu'])->update(['is_active' => false]);
+            foreach (['/services/one-way-taxi', '/services/outstation-taxi', '/services/local-taxi', '/services/rentals', '/services/airport-transfers'] as $i => $url) {
+                NavigationItem::where('menu', 'footer_services')->where('url', $url)->update(['sort_order' => $i + 1, 'is_active' => true]);
+            }
+            NavigationItem::where('menu', 'footer_services')->whereIn('url', ['/services/corporate-taxi', '/services/bike-taxi', '/services/auto-taxi'])->update(['is_active' => false]);
+        }
+        if ($applied < 28) {
+            $this->applyVideoPromotionsHomepage();
+        }
+        if ($applied < 29) {
+            $this->applyHomepageMediaSections();
+        }
+        if ($applied < 30) {
+            // v30 — new About and Why Choose photos (young Indian women passengers); only where the previous seeded photo is still set.
+            $home = Page::where('slug', 'home')->first();
+            foreach (['about' => ['about-college-woman-passenger.jpg', ['about-woman-passenger.jpg', 'about-indian-taxi-driver.jpg', 'about-driver-with-passenger.jpg']],
+                'why_choose' => ['why-woman-passenger-smiling.jpg', ['why-chauffeur-opening-door.jpg']]] as $key => [$newFile, $oldFiles]) {
+                $section = $home ? PageSection::where('page_id', $home->id)->where('key', $key)->first() : null;
+                $new = MediaSeeder::id($newFile);
+                $old = array_map('intval', array_filter(array_map(fn ($f) => MediaSeeder::id($f), $oldFiles)));
+                if ($section && $new && in_array((int) $section->media_id, $old, true)) {
+                    $section->update(['media_id' => $new]);
+                }
+            }
+        }
+        if ($applied < 31) {
+            $this->applyReferenceHomepageMockup();
+        }
+        if ($applied < 32) {
+            // v32 — About photo: the smiling young woman passenger (mockup); only while the previous seeded photo is set.
+            $home = Page::where('slug', 'home')->first();
+            $about = $home ? PageSection::where('page_id', $home->id)->where('key', 'about')->first() : null;
+            $new = MediaSeeder::id('why-woman-passenger-smiling.jpg');
+            $old = MediaSeeder::id('about-college-woman-passenger.jpg');
+            if ($about && $new && $old && (int) $about->media_id === (int) $old) {
+                $about->update(['media_id' => $new]);
+            }
+        }
+        if ($applied < 33) {
+            $this->applyMockupAboutWhyText();
+        }
+        if ($applied < 34) {
+            // v34 — final homepage mockup: the mockup's woman-in-car photo for About, no statistics strip below the
+            // services (record kept, only hidden), "Our services" label. Each change applies only to seeded values.
+            $home = Page::where('slug', 'home')->first();
+            if ($home) {
+                $about = PageSection::where('page_id', $home->id)->where('key', 'about')->first();
+                $new = MediaSeeder::id('about-woman-in-car-mockup.jpg');
+                $previous = array_map('intval', array_filter([MediaSeeder::id('about-college-woman-passenger.jpg'), MediaSeeder::id('why-woman-passenger-smiling.jpg')]));
+                if ($about && $new && in_array((int) $about->media_id, $previous, true)) {
+                    $about->update(['media_id' => $new]);
+                }
+                PageSection::where('page_id', $home->id)->where('key', 'stats')->update(['is_active' => false]);
+                $services = PageSection::where('page_id', $home->id)->where('key', 'services')->first();
+                if ($services && ($services->content['eyebrow'] ?? null) === 'What we offer') {
+                    $services->update(['content' => array_merge((array) $services->content, ['eyebrow' => 'Our services'])]);
+                }
+            }
+        }
+        if ($applied < 37) {
+            // v35–v37 — About Us page banner: a young Indian woman travelling comfortably in a car replaces the
+            // earlier seeded photos — only while the page still uses one of them.
+            self::applyAboutBannerPhoto();
         }
         if ($applied < self::VERSION) {
             SiteSetting::updateOrCreate(['key' => 'homepage_layout_version'], ['value' => (string) self::VERSION, 'group' => 'system']);
@@ -218,6 +341,420 @@ class HomepageLayoutSeeder extends Seeder
         if ($slide && $slide->foreground_media_id && $slide->foreground_media_id === MediaSeeder::id('hero-suv-black.webp')) {
             $slide->update(['foreground_media_id' => null]);
         }
+    }
+
+    /**
+     * v24 — cleaner homepage: the "Most Booked One-Way Taxi Routes" and "Taxi Service Across India" sections are
+     * switched off (records kept — they can be switched back on in Admin → Homepage sections; route and district
+     * pages are unaffected), and the About section shows a smiling taxi driver at the wheel.
+     */
+    private function applyCleanerHomepage(): void
+    {
+        $home = Page::where('slug', 'home')->first();
+        if (! $home) {
+            return;
+        }
+        PageSection::where('page_id', $home->id)->whereIn('key', ['routes', 'service_areas'])->update(['is_active' => false]);
+
+        $about = PageSection::where('page_id', $home->id)->where('key', 'about')->first();
+        $old = MediaSeeder::id('about-driver-with-passenger.jpg');
+        $new = MediaSeeder::id('about-indian-taxi-driver.jpg');
+        if ($about && $new && (int) $about->media_id === (int) $old) {
+            $about->update(['media_id' => $new]);
+        }
+    }
+
+    /**
+     * v22 — one set of trip type names everywhere: Local, Rental, One Way, Round Trip.
+     * Service titles and footer labels follow them; the Local Taxi service now describes local city rides (it
+     * previously duplicated Rental's hourly packages); the rental package "Full day (local)" becomes "Full day".
+     * Each change applies only while the previous seeded text is still in place.
+     */
+    private function applyStandardTripTypeNames(): void
+    {
+        $services = [
+            'outstation-taxi' => ['Outstation Taxi', 'Round Trip Taxi', null],
+            'local-taxi' => ['Local Travel', 'Local Taxi', [
+                'old_short' => 'Hourly packages for errands, meetings and sightseeing in the city.',
+                'short' => 'Point-to-point rides within the city — station, bus stand, hospital, office or airport.',
+                'old_body_start' => 'Need a car for a few hours?',
+                'body' => '<p>Need to get across town? Book a Local taxi for point-to-point rides within the city — to the railway station, bus stand, hospital, office or airport — with a driver who knows the local roads.</p>'
+                    .'<p>Local trips are priced by distance and time within the city. Share your pickup and drop and our team confirms the fare by phone before your ride.</p>'
+                    .'<p>Need a car for several hours instead? Choose a <a href="/services/rentals">Rental</a> package.</p>',
+            ]],
+            'rentals' => ['Rental Trips', 'Rental Taxi', null],
+        ];
+        foreach ($services as $slug => [$oldTitle, $newTitle, $copy]) {
+            $service = Service::where('slug', $slug)->first();
+            if (! $service) {
+                continue;
+            }
+            if ($service->title === $oldTitle) {
+                $service->update(['title' => $newTitle]);
+            }
+            if ($copy && $service->short_description === $copy['old_short']) {
+                $service->update(['short_description' => $copy['short']]);
+            }
+            if ($copy && str_starts_with(trim(strip_tags((string) $service->body)), $copy['old_body_start'])) {
+                $service->update(['body' => $copy['body']]);
+            }
+        }
+
+        // Service page SEO titles and descriptions follow the same names.
+        foreach ([
+            'outstation-taxi' => ['seo_title', 'Outstation Taxi Service', 'Round Trip Taxi Service'],
+            'rentals' => ['seo_title', 'Hourly Rentals', 'Rental Taxi Service'],
+            'local-taxi' => ['seo_description', 'Hourly packages for errands, meetings and sightseeing in the city.', 'Local taxi for point-to-point rides within the city — station, bus stand, hospital, office or airport.'],
+        ] as $slug => [$column, $old, $new]) {
+            Service::where('slug', $slug)->where($column, $old)->update([$column => $new]);
+        }
+
+        foreach (['Outstation Taxi' => 'Round Trip Taxi', 'Local Travel' => 'Local Taxi', 'Rental Trips' => 'Rental Taxi'] as $old => $new) {
+            NavigationItem::where('label', $old)->update(['label' => $new]);
+        }
+
+        $packages = SiteSetting::where('key', 'rental_packages')->first();
+        if ($packages && str_contains((string) $packages->value, 'Full day (local)')) {
+            $packages->update(['value' => str_replace('Full day (local)', 'Full day', (string) $packages->value)]);
+        }
+        app(Settings::class)->flush();
+    }
+
+    /**
+     * v21 — premium automotive homepage: brand colours red #E60000 / dark navy #080D18, the header menu
+     * Home · Services · Routes & Fares · About Us · Contact, the "Find Your Perfect Taxi" hero with a black
+     * sedan and city skyline, and the Tamil Nadu district grid directly below the hero.
+     * Every change applies only while the previous seeded value is still in place.
+     */
+    private function applyPremiumAutomotiveHero(): void
+    {
+        foreach (['brand_gold' => ['#E30613', '#E60000'], 'brand_green' => ['#1F2326', '#080D18']] as $key => [$old, $new]) {
+            SiteSetting::where('key', $key)->where('value', $old)->update(['value' => $new]);
+        }
+
+        // Header menu (Corporate stays in the footer).
+        $header = ['/' => ['Home', 1], '/services' => ['Services', 2], '/routes' => ['Routes & Fares', 3], '/about' => ['About Us', 4], '/contact' => ['Contact', 5]];
+        foreach ($header as $url => [$label, $order]) {
+            NavigationItem::where('menu', 'header')->where('url', $url)->update(['label' => $label, 'sort_order' => $order, 'is_active' => true]);
+        }
+        NavigationItem::where('menu', 'header')->where('url', '/corporate')->update(['is_active' => false]);
+
+        // Hero slide text and photo.
+        $slide = HeroSlide::query()->ordered()->first();
+        if ($slide && $slide->heading === 'Comfortable Rides') {
+            $slide->update([
+                'eyebrow' => 'Trusted taxi service across Tamil Nadu',
+                'heading' => 'Find Your Perfect Taxi',
+                'highlight' => 'for *Every Journey*',
+                'subtitle' => 'Reliable, comfortable and affordable taxi services across Tamil Nadu and beyond.',
+            ]);
+        }
+        if ($slide && (int) $slide->media_id === (int) MediaSeeder::id('hero-airport-taxi-golden-hour.jpg') && ($sedan = MediaSeeder::id('hero-black-sedan-city-skyline.jpg'))) {
+            $slide->update(['media_id' => $sedan]);
+        }
+
+        $home = Page::where('slug', 'home')->first();
+        if (! $home) {
+            return;
+        }
+        $section = fn (string $key) => PageSection::where('page_id', $home->id)->where('key', $key)->first();
+
+        // Hero highlights.
+        $hero = $section('hero');
+        $previous = ['Safe & Secure Travel', '24/7 Customer Support', 'Pan India Service'];
+        if ($hero && array_column($hero->items(), 'title') === $previous) {
+            $hero->update(['content' => array_merge($hero->content ?? [], ['items' => [
+                ['icon' => 'shield-check', 'title' => 'Safe & Secure', 'text' => ''],
+                ['icon' => 'badge-check', 'title' => 'Verified Drivers', 'text' => ''],
+                ['icon' => 'clock', 'title' => 'On-Time Service', 'text' => ''],
+            ]])]);
+        }
+
+        // District grid directly below the hero (and its booking panel).
+        $districts = $section('districts');
+        if ($districts) {
+            PageSection::where('page_id', $home->id)->whereKeyNot($districts->id)->where('sort_order', '>=', 3)->increment('sort_order');
+            $districts->update(['sort_order' => 3]);
+            if ($districts->title === 'Taxi Services Across Tamil Nadu') {
+                $districts->update([
+                    'title' => 'Book Your Taxi Across Tamil Nadu',
+                    'subtitle' => 'Explore reliable taxi services across all 38 districts of Tamil Nadu. Choose your district and book your journey with ease.',
+                    'content' => array_merge($districts->content ?? [], ['eyebrow' => 'All 38 districts']),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * v20 — Tamil Nadu district pages: a homepage "Taxi Services Across Tamil Nadu" section after the service
+     * areas, and a footer link to /tamil-nadu. The pages themselves are created by DistrictPageSeeder.
+     */
+    private function applyDistrictPages(): void
+    {
+        $home = Page::where('slug', 'home')->first();
+        if ($home) {
+            $after = (int) (PageSection::where('page_id', $home->id)->where('key', 'service_areas')->value('sort_order') ?? 10);
+            if (! PageSection::where('page_id', $home->id)->where('key', 'districts')->exists()) {
+                // Make room directly after the service areas section.
+                PageSection::where('page_id', $home->id)->where('sort_order', '>', $after)->increment('sort_order');
+                PageSection::create([
+                    'page_id' => $home->id, 'key' => 'districts', 'type' => 'districts',
+                    'title' => 'Taxi Services Across Tamil Nadu',
+                    'subtitle' => 'One-way, round-trip and local taxis in all 38 districts — choose yours to see routes, fares and pickup points.',
+                    'content' => ['eyebrow' => 'District-wise service'],
+                    'sort_order' => $after + 1, 'is_active' => true,
+                ]);
+            }
+        }
+
+        $order = (int) NavigationItem::where('menu', 'footer_company')->max('sort_order') + 1;
+        NavigationItem::firstOrCreate(['menu' => 'footer_company', 'url' => '/tamil-nadu'], ['label' => 'Tamil Nadu Districts', 'sort_order' => $order, 'is_active' => true]);
+    }
+
+    /**
+     * v33 — homepage mockup (OneWayTrip_Taxi_Homepage_Mockup.jpg): the short About paragraph, short benefit points,
+     * the mockup's one-line Why Choose descriptions (car icon for vehicles) and the seated young woman passenger photo.
+     * Every value changes only while it still equals the previous seeded text/photo, so admin edits are kept.
+     */
+    private function applyMockupAboutWhyText(): void
+    {
+        $home = Page::where('slug', 'home')->first();
+        if (! $home) {
+            return;
+        }
+
+        $about = PageSection::where('page_id', $home->id)->where('key', 'about')->first();
+        if ($about) {
+            $content = (array) $about->content;
+            if (($content['body'] ?? null) === 'We make intercity travel simple and affordable. With one-way pricing you are never charged for the driver’s return journey, and every fare estimate is shown before you book. Our drivers know the highways and hill roads of South India, and our support team is a phone call away.') {
+                $content['body'] = 'We make intercity travel simple and affordable with clear fares, verified drivers and reliable service across Tamil Nadu.';
+            }
+            if (array_column((array) ($content['items'] ?? []), 'text') === ['One-way fares with no return charges', 'Doorstep pickup from home, hotel or airport', 'Sedans, SUVs and Innova Crysta', 'Booking confirmed personally by our team']) {
+                $content['items'] = [['text' => 'No return-fare charges'], ['text' => 'Doorstep pickup & drop'], ['text' => 'Sedans, SUVs & Innova'], ['text' => 'Every booking confirmed']];
+            }
+            $media = $about->media_id;
+            if ((int) $media === (int) MediaSeeder::id('why-woman-passenger-smiling.jpg') && MediaSeeder::id('about-college-woman-passenger.jpg')) {
+                $media = MediaSeeder::id('about-college-woman-passenger.jpg');
+            }
+            $about->update(['content' => $content, 'media_id' => $media]);
+        }
+
+        $why = PageSection::where('page_id', $home->id)->where('key', 'why_choose')->first();
+        if ($why) {
+            $content = (array) $why->content;
+            $old = [
+                'See your fare estimate upfront, with tolls and permits explained before you travel.',
+                'Experienced, courteous drivers familiar with highways and ghat roads.',
+                'Clean, air-conditioned cars that are checked before every trip.',
+                'Talk to a real person before, during and after your journey.',
+            ];
+            if (array_column((array) ($content['items'] ?? []), 'text') === $old) {
+                $content['items'] = [
+                    ['icon' => 'rupee', 'title' => 'Transparent Pricing', 'text' => 'See your fare upfront, no hidden charges.'],
+                    ['icon' => 'badge-check', 'title' => 'Verified Drivers', 'text' => 'Experienced and courteous drivers.'],
+                    ['icon' => 'car', 'title' => 'Well Maintained Vehicles', 'text' => 'Clean, comfortable and AC cars.'],
+                    ['icon' => 'headset', 'title' => '24/7 Support', 'text' => 'Get assistance anytime, anywhere.'],
+                ];
+                $why->update(['content' => $content]);
+            }
+        }
+    }
+
+    /**
+     * v31 — homepage mockup: About + Why choose us directly below the hero, then the services; homepage service cards
+     * One Way, Round Trip, Airport Transfers, Rental with vehicle photos. Each change applies only while the previous
+     * seeded value is still in place (admin choices are kept). The hero is not touched.
+     */
+    private function applyReferenceHomepageMockup(): void
+    {
+        $home = Page::where('slug', 'home')->first();
+        if ($home) {
+            $keys = PageSection::where('page_id', $home->id)->orderBy('sort_order')->orderBy('id')->pluck('key')->all();
+            $rest = array_values(array_diff($keys, ['hero', 'booking', 'about', 'services']));
+            foreach (array_merge(['hero', 'booking', 'about', 'services'], $rest) as $i => $key) {
+                PageSection::where('page_id', $home->id)->where('key', $key)->update(['sort_order' => $i + 1]);
+            }
+        }
+
+        $onHome = Service::where('show_on_home', true)->orderBy('sort_order')->pluck('slug')->all();
+        if ($onHome === ['one-way-taxi', 'outstation-taxi', 'local-taxi', 'rentals']) {
+            Service::where('slug', 'local-taxi')->update(['show_on_home' => false, 'sort_order' => 5]);
+            Service::where('slug', 'airport-transfers')->update(['show_on_home' => true, 'sort_order' => 3]);
+            Service::where('slug', 'rentals')->update(['sort_order' => 4]);
+        }
+
+        foreach ([
+            'one-way-taxi' => ['service-couple-loading-luggage.jpg', 'trip-one-way-white-sedan-sunrise.jpg'],
+            'airport-transfers' => ['service-airport-traveller.jpg', 'hero-airport-taxi-golden-hour.jpg'],
+            'rentals' => ['rental-chauffeur-luxury-suv.jpg', 'fleet-innova.jpg'],
+        ] as $slug => [$old, $new]) {
+            $oldId = MediaSeeder::id($old);
+            $newId = MediaSeeder::id($new);
+            if ($oldId && $newId) {
+                Service::where('slug', $slug)->where('media_id', $oldId)->update(['media_id' => $newId]);
+            }
+        }
+    }
+
+    /**
+     * v29 — Homepage Content: "Taxi Promotional Videos" and "Photo Gallery" sections, placed right after the featured
+     * videos section. Each only renders once the admin adds matching homepage content (nothing sample is created).
+     */
+    private function applyHomepageMediaSections(): void
+    {
+        $home = Page::where('slug', 'home')->first();
+        if (! $home) {
+            return;
+        }
+
+        $after = (int) (PageSection::where('page_id', $home->id)->where('key', 'videos')->value('sort_order') ?? 0);
+        $new = [
+            ['key' => 'promo_videos', 'type' => 'promo_videos', 'title' => 'Taxi Promotional Videos', 'subtitle' => 'Our latest taxi service promotions and offers.', 'content' => ['eyebrow' => 'Promotions']],
+            ['key' => 'gallery', 'type' => 'gallery', 'title' => 'Photo Gallery', 'subtitle' => 'Our cars, drivers and journeys across Tamil Nadu.', 'content' => ['eyebrow' => 'Gallery']],
+        ];
+        foreach ($new as $i => $section) {
+            if (PageSection::where('page_id', $home->id)->where('key', $section['key'])->exists()) {
+                continue;
+            }
+            $position = $after + $i + 1;
+            PageSection::where('page_id', $home->id)->where('sort_order', '>=', $position)->increment('sort_order');
+            PageSection::create($section + ['page_id' => $home->id, 'sort_order' => $position, 'is_active' => true]);
+        }
+    }
+
+    /**
+     * v28 — homepage flow for the video promotions release: hero + booking, the four trip-type service cards, why
+     * choose us, promotional videos, all 38 districts, testimonials, mobile app and the final booking CTA. Sections
+     * outside that list stay active, placed after the districts. The videos section only renders once an admin adds
+     * a homepage video — no sample videos are created.
+     */
+    private function applyVideoPromotionsHomepage(): void
+    {
+        $home = Page::where('slug', 'home')->first();
+        if (! $home) {
+            return;
+        }
+
+        PageSection::firstOrCreate(['page_id' => $home->id, 'key' => 'videos'], [
+            'type' => 'videos',
+            'title' => 'Explore Our Taxi Experiences',
+            'subtitle' => 'Real journeys, real customers and reliable taxi services.',
+            'content' => ['eyebrow' => 'Video stories'],
+            'sort_order' => 0, 'is_active' => true,
+        ]);
+
+        $order = ['hero', 'booking', 'services', 'why_choose', 'stats', 'videos', 'districts', 'about', 'how_it_works', 'testimonials', 'app', 'contact', 'cta'];
+        foreach ($order as $i => $key) {
+            PageSection::where('page_id', $home->id)->where('key', $key)->update(['sort_order' => $i + 1]);
+        }
+        PageSection::where('page_id', $home->id)->whereNotIn('key', $order)->where('sort_order', '<=', count($order))
+            ->update(['sort_order' => DB::raw('sort_order + '.(count($order) + 10))]);
+
+        // Homepage service cards: One Way, Round Trip, Local, Rental — only while the previous seeded selection is unchanged.
+        $onHome = Service::where('show_on_home', true)->orderBy('sort_order')->pluck('slug')->all();
+        if ($onHome === ['one-way-taxi', 'outstation-taxi', 'airport-transfers', 'corporate-taxi']) {
+            Service::whereIn('slug', ['airport-transfers', 'corporate-taxi'])->update(['show_on_home' => false]);
+            foreach (['one-way-taxi', 'outstation-taxi', 'local-taxi', 'rentals'] as $i => $slug) {
+                Service::where('slug', $slug)->update(['show_on_home' => true, 'sort_order' => $i + 1]);
+            }
+            Service::where('slug', 'airport-transfers')->update(['sort_order' => 5]);
+            Service::where('slug', 'corporate-taxi')->update(['sort_order' => 6]);
+        }
+    }
+
+    /**
+     * v19 — the website has no Fleet section: the homepage Fleet and vehicle-carousel sections are switched off and
+     * the /fleet menu links hidden (records are kept, only deactivated; vehicle types still power booking and fares).
+     * Corporate, partner, rental and routes photography is replaced, again only where the previous seeded photo is
+     * still in place.
+     */
+    private function applyFleetRemovalAndCorporatePhotos(): void
+    {
+        NavigationItem::where('url', 'like', '/fleet%')->update(['is_active' => false]);
+
+        $id = fn (string $file) => MediaSeeder::id($file);
+        $swap = function ($model, string $column, ?string $oldFile, string $newFile) use ($id) {
+            $new = $id($newFile);
+            $current = $model?->{$column};
+            if ($model && $new && ($oldFile === null ? $current === null : (int) $current === (int) $id($oldFile))) {
+                $model->update([$column => $new]);
+            }
+        };
+
+        $home = Page::where('slug', 'home')->first();
+        if ($home) {
+            $section = fn (string $key) => PageSection::where('page_id', $home->id)->where('key', $key)->first();
+            foreach (['fleet', 'vehicle_carousel'] as $key) {
+                $section($key)?->update(['is_active' => false]);
+            }
+            $swap($section('corporate'), 'media_id', 'fleet-premium-sedan.jpg', 'corporate-executive-arrival.jpg');
+            $swap($section('partner'), 'media_id', 'partner-driver.jpg', 'partner-driver-at-wheel.jpg');
+            $swap($section('routes'), 'media_id', null, 'routes-sedan-highway-sunset.jpg');
+        }
+
+        $swap(Service::where('slug', 'rentals')->first(), 'media_id', 'scenic-city-highway.jpg', 'rental-chauffeur-luxury-suv.jpg');
+    }
+
+    /**
+     * v18 — premium redesign: taxi-service photography replaces the mountain and landscape scenery, and the
+     * homepage gains its About, Popular routes and Contact sections in a clear story order.
+     * Every image swap applies only while the record still shows the previous seeded photo, so images
+     * chosen in the admin are kept.
+     */
+    private function applyPremiumRedesign(): void
+    {
+        $id = fn (string $file) => MediaSeeder::id($file);
+        $swap = function ($model, string $column, string $oldFile, string $newFile) use ($id) {
+            $old = $id($oldFile);
+            $new = $id($newFile);
+            if ($model && $new && (int) $model->{$column} === (int) $old) {
+                $model->update([$column => $new]);
+            }
+        };
+
+        // Service photos: the people and journeys each service is about.
+        foreach ([
+            'one-way-taxi' => ['hero-munnar-highway.jpg', 'service-couple-loading-luggage.jpg'],
+            'outstation-taxi' => ['scenic-yercaud-ghat-road.jpg', 'service-white-suv-indian-highway.jpg'],
+            'airport-transfers' => ['airport-chennai.jpg', 'service-airport-traveller.jpg'],
+            'local-taxi' => ['scenic-city-highway.jpg', 'cta-mumbai-taxi-driver.jpg'],
+            'corporate-taxi' => ['fleet-premium-sedan.jpg', 'service-corporate-rear-seat.jpg'],
+        ] as $slug => [$old, $new]) {
+            $swap(Service::where('slug', $slug)->first(), 'media_id', $old, $new);
+        }
+
+        $home = Page::where('slug', 'home')->first();
+        if ($home) {
+            $section = fn (string $key) => PageSection::where('page_id', $home->id)->where('key', $key)->first();
+            $swap($section('about'), 'media_id', 'scenic-western-ghats.jpg', 'about-driver-with-passenger.jpg');
+            $swap($section('why_choose'), 'media_id', 'hero-munnar-highway.jpg', 'why-chauffeur-opening-door.jpg');
+            $swap($section('cta'), 'media_id', 'hero-munnar-highway.jpg', 'scenic-city-highway.jpg');
+
+            // Story order: introduce the company, show what it offers, prove it, then help the visitor book.
+            $order = ['about' => 3, 'services' => 4, 'why_choose' => 5, 'stats' => 6, 'how_it_works' => 7, 'fleet' => 8,
+                'routes' => 9, 'service_areas' => 10, 'app' => 11, 'testimonials' => 12, 'contact' => 13, 'cta' => 14];
+            foreach ($order as $key => $position) {
+                $section($key)?->update(['sort_order' => $position]);
+            }
+            foreach (['about', 'routes', 'contact'] as $key) {
+                $section($key)?->update(['is_active' => true]);
+            }
+        }
+
+        $swap(Page::where('slug', 'about')->first(), 'hero_media_id', 'scenic-western-ghats.jpg', 'why-chauffeur-opening-door.jpg');
+    }
+
+    /**
+     * v17 — palette from the official logo: primary red #E30613, charcoal #1F2326, deep red #B8030F for links
+     * (the logo yellow #FFC20E and amber #FBA919 are fixed CSS tokens). Each colour changes only while it still
+     * holds the previous seeded value, so colours customised in the admin are kept.
+     */
+    private function applyLogoPalette(): void
+    {
+        foreach (['brand_gold' => ['#0D6EFD', '#E30613'], 'brand_green' => ['#062B55', '#1F2326'], 'brand_green_fresh' => ['#0D6EFD', '#B8030F']] as $key => [$old, $new]) {
+            SiteSetting::where('key', $key)->where('value', $old)->update(['value' => $new]);
+        }
+        app(Settings::class)->flush();
     }
 
     /**

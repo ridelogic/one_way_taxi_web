@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-page-banner title="Routes & Fares" subtitle="One-way taxi routes with distances, travel times and starting fares." :crumbs="['Routes' => null]" />
+    <x-page-banner title="Routes & Fares" subtitle="One-way taxi routes with distances, travel times and starting fares." :crumbs="['Routes' => null]" fallback="images/demo/routes-sedan-highway-sunset.jpg" variant="brand" />
 
-    <section class="section pt-10!">
+    <section class="section bg-ivory pt-10!">
         <div class="container-site">
-            <form method="GET" action="{{ route('routes.index') }}" class="card mb-10 grid gap-4 p-5 sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end" role="search">
+            <form method="GET" action="{{ route('routes.index') }}" class="mb-10 grid gap-4 rounded-xl border-t-4 border-gold bg-white p-5 shadow-soft sm:grid-cols-[1fr_1fr_auto_auto] sm:items-end sm:p-6" role="search">
                 <x-form.field name="from" label="From" icon="map-pin">
                     <select id="from" name="from" class="form-control form-control-icon">
                         <option value="">Any city</option>
@@ -29,7 +29,7 @@
             </form>
 
             @if ($routes->isNotEmpty())
-                <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($routes as $route)
                         <x-route-card :route="$route" :heading-level="2" />
                     @endforeach
@@ -46,6 +46,4 @@
             @endif
         </div>
     </section>
-
-    <x-cta-band />
 @endsection

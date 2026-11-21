@@ -33,9 +33,26 @@ class Service extends Model
         return $this->belongsTo(MediaAsset::class, 'media_id');
     }
 
+    /**
+     * Services withdrawn from the public website: never listed (Services page, homepage, menus, sitemap) and their
+     * pages redirect to /services. Records, admin screens and booking functionality are kept.
+     */
+    public const WITHDRAWN = ['bike-taxi', 'auto-taxi'];
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('is_active', true);
+    }
+
+    /** Active services shown on the public website (excludes WITHDRAWN). */
+    public function scopePublicListing(Builder $query): Builder
+    {
+        return $query->where('is_active', true)->whereNotIn('slug', self::WITHDRAWN);
+    }
+
+    public function isWithdrawn(): bool
+    {
+        return in_array($this->slug, self::WITHDRAWN, true);
     }
 
     public function scopeOrdered(Builder $query): Builder

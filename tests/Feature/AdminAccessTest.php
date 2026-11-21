@@ -119,7 +119,7 @@ class AdminAccessTest extends TestCase
             ->assertOk()
             ->assertSee('Total Bookings')
             ->assertSee('OWT-261010-TEST1')
-            ->assertSee('Active Routes');
+            ->assertSee('Total Districts')->assertSee('Total Vehicles')->assertSee('Total Videos')->assertSee('Gallery Images');
     }
 
     public function test_every_admin_screen_renders(): void
@@ -201,38 +201,30 @@ class AdminAccessTest extends TestCase
             ->assertOk()
             ->assertSee('aria-current="page"', false)
             ->assertSee('class="topbar-profile"', false)
-            ->assertSee('Booking Status')
             ->assertSee('Recent Bookings')
             ->assertSee('Search bookings')
             ->assertSee('action="'.route('admin.logout').'"', false);
     }
 
-    public function test_dashboard_charts_use_real_bookings_and_estimated_fares(): void
+    public function test_dashboard_shows_real_totals_quick_actions_and_links(): void
     {
-        $this->travelTo(now()->setDate(2026, 10, 15)->setTime(10, 0));
-        $booking = function (string $reference, string $createdAt, ?string $fare, string $status = 'pending') {
-            Booking::create([
-                'reference' => $reference, 'customer_name' => 'Test', 'customer_phone' => '9840012345',
-                'travel_date' => now()->addDay(), 'travel_time' => '08:00', 'status' => $status, 'estimated_fare' => $fare,
-            ])->forceFill(['created_at' => $createdAt])->saveQuietly();
-        };
-        $booking('OWT-CHART-OLD', '2026-03-10 09:00', '50000.00');              // before the six-month window
-        $booking('OWT-CHART-JUN', '2026-06-05 09:00', '1000.00');               // previous quarter (May-Jul)
-        $booking('OWT-CHART-SEP', '2026-09-12 09:00', '2000.00');               // last quarter (Aug-Oct)
-        $booking('OWT-CHART-OCT', '2026-10-02 09:00', '1500.00');
-        $booking('OWT-CHART-CAN', '2026-10-03 09:00', '9999.00', 'cancelled'); // counted as an enquiry, not as revenue
+        Booking::create([
+            'reference' => 'OWT-DASH-0001', 'customer_name' => 'Arun', 'customer_phone' => '9840012345',
+            'travel_date' => now()->addDay(), 'travel_time' => '08:00', 'status' => 'confirmed',
+        ]);
 
-        $this->actingAs($this->admin())->get(route('admin.dashboard'))
-            ->assertOk()
-            ->assertSeeInOrder(['data-chart="months"', '<strong>4</strong>', 'bookings · last 6 months', 'May', 'Oct'], false)
-            ->assertSeeInOrder(['Revenue Growth', '+250%', 'From last quarter', '₹3,500', 'May', '₹1.5K', 'Oct'])
-            ->assertSee('June 2026: ₹1,000 estimated')
-            // Donut: pending, contacted and confirmed count as Pending; the cancelled enquiry is still a booking.
-            ->assertSeeInOrder(['Booking Status', '5', 'Total bookings', 'Completed', '0', '0%', 'Pending', '4', '80%', 'Cancelled', '1', '20%'])
-            ->assertSeeInOrder(['Recent Bookings', 'OWT-CHART-CAN', '₹9,999'])
-            // Chart colours are rendered onto the SVG elements: blue line, then the pending (orange) and cancelled (red) segments.
-            ->assertSee('class="dash-line__path" fill="none" stroke="#1677FF"', false)
-            ->assertSeeInOrder(['class="donut__part" fill="none" stroke="#FA8C16"', 'class="donut__part" fill="none" stroke="#F04438"'], false)
-            ->assertDontSee('class="donut__part" fill="none" stroke="#1677FF"', false); // no completed bookings, so no blue segment
+        $html = $this->actingAs($this->admin())->get(route('admin.dashboard'))->assertOk()
+            ->assertSee('Welcome to')
+            ->assertSeeInOrder(['Total Bookings', (string) Booking::count(), 'Total Vehicles', (string) \App\Models\VehicleCategory::count(),
+                'Total Videos', 'Total Gallery Images', 'Total Districts', '39']) // 38 districts + Puducherry
+            ->assertSeeInOrder(['Recent Bookings', 'View All', 'OWT-DASH-0001', 'Arun', 'Confirmed'])
+            ->getContent();
+
+        // Quick actions and quick links point at existing, working admin screens.
+        foreach (['admin.vehicles.create', 'admin.videos.create', 'admin.photos.index', 'admin.districts.index', 'admin.settings.edit',
+            'admin.bookings.index', 'admin.vehicles.index', 'admin.fares.index', 'admin.routes.index'] as $name) {
+            $this->assertStringContainsString('href="'.route($name).'"', $html, $name);
+            $this->get(route($name))->assertOk();
+        }
     }
 }

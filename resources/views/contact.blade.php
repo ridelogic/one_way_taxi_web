@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-page-banner title="Contact Us" subtitle="Questions, quotes or special requests — we’re happy to help." :crumbs="['Contact' => null]" />
+    <x-page-banner title="Contact Us" subtitle="Questions, quotes or special requests — we’re happy to help." :crumbs="['Contact' => null]" variant="brand" />
 
     <section class="section pt-12!">
         <div class="container-site grid items-start gap-10 lg:grid-cols-[1.2fr_0.8fr]">

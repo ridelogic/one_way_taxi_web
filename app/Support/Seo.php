@@ -16,6 +16,9 @@ class Seo
         public ?string $image = null,
         public string $type = 'website',
         public bool $noindex = false,
+        public ?string $keywords = null,
+        public ?string $ogTitle = null,
+        public ?string $ogDescription = null,
     ) {}
 
     public static function make(?string $title = null, ?string $description = null, MediaAsset|string|null $image = null): self

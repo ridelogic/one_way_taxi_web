@@ -59,7 +59,7 @@ class AppLinks
                 'eccLevel' => \chillerlan\QRCode\Common\EccLevel::M,
                 'addQuietzone' => true,
                 'drawLightModules' => true,
-                'markupDark' => '#0b1426',
+                'markupDark' => '#1f2326', // brand charcoal: high contrast on white, so the code stays easy to scan
                 'markupLight' => '#ffffff',
             ]);
 

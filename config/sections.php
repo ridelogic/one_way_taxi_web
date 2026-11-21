@@ -77,6 +77,34 @@ return [
         ],
         'note' => 'The city list comes from active cities in Admin → Cities, grouped by state.',
     ],
+    'videos' => [
+        'label' => 'Featured taxi videos',
+        'fields' => [
+            'eyebrow' => ['label' => 'Eyebrow', 'type' => 'text'],
+        ],
+        'note' => 'Shows up to 10 active homepage videos set to the “Featured Taxi Videos” section (Homepage Content → Videos). Hidden until at least one exists.',
+    ],
+    'promo_videos' => [
+        'label' => 'Taxi promotional videos',
+        'fields' => [
+            'eyebrow' => ['label' => 'Eyebrow', 'type' => 'text'],
+        ],
+        'note' => 'Shows active homepage videos set to the “Taxi Promotional Videos” section (Homepage Content → Videos). Hidden until at least one exists.',
+    ],
+    'gallery' => [
+        'label' => 'Photo gallery',
+        'fields' => [
+            'eyebrow' => ['label' => 'Eyebrow', 'type' => 'text'],
+        ],
+        'note' => 'Shows active homepage photos (Homepage Content → Photos). Hidden until at least one photo is added.',
+    ],
+    'districts' => [
+        'label' => 'Taxi services across Tamil Nadu',
+        'fields' => [
+            'eyebrow' => ['label' => 'Eyebrow', 'type' => 'text'],
+        ],
+        'note' => 'Lists every published district page as a link. Manage the pages in Admin → District pages.',
+    ],
     'corporate' => [
         'label' => 'Corporate taxi',
         'media' => 'Image',

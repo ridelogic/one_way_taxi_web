@@ -23,6 +23,31 @@
         window.addEventListener('resize', function () { if (window.innerWidth >= 1280) setOpen(false); });
     }
 
+    /* ---------- Desktop submenus open on click (never on hover) ---------- */
+    var submenuToggles = document.querySelectorAll('[data-submenu-toggle]');
+    var closeSubmenus = function (except) {
+        submenuToggles.forEach(function (btn) {
+            if (btn === except) return;
+            btn.setAttribute('aria-expanded', 'false');
+            var menu = document.getElementById(btn.getAttribute('aria-controls'));
+            if (menu) menu.classList.remove('is-open');
+        });
+    };
+    submenuToggles.forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var menu = document.getElementById(btn.getAttribute('aria-controls'));
+            var open = btn.getAttribute('aria-expanded') !== 'true';
+            closeSubmenus(btn);
+            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            if (menu) menu.classList.toggle('is-open', open);
+        });
+    });
+    if (submenuToggles.length) {
+        document.addEventListener('click', function (e) { if (!e.target.closest('[data-submenu]')) closeSubmenus(); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeSubmenus(); });
+    }
+
     /* ---------- Header background on scroll ---------- */
     var header = document.querySelector('[data-header]');
     if (header) {
@@ -79,8 +104,6 @@
             syncPause();
         }
 
-        slider.addEventListener('mouseenter', function () { hover = true; clearTimeout(timer); });
-        slider.addEventListener('mouseleave', function () { hover = false; schedule(); });
         slider.addEventListener('focusin', function () { hover = true; clearTimeout(timer); });
         slider.addEventListener('focusout', function () { hover = false; schedule(); });
         slider.addEventListener('keydown', function (e) {
@@ -134,7 +157,8 @@
     document.querySelectorAll('[data-trip-search]').forEach(function (form) {
         var message = form.querySelector('[data-search-error]');
         var leadHours = parseInt(form.getAttribute('data-lead-hours') || '0', 10);
-        var input = function (name) { return form.querySelector('[name="' + name + '"]'); };
+        // Prefer the enabled field when a name is used twice (the Airport tab has its own drop field).
+        var input = function (name) { return form.querySelector('[name="' + name + '"]:not(:disabled)') || form.querySelector('[name="' + name + '"]'); };
         var pad = function (n) { return (n < 10 ? '0' : '') + n; };
         var localDate = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
 
@@ -245,5 +269,148 @@
         });
         form.addEventListener('trip-change', function () { queue(50); });
         update();
+    });
+})();
+
+/* Video promotions (homepage + district pages): one YouTube player, created only when a visitor clicks a video and
+   destroyed on close (which stops playback). The official YouTube IFrame Player API is loaded on the first click so
+   YouTube's error codes can be caught: if a video may not be played here (owner disabled embedding, age check, private
+   or removed video…) the player is replaced by the thumbnail and a "Watch on YouTube" button — never a blank box.
+   Nothing is bypassed: the player only plays what YouTube allows. Without JavaScript the cards are plain YouTube links. */
+(function () {
+    var modal = document.querySelector('[data-video-modal]');
+    if (!modal || typeof modal.showModal !== 'function') return;
+    var frame = modal.querySelector('[data-video-modal-frame]');
+    var heading = modal.querySelector('[data-video-modal-title]');
+    var fallback = modal.querySelector('[data-video-fallback]');
+    var fallbackImg = modal.querySelector('[data-video-fallback-img]');
+    var fallbackLink = modal.querySelector('[data-video-fallback-link]');
+    var opener = null, player = null, current = null, apiState = 'idle', apiWaiters = [];
+
+    var loadApi = function (done) {
+        if (window.YT && window.YT.Player) { done(true); return; }
+        apiWaiters.push(done);
+        if (apiState === 'loading') return;
+        apiState = 'loading';
+        var previous = window.onYouTubeIframeAPIReady;
+        window.onYouTubeIframeAPIReady = function () {
+            if (typeof previous === 'function') previous();
+            apiState = 'ready';
+            apiWaiters.splice(0).forEach(function (fn) { fn(true); });
+        };
+        var s = document.createElement('script');
+        s.src = 'https://www.youtube.com/iframe_api';
+        s.async = true;
+        s.onerror = function () { apiState = 'failed'; apiWaiters.splice(0).forEach(function (fn) { fn(false); }); };
+        document.head.appendChild(s);
+        // If the API is blocked or slow, fall back to a plain embed rather than leaving the visitor waiting.
+        setTimeout(function () { if (apiState === 'loading') { apiWaiters.splice(0).forEach(function (fn) { fn(false); }); } }, 6000);
+    };
+
+    var stop = function () {
+        if (player && typeof player.destroy === 'function') { try { player.destroy(); } catch (e) {} }
+        player = null;
+        frame.innerHTML = '';
+        frame.hidden = false;
+        fallback.hidden = true;
+    };
+
+    var showFallback = function () {
+        if (!current) return;
+        if (player && typeof player.destroy === 'function') { try { player.destroy(); } catch (e) {} }
+        player = null;
+        frame.innerHTML = '';
+        frame.hidden = true;
+        fallbackImg.src = current.thumb;
+        fallbackLink.href = current.watch;
+        fallback.hidden = false;
+    };
+
+    var plainIframe = function (video) {
+        var iframe = document.createElement('iframe');
+        iframe.src = 'https://www.youtube-nocookie.com/embed/' + video.id + '?autoplay=1&rel=0&playsinline=1';
+        iframe.title = video.title;
+        iframe.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+        iframe.allowFullscreen = true;
+        iframe.referrerPolicy = 'strict-origin-when-cross-origin'; // YouTube requires a referrer to identify the embedding site
+        frame.appendChild(iframe);
+    };
+
+    var play = function (video) {
+        stop();
+        var mount = document.createElement('div');
+        frame.appendChild(mount);
+        loadApi(function (ok) {
+            if (current !== video) return; // the modal was closed or another video was opened meanwhile
+            if (!ok) { frame.innerHTML = ''; plainIframe(video); return; }
+            player = new window.YT.Player(mount, {
+                host: 'https://www.youtube-nocookie.com',
+                videoId: video.id,
+                width: '100%',
+                height: '100%',
+                playerVars: { autoplay: 1, rel: 0, playsinline: 1, origin: window.location.origin },
+                events: {
+                    // 2 invalid id · 5 playback error · 100 removed/private · 101/150 the owner does not allow embedding.
+                    onError: showFallback
+                }
+            });
+            var el = player.getIframe && player.getIframe();
+            if (el) {
+                el.setAttribute('title', video.title);
+                el.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+                el.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+            }
+        });
+    };
+
+    document.addEventListener('click', function (event) {
+        var card = event.target.closest('[data-video-id]');
+        if (!card) return;
+        var id = card.getAttribute('data-video-id') || '';
+        if (!/^[A-Za-z0-9_-]{11}$/.test(id)) return;
+        event.preventDefault();
+        opener = card;
+        current = { id: id, title: card.getAttribute('data-video-title') || 'Video', thumb: card.getAttribute('data-video-thumb') || '', watch: card.getAttribute('href') };
+        heading.textContent = current.title;
+        modal.showModal();
+        document.documentElement.classList.add('has-video-modal');
+        play(current);
+    });
+
+    modal.querySelector('[data-video-modal-close]').addEventListener('click', function () { modal.close(); });
+    // Clicking the dimmed backdrop (outside the player box) closes the modal too.
+    modal.addEventListener('click', function (event) { if (event.target === modal) modal.close(); });
+    modal.addEventListener('close', function () {
+        current = null;
+        stop();
+        document.documentElement.classList.remove('has-video-modal');
+        if (opener) opener.focus();
+    });
+})();
+
+/* Photo galleries: clicking a photo opens it in a lightbox (plain link to the image without JavaScript). */
+(function () {
+    var box = document.querySelector('[data-lightbox]');
+    if (!box || typeof box.showModal !== 'function') return;
+    var img = box.querySelector('[data-lightbox-img]');
+    var title = box.querySelector('[data-lightbox-title-out]');
+    var opener = null;
+    document.addEventListener('click', function (event) {
+        var link = event.target.closest('[data-lightbox-src]');
+        if (!link) return;
+        event.preventDefault();
+        opener = link;
+        img.src = link.getAttribute('data-lightbox-src');
+        img.alt = link.getAttribute('data-lightbox-title') || '';
+        title.textContent = link.getAttribute('data-lightbox-title') || '';
+        box.showModal();
+        document.documentElement.classList.add('has-video-modal');
+    });
+    box.querySelector('[data-lightbox-close]').addEventListener('click', function () { box.close(); });
+    box.addEventListener('click', function (event) { if (event.target === box) box.close(); });
+    box.addEventListener('close', function () {
+        img.removeAttribute('src');
+        document.documentElement.classList.remove('has-video-modal');
+        if (opener) opener.focus();
     });
 })();

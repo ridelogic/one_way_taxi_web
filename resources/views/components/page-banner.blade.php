@@ -1,18 +1,37 @@
-@props(['title', 'subtitle' => null, 'media' => null, 'fallback' => null, 'crumbs' => []])
-{{-- Inner-page banner: midnight navy with the homepage's sweeping orange/champagne arcs --}}
-<section class="relative isolate overflow-hidden bg-[linear-gradient(135deg,var(--color-navy)_0%,var(--color-forest)_60%,var(--color-fresh)_140%)] text-white">
-    <svg class="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[70%] opacity-90" viewBox="0 0 700 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        <path d="M260 0C380 90 470 210 700 300V0Z" fill="#fff" fill-opacity="0.04" />
-        <path d="M300 0C420 92 512 212 700 286" fill="none" style="stroke:var(--color-gold)" stroke-width="2.5" vector-effect="non-scaling-stroke" />
-        <path d="M322 0C442 92 534 208 700 270" fill="none" style="stroke:var(--color-champagne);stroke-opacity:0.7" stroke-width="1.2" vector-effect="non-scaling-stroke" />
-    </svg>
-    <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-24 -z-10 size-96 rounded-full bg-gold/20 blur-3xl"></div>
+@props(['title', 'subtitle' => null, 'media' => null, 'fallback' => null, 'crumbs' => [], 'variant' => null])
+@php
+    // variant="brand": the homepage hero banner's red/yellow colours (Services, Routes & Fares, About, Contact).
+    // Default: the original midnight-navy banner with the homepage's sweeping arcs (all other inner pages).
+    $brand = $variant === 'brand';
+@endphp
+{{-- Inner-page banner --}}
+<section @class([
+    'relative isolate overflow-hidden text-white',
+    'page-banner--brand' => $brand,
+    'bg-[linear-gradient(135deg,var(--color-navy)_0%,var(--color-forest)_60%,var(--color-fresh)_140%)]' => ! $brand,
+])>
+    @if ($brand)
+        {{-- Red and yellow sweeping curves, as on the homepage hero --}}
+        <svg class="page-banner__curves" viewBox="0 0 700 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path d="M250 0C380 96 470 214 700 300V0Z" class="page-banner__sweep" />
+            <path d="M292 0C414 96 506 214 700 290" fill="none" class="page-banner__line page-banner__line--yellow" vector-effect="non-scaling-stroke" />
+            <path d="M318 0C440 94 532 210 700 272" fill="none" class="page-banner__line page-banner__line--light" vector-effect="non-scaling-stroke" />
+        </svg>
+        <div aria-hidden="true" class="page-banner__glow"></div>
+    @else
+        <svg class="pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[70%] opacity-90" viewBox="0 0 700 300" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+            <path d="M260 0C380 90 470 210 700 300V0Z" fill="#fff" fill-opacity="0.04" />
+            <path d="M300 0C420 92 512 212 700 286" fill="none" style="stroke:var(--color-gold)" stroke-width="2.5" vector-effect="non-scaling-stroke" />
+            <path d="M322 0C442 92 534 208 700 270" fill="none" style="stroke:var(--color-champagne);stroke-opacity:0.7" stroke-width="1.2" vector-effect="non-scaling-stroke" />
+        </svg>
+        <div aria-hidden="true" class="pointer-events-none absolute -bottom-32 -left-24 -z-10 size-96 rounded-full bg-gold/20 blur-3xl"></div>
+    @endif
     <div class="container-site relative grid items-center gap-8 py-12 sm:py-16 @if ($media || $fallback) lg:grid-cols-[1.2fr_0.8fr] @endif">
         <div>
-            <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1.5 text-sm text-white/65">
+            <nav aria-label="Breadcrumb" @class(['flex flex-wrap items-center gap-1.5 text-sm', 'text-white/80' => $brand, 'text-white/65' => ! $brand])>
                 <a href="{{ route('home') }}" class="hover:text-champagne max-sm:-my-2 max-sm:py-2">Home</a>
                 @foreach ($crumbs as $label => $url)
-                    <x-icon name="chevron-right" :size="14" class="text-white/40" />
+                    <x-icon name="chevron-right" :size="14" @class(['text-white/55' => $brand, 'text-white/40' => ! $brand]) />
                     @if ($url)
                         <a href="{{ $url }}" class="hover:text-champagne max-sm:-my-2 max-sm:py-2">{{ $label }}</a>
                     @else
@@ -21,13 +40,18 @@
                 @endforeach
             </nav>
             <h1 class="mt-4 text-4xl leading-tight font-extrabold text-white sm:text-5xl">{{ $title }}</h1>
+            @if ($brand)<span aria-hidden="true" class="page-banner__rule"></span>@endif
             @if ($subtitle)
-                <p class="mt-4 max-w-2xl text-lg text-white/75">{{ $subtitle }}</p>
+                <p @class(['mt-4 max-w-2xl text-lg', 'text-white/90' => $brand, 'text-white/75' => ! $brand])>{{ $subtitle }}</p>
             @endif
             {{ $slot }}
         </div>
         @if ($media || $fallback)
-            <div class="hidden overflow-hidden rounded-3xl shadow-[0_30px_60px_-30px_rgb(0_0_0/0.6)] ring-1 ring-champagne/40 lg:block">
+            <div @class([
+                'hidden overflow-hidden rounded-3xl shadow-[0_30px_60px_-30px_rgb(0_0_0/0.6)] lg:block',
+                'page-banner__frame' => $brand,
+                'ring-1 ring-champagne/40' => ! $brand,
+            ])>
                 <x-img :media="$media" :fallback="$fallback" alt="" :priority="true" :lazy="false" class="aspect-[16/10] w-full" />
             </div>
         @endif

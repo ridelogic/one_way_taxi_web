@@ -1,41 +1,58 @@
 @php
+    // Simple six-item sidebar. Each item covers a group of screens; groups with several screens get a tab bar.
     $nav = [
-        ['Dashboard', 'admin.dashboard', 'grid', 'admin.dashboard'],
-        'Booking Management',
-        ['Bookings', 'admin.bookings.index', 'clipboard-check', 'admin.bookings.*'],
-        ['Corporate Enquiries', 'admin.corporate-enquiries.index', 'building', 'admin.corporate-enquiries.*'],
-        ['Partner Registrations', 'admin.partner-enquiries.index', 'users', 'admin.partner-enquiries.*'],
-        ['Messages', 'admin.messages.index', 'inbox', 'admin.messages.*'],
-        'Website CMS',
-        ['Hero Banner', 'admin.slides.index', 'image', 'admin.slides.*'],
-        ['Homepage Sections', 'admin.homepage.index', 'home', 'admin.homepage.*'],
-        ['Pages', 'admin.pages.index', 'file-text', 'admin.pages.*'],
-        ['Services', 'admin.services.index', 'briefcase', 'admin.services.*'],
-        ['FAQs', 'admin.faqs.index', 'help-circle', 'admin.faqs.*'],
-        ['Testimonials', 'admin.testimonials.index', 'message', 'admin.testimonials.*'],
-        ['Media Library', 'admin.media.index', 'image', 'admin.media.*'],
-        ['Navigation Menu', 'admin.navigation.index', 'list', 'admin.navigation.*'],
-        'Fleet & Pricing',
-        ['Routes', 'admin.routes.index', 'route', 'admin.routes.*'],
-        ['Cities', 'admin.cities.index', 'map-pin', 'admin.cities.*'],
-        ['Fleet & Vehicles', 'admin.vehicles.index', 'car', 'admin.vehicles.*'],
-        ['Fare Rules', 'admin.fares.index', 'rupee', 'admin.fares.*'],
-        'System',
-        ['Settings', 'admin.settings.edit', 'sliders', 'admin.settings.*'],
-        ['My Account', 'admin.account.edit', 'user', 'admin.account.*'],
+        ['Dashboard', 'admin.dashboard', 'grid', ['admin.dashboard']],
+        ['Bookings', 'admin.bookings.index', 'clipboard-check', ['admin.bookings.*', 'admin.corporate-enquiries.*', 'admin.partner-enquiries.*', 'admin.messages.*']],
+        ['District Management', 'admin.districts.index', 'map-pin', ['admin.districts.*', 'admin.district-cars.*', 'admin.district-routes.*', 'admin.district-faqs.*']],
+        ['Homepage Content', 'admin.videos.index', 'home', ['admin.videos.*', 'admin.photos.*', 'admin.homepage.*']],
+        ['Promotional Announcements', 'admin.announcements.index', 'bell', ['admin.announcements.*']],
+        ['Vehicle Master', 'admin.vehicles.index', 'car', ['admin.vehicles.*', 'admin.fares.*']],
+        ['Website Settings', 'admin.settings.edit', 'sliders', ['admin.settings.*', 'admin.pages.*', 'admin.services.*', 'admin.faqs.*', 'admin.testimonials.*', 'admin.navigation.*', 'admin.media.*', 'admin.cities.*', 'admin.routes.*', 'admin.account.*']],
+    ];
+    $groupTabs = [
+        'Bookings' => [
+            ['Bookings', 'admin.bookings.index', 'admin.bookings.*'],
+            ['Corporate enquiries', 'admin.corporate-enquiries.index', 'admin.corporate-enquiries.*'],
+            ['Driver registrations', 'admin.partner-enquiries.index', 'admin.partner-enquiries.*'],
+            ['Messages', 'admin.messages.index', 'admin.messages.*'],
+        ],
+        'Homepage Content' => [
+            ['Videos', 'admin.videos.index', 'admin.videos.*'],
+            ['Photos', 'admin.photos.index', 'admin.photos.*'],
+            ['Homepage sections', 'admin.homepage.index', 'admin.homepage.*'],
+        ],
+        'Vehicle Master' => [
+            ['Vehicles', 'admin.vehicles.index', 'admin.vehicles.*'],
+            ['Fares', 'admin.fares.index', 'admin.fares.*'],
+        ],
+        'Website Settings' => [
+            ['Business details', 'admin.settings.edit', 'admin.settings.*'],
+            ['Pages', 'admin.pages.index', 'admin.pages.*'],
+            ['Services', 'admin.services.index', 'admin.services.*'],
+            ['General FAQs', 'admin.faqs.index', 'admin.faqs.*'],
+            ['Testimonials', 'admin.testimonials.index', 'admin.testimonials.*'],
+            ['Menus', 'admin.navigation.index', 'admin.navigation.*'],
+            ['Image library', 'admin.media.index', 'admin.media.*'],
+            ['Booking cities', 'admin.cities.index', 'admin.cities.*'],
+            ['Intercity routes', 'admin.routes.index', 'admin.routes.*'],
+            ['My account', 'admin.account.edit', 'admin.account.*'],
+        ],
     ];
     $pendingCount = \App\Models\Booking::where('status', 'pending')->count();
     $unreadCount = \App\Models\ContactMessage::whereNull('read_at')->count();
     $newCorporate = \App\Models\CorporateEnquiry::where('status', 'new')->count();
     $newPartners = \App\Models\PartnerEnquiry::where('status', 'new')->count();
 
-    // Section label shown above the page title (the sidebar group of the current page).
+    // Section label shown above the page title (the sidebar item of the current page) and its tab bar.
     $crumb = 'Overview';
-    $group = 'Overview';
+    $tabs = [];
     foreach ($nav as $item) {
-        if (is_string($item)) { $group = $item; continue; }
-        if (request()->routeIs($item[3])) { $crumb = $group; break; }
+        if (request()->routeIs(...$item[3])) { $crumb = $item[0]; $tabs = $groupTabs[$item[0]] ?? []; break; }
     }
+    $tabCounts = [
+        'admin.bookings.index' => $pendingCount, 'admin.messages.index' => $unreadCount,
+        'admin.corporate-enquiries.index' => $newCorporate, 'admin.partner-enquiries.index' => $newPartners,
+    ];
     $adminUser = auth()->user();
     $alerts = array_filter([
         ['pending booking', $pendingCount, route('admin.bookings.index', ['status' => 'pending']), 'clipboard-check'],
@@ -54,7 +71,7 @@
     <meta name="robots" content="noindex, nofollow">
     <meta name="media-edit-url" content="{{ route('admin.media.edit', '__ID__') }}">
     <title>@yield('title', 'Admin') · {{ $settings->get('business_name') }} CMS</title>
-    <link rel="icon" href="{{ asset('images/favicon.svg') }}" type="image/svg+xml">
+    <link rel="icon" href="{{ asset(config('branding.favicon_32')) }}" type="image/png" sizes="32x32">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
@@ -63,36 +80,21 @@
 <body class="admin">
     <a class="skip-link" href="#admin-main">Skip to content</a>
     <aside class="admin-sidebar" data-sidebar>
-        @php
-            $brandWords = preg_split('/\s+/', \Illuminate\Support\Str::upper(trim($settings->get('business_name'))));
-            $brandLast = count($brandWords) > 1 ? array_pop($brandWords) : null;
-        @endphp
-        <a href="{{ route('admin.dashboard') }}" class="admin-brand">
-            <svg class="admin-brand__mark" viewBox="0 0 80 68" aria-hidden="true" focusable="false"><path fill="#FBB70A" fill-rule="evenodd" d="M30 2h20a2 2 0 0 1 2 2v6h6.6c2.6 0 4.9 1.6 5.8 4l4.5 12.1 4.4 1.6A5 5 0 0 1 77 32.4V54a4 4 0 0 1-4 4h-1v6a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3v-6H21v6a3 3 0 0 1-3 3h-7a3 3 0 0 1-3-3v-6H7a4 4 0 0 1-4-4V32.4a5 5 0 0 1 3.7-4.7l4.4-1.6 4.5-12.1c.9-2.4 3.2-4 5.8-4H28V4a2 2 0 0 1 2-2Zm-8.3 14a2 2 0 0 0-1.9 1.3l-3.3 9h47l-3.3-9a2 2 0 0 0-1.9-1.3H21.7ZM14 35a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm52 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10ZM27 41a2 2 0 0 0 0 4h26a2 2 0 0 0 0-4H27Z"/></svg>
-            <span><span class="admin-brand__name">{{ implode(' ', $brandWords) }}@if ($brandLast) <span>{{ $brandLast }}</span>@endif</span><small>Admin CMS</small></span>
+        <a href="{{ route('admin.dashboard') }}" class="admin-brand" aria-label="{{ $settings->get('business_name') }} Admin CMS — dashboard">
+            <span class="admin-logo-plate"><img src="{{ asset(config('branding.logo.path')) }}" alt="" width="{{ config('branding.logo.width') }}" height="{{ config('branding.logo.height') }}" decoding="async"></span>
+            <small>Admin CMS</small>
         </a>
         <nav aria-label="Admin">
             <ul class="admin-nav">
-                @foreach ($nav as $item)
-                    @if (is_string($item))
-                        <li class="admin-nav__heading">{{ $item }}</li>
-                    @else
-                        @php([$label, $routeName, $icon, $pattern] = $item)
-                        <li>
-                            <a href="{{ route($routeName) }}" @class(['is-active' => request()->routeIs($pattern)]) @if (request()->routeIs($pattern)) aria-current="page" @endif>
-                                <x-icon :name="$icon" :size="18" /> {{ $label }}
-                                @if ($routeName === 'admin.bookings.index' && $pendingCount)
-                                    <span class="admin-nav__count">{{ $pendingCount }}</span>
-                                @elseif ($routeName === 'admin.messages.index' && $unreadCount)
-                                    <span class="admin-nav__count">{{ $unreadCount }}</span>
-                                @elseif ($routeName === 'admin.corporate-enquiries.index' && $newCorporate)
-                                    <span class="admin-nav__count">{{ $newCorporate }}</span>
-                                @elseif ($routeName === 'admin.partner-enquiries.index' && $newPartners)
-                                    <span class="admin-nav__count">{{ $newPartners }}</span>
-                                @endif
-                            </a>
-                        </li>
-                    @endif
+                @foreach ($nav as [$label, $routeName, $icon, $patterns])
+                    @php($active = request()->routeIs(...$patterns))
+                    @php($badge = $routeName === 'admin.bookings.index' ? $pendingCount + $unreadCount + $newCorporate + $newPartners : 0)
+                    <li>
+                        <a href="{{ route($routeName) }}" @class(['is-active' => $active]) @if ($active) aria-current="page" @endif>
+                            <x-icon :name="$icon" :size="18" /> {{ $label }}
+                            @if ($badge)<span class="admin-nav__count">{{ $badge }}</span>@endif
+                        </a>
+                    </li>
                 @endforeach
             </ul>
         </nav>
@@ -102,10 +104,7 @@
     <div class="admin-main">
         <header class="admin-topbar">
             <button type="button" class="admin-menu-btn" data-sidebar-toggle aria-label="Open menu" aria-expanded="false"><x-icon name="menu" :size="22" /></button>
-            <div class="admin-topbar__heading">
-                <span class="admin-topbar__crumb">{{ $crumb }}</span>
-                <h1 class="admin-topbar__title">@yield('title', 'Admin')</h1>
-            </div>
+            <span class="admin-topbar__crumb">{{ $crumb }}</span>
             <div class="admin-topbar__actions">
                 <form class="topbar-search" method="GET" action="{{ route('admin.bookings.index') }}" role="search">
                     <label class="visually-hidden" for="topbar-search">Search bookings</label>
@@ -147,6 +146,10 @@
         </header>
 
         <main id="admin-main" class="admin-content">
+            <div class="page-title">
+                <h1 class="page-title__heading">@yield('title', 'Admin')</h1>
+                @hasSection('subtitle')<p class="page-title__sub">@yield('subtitle')</p>@endif
+            </div>
             @if (session('status'))
                 <div class="aalert aalert--success" role="status">{{ session('status') }}</div>
             @endif
@@ -158,6 +161,14 @@
                     <strong>Please fix the following:</strong>
                     <ul>@foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
                 </div>
+            @endif
+
+            @if (count($tabs) > 1)
+                <nav class="group-tabs" aria-label="{{ $crumb }}">
+                    @foreach ($tabs as [$tabLabel, $tabRoute, $tabPattern])
+                        <a href="{{ route($tabRoute) }}" @class(['is-active' => request()->routeIs($tabPattern)]) @if (request()->routeIs($tabPattern)) aria-current="page" @endif>{{ $tabLabel }}@if (!empty($tabCounts[$tabRoute]))<span class="group-tabs__count">{{ $tabCounts[$tabRoute] }}</span>@endif</a>
+                    @endforeach
+                </nav>
             @endif
 
             @yield('content')

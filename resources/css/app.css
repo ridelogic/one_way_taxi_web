@@ -14,35 +14,42 @@
 */
 @theme {
     /*
-    | Brand palette: primary blue #0D6EFD, bright blue #009DFF, dark navy #062B55, light blue #EAF4FF, white.
-    | Token names are historical: "gold" is the primary blue (buttons, active states, icons), "forest"/"navy" the
-    | dark navy, "fresh" the primary blue for links and icons on white, "sun"/"champagne" the bright blue (accents
-    | on navy only — white text on it is too low-contrast), "mint"/"ivory" the light blue surfaces.
+    | One Way Taxi brand colours: red #E60000, yellow #FFC400, dark navy #080D18 and white,
+    | with amber #FBA919 and the deep logo reds for small accents.
+    | Token names are historical: "gold" is the primary red (buttons, active states, icons), "forest"/"navy" the
+    | dark navy (headings, hero, dark sections, footer), "fresh" the deep red for links and icons on white,
+    | "sun"/"champagne" the brand yellow (accents on dark surfaces only — never body text on white), "mint" the pale
+    | yellow surface and "ivory" the warm white page background.
     | Forest, gold and fresh are overridden at runtime from Admin → Settings, and the other shades mix from them.
     */
-    --color-gold: #0D6EFD;
-    --color-gold-600: color-mix(in oklab, var(--color-gold) 74%, #000); /* accent text on white / light blue, hovers */
-    --color-gold-100: #EAF4FF;
+    --color-gold: #E60000;
+    --color-gold-600: color-mix(in oklab, var(--color-gold) 74%, #000); /* accent text on white / pale surfaces, hovers */
+    --color-gold-100: #FDECEC;
     --color-gold-50: color-mix(in oklab, var(--color-gold) 6%, #fff);
-    --color-sun: #009DFF;
-    --color-forest: #062B55;
+    --color-sun: #FFC400;
+    --color-amber: #FBA919;
+    --color-crimson: #A10312; /* deep logo red */
+    --color-crimson-900: #880304;
+    --color-night: #080D18; /* brand dark navy, fixed (hero and footer backgrounds) */
+    --color-night-800: #0F1626; /* raised surfaces on dark navy */
+    --color-forest: #080D18;
     --color-navy: var(--color-forest);
-    --color-forest-900: color-mix(in oklab, var(--color-forest) 80%, #000); /* hover on navy */
-    --color-fresh: #0D6EFD;
+    --color-forest-900: color-mix(in oklab, var(--color-forest) 80%, #000); /* hover on charcoal */
+    --color-fresh: #B8030F;
     --color-champagne: var(--color-sun);
-    --color-champagne-100: #EAF4FF;
-    --color-ivory: #EAF4FF; /* light blue page background */
-    --color-mint: #EAF4FF; /* light blue surface */
-    --color-mint-200: color-mix(in oklab, var(--color-fresh) 18%, #fff);
-    --color-ink: #16212E;
-    --color-ink-soft: #586577;
-    --color-line: #E1E7EF;
+    --color-champagne-100: #FFF6D6;
+    --color-ivory: #FBF8F3; /* warm white page background */
+    --color-mint: #FFF4DA; /* pale yellow surface */
+    --color-mint-200: color-mix(in oklab, var(--color-sun) 34%, #fff);
+    --color-ink: #1F2326;
+    --color-ink-soft: #5F6368;
+    --color-line: #ECE6DC;
 
     --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
     --font-display: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
 
-    --shadow-soft: 0 1px 2px rgb(6 43 85 / 0.04), 0 8px 24px -12px rgb(6 43 85 / 0.16);
-    --shadow-lift: 0 2px 4px rgb(6 43 85 / 0.05), 0 24px 52px -22px rgb(6 43 85 / 0.32);
+    --shadow-soft: 0 1px 2px rgb(8 13 24 / 0.05), 0 8px 24px -12px rgb(8 13 24 / 0.16);
+    --shadow-lift: 0 2px 4px rgb(8 13 24 / 0.06), 0 24px 52px -22px rgb(8 13 24 / 0.32);
     --shadow-gold: 0 12px 26px -12px color-mix(in oklab, var(--color-gold) 75%, transparent);
 
     --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
@@ -56,46 +63,48 @@
     html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
     body { @apply bg-ivory font-sans text-ink antialiased; }
     h1, h2, h3, h4 { @apply font-display text-forest tracking-tight; }
-    a { @apply transition-colors; }
+    /* Calm, stable UI: no hover motion or animated transitions anywhere (colour changes are instant). */
     :focus-visible { @apply outline-3 outline-offset-2 outline-gold; }
     [hidden] { display: none !important; }
     img { @apply max-w-full; }
 }
 
 @layer components {
-    .container-site { @apply mx-auto w-full max-w-[1240px] px-4 sm:px-6 lg:px-8; }
+    .container-site { @apply mx-auto w-full max-w-[1500px] px-4 sm:px-6 lg:px-8; } /* content width for every section below the hero: ~95% of a 1440px screen, 1500px max (header/hero use container-wide) */
 
     /* Buttons */
-    .btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-display text-[0.95rem] font-bold whitespace-nowrap transition duration-200 focus-visible:outline-3 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60; }
-    .btn-gold { @apply bg-gold text-white shadow-gold hover:-translate-y-0.5 hover:bg-gold-600; }
-    .btn-green { @apply bg-forest text-white hover:-translate-y-0.5 hover:bg-forest-900; }
-    .btn-outline { @apply border-2 border-forest/15 bg-white text-forest hover:border-forest hover:bg-forest hover:text-white; }
-    .btn-ghost-light { @apply border-2 border-white/40 text-white hover:border-white hover:bg-white hover:text-forest; }
+    /* Buttons: solid, clearly shaped, no movement — hover only deepens the colour */
+    .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-display text-[0.95rem] font-bold tracking-[-0.005em] whitespace-nowrap focus-visible:outline-3 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-60; }
+    .btn-gold { @apply bg-gold text-white hover:bg-gold-600; }
+    .btn-green { @apply bg-forest text-white hover:bg-forest-900; }
+    .btn-outline { @apply border border-forest/20 bg-white text-forest hover:border-forest; }
+    .btn-ghost-light { @apply border border-white/45 text-white hover:border-white hover:bg-white/10; }
+    .btn-yellow { @apply bg-sun text-forest hover:bg-amber; }
     .btn-lg { @apply px-7 py-4 text-base; }
-    .btn-sm { @apply rounded-lg px-4 py-2 text-sm; }
+    .btn-sm { @apply rounded-md px-4 py-2 text-sm; }
 
     /* Typography */
     .eyebrow { @apply inline-flex items-center gap-3 font-display text-sm font-bold tracking-[0.16em] text-gold-600 uppercase; }
-    .eyebrow::before { content: ""; @apply h-[2px] w-8 rounded-full bg-linear-to-r from-champagne to-gold; }
+    .eyebrow::before { content: ""; @apply h-[2px] w-8 rounded-full bg-linear-to-r from-champagne via-amber to-gold; }
     .eyebrow-light { @apply text-champagne; }
-    .container-wide { @apply mx-auto w-full max-w-[1460px] px-4 sm:px-6 lg:px-8; }
-    .btn-quote { @apply bg-gold text-white shadow-gold hover:-translate-y-0.5 hover:bg-gold-600; }
+    .container-wide { @apply mx-auto w-full max-w-[1320px] px-4 sm:px-6 lg:px-8; } /* same as container-site so header, hero and sections align */
+    .btn-quote { @apply bg-gold text-white hover:bg-gold-600; }
     .btn-pill { @apply rounded-full; }
     .section-title { @apply text-3xl leading-tight font-extrabold sm:text-4xl; }
     .section-lead { @apply mt-3 text-lg text-ink-soft; }
 
     /* Surfaces */
     .card { @apply rounded-2xl border border-line bg-white shadow-soft; }
-    .card-hover { @apply transition duration-300 hover:-translate-y-1 hover:shadow-lift; }
-    .section { @apply py-16 sm:py-20 lg:py-24; }
+    .card-hover { @apply hover:border-forest/25; } /* kept for existing markup: a quiet border cue, no movement */
+    .section { @apply py-9 sm:py-10 lg:py-11; }
     .icon-tile { @apply grid size-12 shrink-0 place-items-center rounded-xl bg-mint text-fresh; }
 
     /* Forms */
     .form-label { @apply mb-1.5 block text-sm font-semibold text-ink; }
-    .form-control { @apply block w-full rounded-xl border border-line bg-white px-4 py-3 text-[0.95rem] text-ink placeholder:text-ink-soft/60 transition focus:border-gold focus:ring-4 focus:ring-gold/20 focus:outline-none; }
+    .form-control { @apply block w-full rounded-lg border border-line bg-white px-4 py-3 text-[0.95rem] text-ink placeholder:text-ink-soft/60 focus:border-gold focus:ring-4 focus:ring-gold/15 focus:outline-none; }
     .form-control-icon { @apply pl-11; }
     .form-icon { @apply pointer-events-none absolute top-[2.35rem] left-3.5 text-forest; }
-    select.form-control { @apply appearance-none bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='20'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%230B2942'%20stroke-width='2.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='m6%209%206%206%206-6'/%3E%3C/svg%3E")] bg-[position:right_0.9rem_center] bg-no-repeat pr-10; }
+    select.form-control { @apply appearance-none bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='20'%20height='20'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%231F2326'%20stroke-width='2.2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='m6%209%206%206%206-6'/%3E%3C/svg%3E")] bg-[position:right_0.9rem_center] bg-no-repeat pr-10; }
     .field.has-error .form-control { @apply border-red-500 focus:ring-red-200; }
     .form-error { @apply mt-1.5 text-sm font-medium text-red-700; }
     .form-check { @apply flex items-start gap-3 text-sm text-ink-soft; }
@@ -104,7 +113,7 @@
 
     /* Badges & chips */
     .badge-sample { @apply inline-flex items-center rounded-full border border-dashed border-gold bg-gold-50 px-2 py-0.5 text-[0.68rem] font-bold tracking-wide text-gold-600 uppercase; }
-    .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-medium text-ink transition hover:border-fresh hover:text-forest; }
+    .chip { @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-white px-3.5 py-1.5 text-sm font-medium text-ink hover:border-forest/40 hover:text-forest; }
 
     /* Rich text from the CMS */
     .prose-site { @apply text-[1.02rem] leading-relaxed text-ink-soft; }
@@ -122,108 +131,402 @@
 
     /* Trip tabs (radio-based so they work without JavaScript) */
     /* Below 360px the tab labels may wrap and the padding tightens, so three tabs fit a 320px phone. */
-    .trip-tabs { @apply inline-grid grid-cols-3 gap-1 rounded-2xl bg-mint p-1 min-[360px]:p-1.5; }
+    .trip-tabs { @apply inline-grid grid-cols-2 gap-1 rounded-xl bg-mint p-1 min-[360px]:p-1.5 min-[480px]:grid-cols-4; }
     .trip-tab { @apply relative min-w-0 cursor-pointer; }
     .trip-tab input { @apply absolute inset-0 cursor-pointer opacity-0; }
-    .trip-tab span { @apply flex h-full items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-center font-display text-sm font-bold text-forest transition max-[359px]:leading-tight min-[360px]:px-3 min-[360px]:whitespace-nowrap sm:px-5; }
-    .trip-tab input:checked + span { @apply bg-gold text-white shadow-gold; }
+    .trip-tab span { @apply flex h-full items-center justify-center gap-2 rounded-lg px-2 py-2.5 text-center font-display text-sm font-bold text-forest max-[359px]:leading-tight min-[360px]:px-3 min-[360px]:whitespace-nowrap sm:px-5; }
+    .trip-tab input:checked + span { @apply bg-gold text-white; }
     .trip-tab input:focus-visible + span { @apply outline-3 outline-offset-2 outline-gold; }
-    .trip-tab:hover input:not(:checked) + span { @apply bg-white; }
 
     /*
-    | Homepage hero: full-bleed airport-at-sunset photo with a navy gradient on the text side, three benefits,
-    | and the booking search panel overlapping the hero's bottom edge.
+    |--------------------------------------------------------------------------
+    | Section typography shared by the homepage and inner pages
+    |--------------------------------------------------------------------------
     */
-    .home-hero { @apply relative bg-ivory; }
-    /* The photo is the hero background at every size; from lg it starts 12% in, behind a navy fade on the left. */
-    .home-hero__stage { @apply relative isolate overflow-hidden bg-navy; }
-    .home-hero__media { @apply absolute inset-0 lg:left-[12%]; }
-    .home-hero__media::after { content: ""; @apply pointer-events-none absolute inset-0 lg:bg-[linear-gradient(90deg,var(--color-navy)_0%,transparent_14%)]; }
-    .home-hero__scene-img { @apply absolute inset-0 size-full; }
-    /* Below lg the text spans the full width, so a light navy fade reaches across, letting the airport photo show. */
-    .home-hero__veil { @apply pointer-events-none absolute inset-0 z-[1] bg-[linear-gradient(90deg,color-mix(in_oklab,var(--color-navy)_65%,transparent)_0%,color-mix(in_oklab,var(--color-navy)_35%,transparent)_50%,color-mix(in_oklab,var(--color-navy)_20%,transparent)_100%)] lg:bg-[linear-gradient(90deg,var(--color-navy)_0%,color-mix(in_oklab,var(--color-navy)_92%,transparent)_24%,color-mix(in_oklab,var(--color-navy)_55%,transparent)_38%,color-mix(in_oklab,var(--color-navy)_10%,transparent)_50%,transparent_58%)]; }
-    .home-hero__content { @apply relative z-10 pt-10 pb-20 sm:pt-12 sm:pb-24 lg:min-h-[36rem] lg:pt-20 lg:pb-36 xl:min-h-[38rem]; }
-    .home-hero__content > * { @apply max-w-[38rem] lg:max-w-[30rem] xl:max-w-[34rem]; }
-    .home-hero__eyebrow { @apply inline-flex items-center gap-2.5 rounded-full bg-white/10 py-1.5 pr-4 pl-1.5 font-display text-[0.68rem] font-bold tracking-[0.16em] text-white/90 uppercase ring-1 ring-white/15 backdrop-blur sm:text-[0.72rem]; }
-    .home-hero__eyebrow-icon { @apply grid size-7 shrink-0 place-items-center rounded-full bg-gold text-white; }
-    .home-hero__title { @apply mt-5 font-display text-[2.4rem] leading-[1.08] font-extrabold tracking-[-0.03em] text-white sm:text-[3.2rem] lg:text-[3.2rem] xl:text-[3.7rem]; }
-    .home-hero__accent { @apply text-champagne; }
-    .home-hero__subheading { @apply mt-4 font-display text-xl font-bold text-champagne sm:text-2xl; }
-    .home-hero__subtitle { @apply mt-5 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg; }
-    .home-hero__benefits { @apply mt-6 flex flex-wrap gap-x-4 gap-y-3 sm:mt-8 sm:max-w-none! sm:gap-x-7 sm:gap-y-4; }
-    .home-hero__benefits li { @apply flex items-center gap-2 font-display text-[0.78rem] leading-tight font-bold text-white sm:gap-3 sm:text-sm; }
-    .home-hero__benefit-icon { @apply grid size-9 shrink-0 sm:size-11 place-items-center rounded-full bg-gold text-white shadow-gold ring-4 ring-gold/20; }
+    .kicker { @apply inline-flex items-center gap-3 font-display text-[0.76rem] font-bold tracking-[0.2em] text-gold-600 uppercase; }
+    .kicker::before { content: ""; @apply h-0.5 w-7 shrink-0 bg-gold; }
+    .kicker-light { @apply text-sun; }
+    .kicker-light::before { @apply bg-sun; }
+    .display-2 { @apply mt-2 text-[1.6rem] leading-[1.15] font-extrabold tracking-[-0.02em] sm:text-[1.9rem] xl:text-[2.15rem]; }
+    .lead { @apply mt-3 max-w-2xl text-base leading-[1.65] text-ink-soft sm:text-[1.04rem]; }
+    .section-head { @apply mb-6 flex flex-col gap-3 md:flex-row md:items-end md:justify-between md:gap-8; }
+    .text-link { @apply inline-flex items-center gap-1.5 font-display text-[0.95rem] font-bold text-gold-600 underline-offset-4 hover:underline; }
+    .text-link-light { @apply text-sun; }
 
-    /* Booking search panel: one white card on the hero's bottom edge */
-    .booking-panel { @apply relative z-20 -mt-8 lg:-mt-20; }
-    .booking-form__body { @apply rounded-2xl bg-white p-4 shadow-[0_2px_6px_rgb(6_43_85/0.06),0_36px_70px_-34px_rgb(6_43_85/0.5)] ring-1 ring-forest/8 sm:p-6 lg:px-7; }
-    .booking-tabs { @apply grid grid-cols-3 gap-1 rounded-xl bg-mint p-1 sm:inline-grid; }
+    /*
+    |--------------------------------------------------------------------------
+    | Homepage hero: the site owner's OneWayTrip Taxi banner image
+    |--------------------------------------------------------------------------
+    | The banner is shown full width at its natural aspect ratio (no cropping, no stretching). The working booking
+    | form sits on a red band matching the banner's lower edge (#B3020B centre to #86050D edges) and overlaps the
+    | banner slightly, as in the supplied design.
+    */
+    .home-hero { @apply relative bg-[#9C030C]; }
+    .home-hero__banner { @apply relative bg-[#9C030C]; }
+    .home-hero__scene-img { @apply block h-auto w-full; }
+    .home-hero__controls { @apply absolute right-4 bottom-4 z-10 flex gap-2 sm:right-6 sm:bottom-auto sm:top-6; }
+    .home-hero__accent { @apply text-sun; }
+    .home-hero__booking { @apply relative bg-[radial-gradient(ellipse_at_50%_0%,#B3020B_0%,#A0030C_55%,#86050D_100%)] pt-5 pb-6 sm:pt-6 sm:pb-7 lg:pb-8; }
+    .home-hero__booking .booking-panel--hero { @apply sm:-mt-12 lg:-mt-16 xl:-mt-20; }
+
+    /* Booking search panel: compact white card (at the bottom of the homepage hero; overlapping on district pages) */
+    .booking-panel { @apply relative z-20 -mt-12 lg:-mt-24; }
+    .booking-panel--hero { @apply mt-0 lg:mt-0; }
+    .booking-form__body { @apply rounded-2xl bg-white p-4 shadow-[0_2px_6px_rgb(8_13_24/0.08),0_40px_80px_-36px_rgb(0_0_0/0.65)] sm:p-5 lg:px-6 lg:py-5; }
+    .booking-form__head { @apply flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-6; }
+    .booking-form__intro { @apply lg:text-right; }
+    .booking-form__title { @apply text-base font-extrabold tracking-[-0.01em] sm:text-lg; }
+    .booking-form__note { @apply mt-0.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-[0.8rem] text-ink-soft lg:justify-end; }
+    .booking-tabs { @apply grid grid-cols-3 gap-1.5 sm:inline-grid; }
     .booking-tab { @apply relative block min-w-0 cursor-pointer; }
-    .booking-tab__inner { @apply flex h-11 items-center justify-center gap-2 rounded-lg px-2 text-center font-display text-[0.82rem] font-bold whitespace-nowrap text-forest transition sm:px-5 sm:text-[0.92rem]; }
-    .booking-tab__inner .icon { @apply hidden shrink-0 sm:block; }
-    .booking-tab:hover input:not(:checked) + .booking-tab__inner { @apply bg-white; }
-    .booking-tab input:checked + .booking-tab__inner { @apply bg-gold text-white shadow-gold; }
+    .booking-tab__inner { @apply flex h-10 items-center justify-center gap-2 rounded-full border border-line bg-white px-3 text-center font-display text-[0.82rem] font-bold whitespace-nowrap text-forest sm:px-5 sm:text-[0.88rem]; }
+    .booking-tab__inner .icon { @apply hidden shrink-0 text-gold sm:block; }
+    .booking-tab:hover input:not(:checked) + .booking-tab__inner { @apply border-forest/30; }
+    .booking-tab input:checked + .booking-tab__inner { @apply border-gold bg-gold text-white; }
+    .booking-tab input:checked + .booking-tab__inner .icon { @apply text-white; }
     .booking-tab input:focus-visible + .booking-tab__inner { @apply outline-3 outline-offset-2 outline-gold; }
-    .booking-fields { @apply mt-5 grid gap-4 sm:grid-cols-2 lg:grid-flow-col lg:grid-cols-none lg:auto-cols-fr lg:items-end; }
+    .booking-fields { @apply mt-4 grid gap-3 border-t border-line pt-4 sm:grid-cols-2 lg:grid-flow-col lg:grid-cols-none lg:auto-cols-fr lg:items-end; }
     .booking-fields > .field-wide { @apply lg:col-span-3 xl:col-span-4; }
     .booking-fields > .field-narrow { @apply lg:col-span-3; }
-    .booking-form .form-label { @apply font-display font-bold text-forest; }
-    .booking-form .form-icon { @apply top-[2.55rem] text-gold; }
-    .booking-form .form-control { @apply h-12 border-line bg-white focus:border-gold focus:ring-gold/20; }
+    .booking-form .form-label { @apply font-display text-[0.8rem] font-bold tracking-[0.04em] text-forest uppercase; }
+    .booking-form .form-icon { @apply top-[2.45rem] text-gold; }
+    .booking-form .form-control { @apply h-12 border-line bg-white focus:border-gold focus:ring-gold/15; }
     .booking-submit .icon { @apply shrink-0 lg:max-xl:hidden; }
-    .booking-submit { @apply inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gold px-5 font-display text-base font-extrabold whitespace-nowrap text-white shadow-gold transition hover:-translate-y-0.5 hover:bg-gold-600 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-forest sm:col-span-2 lg:col-span-2 lg:px-3 xl:col-span-3 xl:px-5; }
+    .booking-submit { @apply inline-flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-gold px-5 font-display text-base font-extrabold whitespace-nowrap text-white hover:bg-gold-600 focus-visible:outline-3 focus-visible:outline-offset-4 focus-visible:outline-forest sm:col-span-2 lg:col-span-2 lg:px-3 xl:col-span-3 xl:px-5; }
 
-    /* Homepage sections from the reference design */
-    .home-section { @apply py-16 sm:py-20; }
-    .home-heading { @apply mx-auto mb-10 max-w-2xl text-center sm:mb-12; }
-    .home-heading__eyebrow { @apply font-display text-sm font-bold tracking-[0.14em] text-gold-600 uppercase; }
-    .home-heading__title { @apply mt-2 text-[1.9rem] leading-tight font-extrabold sm:text-[2.3rem]; }
-    .home-heading__lead { @apply mt-3 text-ink-soft sm:text-lg; }
-    .home-heading__rule { @apply mx-auto mt-4 block h-1 w-14 rounded-full bg-gold; }
+    /* Homepage section rhythm */
+    .home-section { @apply py-9 sm:py-10 xl:py-11; } /* 36–44px: compact commercial rhythm */
+    /* Consecutive sections on the same background share one gap instead of stacking two paddings */
+    :is(.home-section, .svc-band).bg-ivory + .home-section.bg-ivory,
+    :is(.home-section, .intro-band, .app-band).bg-white + .home-section.bg-white { @apply pt-0; }
+    .home-heading { @apply mx-auto mb-6 max-w-2xl text-center; }
+    .home-heading__eyebrow { @apply inline-flex items-center gap-3 font-display text-[0.76rem] font-bold tracking-[0.2em] text-gold-600 uppercase; }
+    .home-heading__title { @apply mt-2 text-[1.6rem] leading-[1.15] font-extrabold tracking-[-0.02em] sm:text-[1.9rem] xl:text-[2.15rem]; }
+    .home-heading__lead { @apply mx-auto mt-3 max-w-xl leading-[1.65] text-ink-soft sm:text-[1.04rem] xl:max-w-2xl; }
+    .home-heading__rule { @apply mx-auto mt-5 block h-0.5 w-12 bg-gold; }
 
-    .service-card { @apply flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-soft ring-1 ring-line transition duration-300 hover:-translate-y-1 hover:shadow-lift; }
-    .service-card__media { @apply relative block aspect-[16/10] overflow-hidden bg-mint; }
-    .service-card__icon { @apply relative z-10 -mt-7 ml-5 grid size-14 place-items-center rounded-full bg-gold text-white shadow-gold ring-4 ring-white; }
+    /* About: photograph with an offset brand block and a trust badge */
+    .about-media { @apply relative isolate mx-auto w-full max-w-[460px] pb-10 lg:mx-0 lg:pr-8 lg:pb-0; }
+    .about-media__frame { @apply relative overflow-hidden rounded-2xl bg-mint; }
+    .about-media__accent { @apply absolute top-12 right-0 bottom-0 -z-10 hidden w-1/2 rounded-2xl bg-sun lg:block; }
+    .about-badge { @apply absolute bottom-0 left-4 flex max-w-[19rem] items-center gap-4 rounded-xl bg-forest px-5 py-4 text-white shadow-lift sm:left-8 lg:bottom-10 lg:-left-6; }
+    .about-badge__icon { @apply grid size-12 shrink-0 place-items-center rounded-lg bg-gold text-white; }
+    .about-list { @apply mt-8 grid gap-x-8 gap-y-4 sm:grid-cols-2; }
+    .about-list li { @apply flex items-start gap-3 text-[0.97rem] leading-snug font-semibold text-ink; }
+    .about-list__icon { @apply mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-gold-100 text-gold; }
+    .about-contact { @apply mt-10 flex flex-wrap items-center gap-x-8 gap-y-5 border-t border-line pt-8; }
 
-    .feature-tile { @apply flex h-full gap-4 rounded-2xl bg-white p-5 shadow-soft ring-1 ring-line sm:p-6; }
-    .feature-tile__icon { @apply grid size-12 shrink-0 place-items-center rounded-xl bg-gold-100 text-gold; }
+    /* Services: editorial photo cards */
+    .svc-card { @apply flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white hover:border-forest/25; }
+    .svc-card__media { @apply relative block aspect-[16/10] overflow-hidden bg-mint; }
+    .svc-card__index { @apply absolute top-4 left-4 rounded-md bg-white px-2.5 py-1 font-display text-xs font-extrabold tracking-[0.08em] text-forest; }
+    .svc-card__body { @apply flex flex-1 flex-col p-5; }
+    .svc-card__icon { @apply grid size-10 shrink-0 place-items-center rounded-lg bg-gold-100 text-gold; }
+    .svc-card__link { @apply mt-4 inline-flex items-center gap-1.5 border-t border-line pt-3 font-display text-sm font-bold text-gold-600; }
 
-    .stats-strip { @apply relative overflow-hidden bg-navy py-10 text-white sm:py-12; }
-    .stat-item { @apply flex items-center justify-center gap-4 px-2 py-3 lg:border-r lg:border-white/10 lg:last:border-r-0; }
-    .stat-item__icon { @apply grid size-14 shrink-0 place-items-center rounded-full bg-gold/15 text-champagne ring-1 ring-gold/40; }
+    /* Why choose us: charcoal section with photograph and feature rows */
+    .why-block { @apply relative overflow-hidden bg-forest py-9 text-white sm:py-10 xl:py-11; }
+    .why-media { @apply relative overflow-hidden rounded-2xl; }
+    .why-media__caption { @apply absolute right-4 bottom-4 left-4 flex items-center gap-3 rounded-xl bg-white/95 px-4 py-3 text-forest sm:right-auto sm:max-w-sm; }
+    .why-list { @apply mt-5 border-t border-white/10; }
+    .why-list li { @apply flex gap-4 border-b border-white/10 py-3.5; }
+    .why-list__icon { @apply grid size-11 shrink-0 place-items-center rounded-lg bg-gold text-white; }
 
-    .step-icon { @apply relative mx-auto grid size-20 place-items-center rounded-full bg-gold text-white shadow-gold ring-8 ring-gold-100; }
-    .step-number { @apply absolute -top-1 -right-1 grid size-7 place-items-center rounded-full bg-navy font-display text-xs font-extrabold text-white ring-2 ring-white; }
+    /* Statistics: a light figures band */
+    .stats-band { @apply border-b border-line bg-white; }
+    .stat-cell { @apply flex items-center gap-4 px-2 py-8 sm:px-6 lg:py-10; }
+    .stat-cell + .stat-cell { @apply max-sm:border-t max-sm:border-line sm:max-lg:even:border-l sm:max-lg:even:border-line lg:border-l lg:border-line; }
+    .stat-cell__icon { @apply grid size-12 shrink-0 place-items-center rounded-full bg-mint text-gold-600; }
 
-    .fleet-card { @apply flex h-full flex-col rounded-2xl bg-white p-4 text-center shadow-soft ring-1 ring-line transition hover:-translate-y-1 hover:shadow-lift; }
-    .fleet-card__media { @apply block aspect-[16/10] overflow-hidden rounded-xl bg-mint; }
+    /* How it works: numbered step cards */
+    .step-card { @apply relative flex h-full flex-col rounded-xl border border-line bg-white p-6; }
+    .step-card__num { @apply font-display text-[3.2rem] leading-none font-extrabold text-transparent [-webkit-text-stroke:1.5px_var(--color-gold)]; }
+    .step-card__icon { @apply absolute top-6 right-6 grid size-12 place-items-center rounded-lg bg-forest text-sun; }
 
-    .app-banner { @apply relative overflow-hidden rounded-[1.75rem] bg-[linear-gradient(120deg,var(--color-navy)_0%,var(--color-forest)_55%,color-mix(in_oklab,var(--color-gold)_55%,var(--color-forest))_100%)] px-6 py-10 text-white shadow-lift sm:px-10 lg:px-12 lg:py-12; }
-    .phone-mock { @apply relative w-36 rounded-[1.9rem] border-[7px] border-[#0b1426] bg-white p-2.5 shadow-[0_30px_50px_-20px_rgb(0_0_0/0.6)] sm:w-40; }
-    .phone-mock::before { content: ""; @apply absolute top-1.5 left-1/2 h-1.5 w-12 -translate-x-1/2 rounded-full bg-[#0b1426]; }
-    .store-button { @apply inline-flex items-center gap-3 rounded-xl bg-black px-4 py-2.5 text-white ring-1 ring-white/20 transition hover:bg-[#0b1426]; }
-    .store-button--pending { @apply cursor-default border border-dashed border-white/40 bg-white/5 text-white/80 ring-0 hover:bg-white/5; }
+    /* Routes & fares: route tickets, the homepage photo panel and the per-vehicle fare board */
+    .route-ticket { @apply flex h-full flex-col rounded-xl border border-line bg-white; }
+    .route-ticket__head { @apply flex items-center justify-between gap-3 border-b border-dashed border-line px-5 py-3 text-xs font-medium; }
+    .route-ticket__tag { @apply shrink-0 rounded-md bg-forest px-2 py-1 font-display text-[0.66rem] font-bold tracking-[0.12em] text-sun uppercase; }
+    .route-ticket__path { @apply grid grid-cols-[minmax(min-content,1fr)_auto_minmax(min-content,1fr)] items-center gap-2.5 px-5 py-5 font-normal; }
+    .route-ticket__city { @apply flex min-w-0 flex-col leading-tight hover:underline hover:decoration-gold hover:underline-offset-4; }
+    .route-ticket__city small { @apply text-[0.66rem] font-bold tracking-[0.14em] text-ink-soft uppercase; }
+    .route-ticket__city strong { @apply mt-1 font-display text-[1.05rem] leading-tight font-extrabold text-forest sm:text-[1.1rem]; }
+    .route-ticket__city > span { @apply mt-0.5 text-xs text-ink-soft; }
+    .route-ticket__line { @apply flex items-center gap-1 text-gold; }
+    .route-ticket__dash { @apply hidden h-0 w-3 border-t-2 border-dashed border-gold/45 min-[400px]:block; }
+    .route-ticket__car { @apply grid size-8 place-items-center rounded-full bg-gold-100; }
+    .route-ticket__foot { @apply mt-auto flex flex-wrap items-end justify-between gap-3 rounded-b-xl border-t border-line bg-ivory px-5 py-4; }
+    .routes-visual { @apply relative isolate flex min-h-[26rem] flex-col overflow-hidden rounded-2xl bg-navy lg:min-h-full; }
+    .routes-visual > img, .routes-visual > span { @apply -z-10; }
+    .routes-custom { @apply flex h-full flex-col rounded-xl border border-dashed border-gold/50 bg-white p-6 hover:border-gold; }
+    .fare-board { @apply overflow-hidden rounded-xl border border-line bg-white; }
 
-    .review-card { @apply flex h-full flex-col rounded-2xl bg-white p-6 shadow-soft ring-1 ring-line sm:p-7; }
-    .carousel-btn { @apply grid size-11 place-items-center rounded-full bg-white text-forest shadow-soft ring-1 ring-line transition hover:bg-gold hover:text-white; }
+    /*
+    | Tamil Nadu district pages (/tamil-nadu, /tamil-nadu/{district})
+    */
+    .district-links { @apply grid grid-cols-1 gap-x-8 gap-y-1 min-[480px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4; }
+    .district-link { @apply flex items-center gap-2.5 rounded-lg px-2 py-2.5 text-[0.95rem] text-ink hover:bg-ivory hover:text-forest; }
+    .district-link strong { @apply font-semibold text-forest; }
+    .district-hero { @apply relative bg-ivory; }
+    .district-hero__stage { @apply relative isolate overflow-hidden bg-navy; }
+    .district-hero__img { @apply absolute inset-0 -z-20 size-full; }
+    .district-hero__veil { @apply absolute inset-0 -z-10 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--color-navy)_70%,transparent)_0%,color-mix(in_oklab,var(--color-navy)_88%,transparent)_100%)] lg:bg-[linear-gradient(90deg,var(--color-navy)_0%,color-mix(in_oklab,var(--color-navy)_88%,transparent)_45%,color-mix(in_oklab,var(--color-navy)_35%,transparent)_100%)]; }
+    .district-hero__content { @apply relative pt-10 pb-24 sm:pt-12 sm:pb-28 lg:pt-16 lg:pb-40; }
+    .district-hero__content > * { @apply max-w-[44rem]; }
+    .district-hero__title { @apply mt-4 font-display text-[2.2rem] leading-[1.08] font-extrabold tracking-[-0.03em] text-white sm:text-[3rem] xl:text-[3.4rem]; }
+    .district-hero__facts { @apply mt-7 flex flex-wrap gap-2.5; }
+    .district-hero__facts li { @apply inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-[0.82rem] font-semibold text-white ring-1 ring-white/15; }
+    .booking-tabs--4 { @apply grid-cols-2 min-[420px]:grid-cols-4; }
+    .trust-card { @apply flex h-full flex-col rounded-xl border border-line bg-white p-5; }
+    .trust-card__icon { @apply grid size-12 place-items-center rounded-lg bg-forest text-sun; }
+    .fare-grid { @apply w-full min-w-[56rem] border-collapse text-left text-sm; }
+    .fare-grid thead th { @apply bg-forest px-4 py-3 font-display text-[0.72rem] font-bold tracking-[0.1em] whitespace-nowrap text-white/80 uppercase; }
+    .fare-grid tbody th, .fare-grid tbody td { @apply border-b border-line px-4 py-4 align-middle; }
+    .fare-grid tbody tr:last-child th, .fare-grid tbody tr:last-child td { @apply border-b-0; }
+    .fare-grid tbody tr:nth-child(even) { @apply bg-ivory/60; }
+    .fare-request { @apply flex flex-col gap-6 rounded-2xl border border-dashed border-gold/50 bg-white p-7 sm:p-9 lg:flex-row lg:items-center; }
+    .pickup-item { @apply flex items-center gap-3 rounded-xl border border-line bg-white px-4 py-3.5; }
 
-    .journey-cta { @apply relative isolate overflow-hidden rounded-[1.75rem] bg-navy shadow-lift; }
+    /* Service areas: destination text cards (no landscape photography) */
+    .dest-card { @apply flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-5 py-4 hover:border-forest/25; }
+
+    /* Book Anytime, Anywhere banner (homepage, former mobile-app section): the artwork at its own aspect ratio */
+    .app-band { @apply bg-white py-7 sm:py-8; }
+    .app-band__banner { @apply relative overflow-hidden rounded-xl; }
+    .app-band__img { @apply block h-auto w-full; }
+    /* Invisible links over the store buttons drawn in the artwork (only rendered when store URLs are set) */
+    .app-band__hit { @apply absolute top-[72.3%] h-[15.9%] rounded-md focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-sun; }
+    .app-band__hit--play { @apply left-[6.2%] w-[10.8%]; }
+    .app-band__hit--ios { @apply left-[18.6%] w-[10.3%]; }
+
+    /* Testimonials */
+    .review-card { @apply relative flex h-full flex-col rounded-xl border border-line bg-white p-6 sm:p-7; }
+    .review-card__mark { @apply font-display text-[4rem] leading-[0.7] font-extrabold text-sun; }
+    .carousel-btn { @apply grid size-11 place-items-center rounded-full border border-line bg-white text-forest hover:border-forest; }
+
+    /* Contact: charcoal details panel beside the message form */
+    /* Inner-page banner, brand variant (Services, Routes & Fares, About, Contact): the homepage hero's exact colours —
+     booking-panel red gradient #B3020B → #A0030C → #86050D, deep red #9C030C, yellow #FFC400 (sun), white text. */
+  .page-banner--brand { @apply bg-[#9C030C] bg-[radial-gradient(ellipse_at_50%_0%,#B3020B_0%,#A0030C_55%,#86050D_100%)]; }
+  .page-banner__curves { @apply pointer-events-none absolute inset-y-0 right-0 -z-10 h-full w-[18%] sm:w-[70%]; } /* narrow on phones: never across the text */
+  .page-banner__sweep { fill: #86050D; fill-opacity: .55; }
+  .page-banner__line { stroke-linecap: round; }
+  .page-banner__line--yellow { stroke: var(--color-sun); stroke-width: 3px; }
+  .page-banner__line--light { stroke: #fff; stroke-opacity: .35; stroke-width: 1.4px; }
+  .page-banner__glow { @apply pointer-events-none absolute -bottom-32 -left-24 -z-10 size-96 rounded-full bg-sun/15 blur-3xl; }
+  .page-banner__rule { @apply mt-4 block h-1 w-16 rounded-full bg-sun; }
+  .page-banner__frame { @apply ring-2 ring-sun/70; }
+
+  /* About Us page: compact 4:3 photo beside the text — full width on phones, max 480×360 from tablet up,
+     right-aligned in its column on desktop. */
+  .about-page-photo { @apply w-full max-w-full; }
+  .about-page-photo__img { @apply block aspect-[4/3] h-auto w-full object-cover; }
+  @media (min-width: 640px) {
+    .about-page-photo { @apply max-w-[480px]; }
+    .about-page-photo__img { @apply max-h-[360px]; }
+  }
+  @media (min-width: 1024px) {
+    .about-page-photo { @apply justify-self-end; }
+  }
+
+  /* Contact "Talk to Us" panel: the exact hero banner red gradient (same values as .home-hero__booking) */
+  .contact-panel { @apply flex flex-col rounded-2xl bg-[radial-gradient(ellipse_at_50%_0%,#B3020B_0%,#A0030C_55%,#86050D_100%)] p-6 text-white sm:p-8; }
+    .contact-item { @apply flex gap-4 border-b border-white/10 py-4 last:border-b-0; }
+    .contact-item__icon { @apply grid size-11 shrink-0 place-items-center rounded-lg bg-white/10 text-sun; }
+
+    .journey-cta { @apply relative isolate flex items-center overflow-hidden rounded-2xl bg-navy shadow-lift lg:min-h-[16rem]; }
 
     .skip-link { @apply absolute -top-16 left-4 z-[100] rounded-lg bg-gold px-4 py-2 font-bold text-white focus:top-4; }
+
+    /* Brand logo: the official artwork is on white, so on dark surfaces it sits on a white plate */
+    .brand-logo { @apply block h-10 w-auto max-w-none object-contain min-[360px]:h-11 sm:h-12 2xl:h-[3.25rem]; }
+    .brand-plate { @apply inline-flex items-center rounded-xl bg-white px-3.5 py-2.5; }
+    .brand-plate .brand-logo { @apply h-11 sm:h-12 2xl:h-12; }
+    .header-call { @apply items-center gap-2.5 rounded-lg border border-line px-3.5 py-1.5 hover:border-forest/30; }
+
+    /* District cards: photo, name, short description and "Explore Taxi Services" (homepage + /tamil-nadu) */
+    .district-grid { @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4; }
+    .district-card { @apply flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white hover:border-forest/25; }
+    .district-card__media { @apply relative block aspect-[2/1] overflow-hidden bg-night; }
+    .district-card__media::after { content: ""; @apply absolute inset-0 bg-[linear-gradient(180deg,transparent_45%,rgb(8_13_24/0.75)_100%)]; }
+    .district-card__name { @apply absolute bottom-3 left-4 z-10 font-display text-lg font-extrabold text-white; }
+  /* Union Territory badge (e.g. Puducherry) on a location card */
+  .district-card__tag { @apply absolute top-3 left-3 z-10 rounded-full bg-[#FFC400] px-2.5 py-1 font-display text-[0.7rem] font-extrabold tracking-wide text-[#151515] uppercase; }
+    .district-card__body { @apply flex flex-1 flex-col p-4; }
+    /* Card description text (district cards + district-page service cards): dark and readable */
+    .district-card__text { @apply flex-1 text-[0.92rem] leading-relaxed font-medium text-[#292929]; }
+    /* Card CTA: full-width solid red button, pinned to the card bottom (cards are flex columns) */
+    .district-card__link { @apply mt-4 flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#B00000] px-4 py-2.5 font-display text-[0.95rem] font-bold text-white no-underline transition-colors duration-200 hover:bg-[#8C0000]; }
+
+    /* Video promotions: YouTube thumbnail cards + one shared modal player */
+    .video-grid { @apply grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:gap-7; }
+    .video-card { @apply flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white text-left shadow-[0_1px_2px_rgb(17_24_39/0.04)] focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-gold; }
+    .video-card__media { @apply relative block aspect-video overflow-hidden bg-night; }
+    .video-card__img { @apply size-full object-cover; }
+    .video-card__media::after { content: ""; @apply absolute inset-0 bg-[linear-gradient(180deg,rgb(8_13_24/0.05)_40%,rgb(8_13_24/0.55)_100%)]; }
+    .video-card__tag { @apply absolute top-3 left-3 z-10 rounded-full bg-[#FFB800] px-3 py-1 font-display text-[0.72rem] font-extrabold tracking-[0.04em] text-[#111827] uppercase; }
+    .video-card__play { @apply absolute top-1/2 left-1/2 z-10 grid size-16 -translate-1/2 place-items-center rounded-full bg-[#D71920] pl-1 text-white shadow-[0_10px_30px_rgb(215_25_32/0.45)] ring-4 ring-white/80 transition-colors duration-200; }
+    .video-card:hover .video-card__play, .video-card:focus-visible .video-card__play { @apply bg-[#B00000]; }
+    .video-card__body { @apply flex flex-1 flex-col gap-2 p-5 xl:p-6; }
+    .video-card__title { @apply font-display text-lg leading-snug font-extrabold text-[#111827] xl:text-xl; }
+    .video-card__text { @apply line-clamp-2 text-[0.95rem] leading-relaxed font-medium text-[#475569]; }
+    .video-modal { @apply m-auto w-[min(1100px,calc(100vw-2rem))] max-w-none overflow-visible border-0 bg-transparent p-0 backdrop:bg-[rgb(8_13_24/0.85)]; }
+    .video-modal__box { @apply overflow-hidden rounded-2xl bg-night shadow-lift; }
+    .video-modal__bar { @apply flex items-center justify-between gap-4 px-4 py-3 sm:px-5; }
+    .video-modal__title { @apply truncate font-display text-base font-bold text-white; }
+    .video-modal__close { @apply grid size-10 shrink-0 place-items-center rounded-full bg-white/10 text-white hover:bg-[#D71920] focus-visible:outline-3 focus-visible:outline-[#FFB800]; }
+    .video-modal__frame { @apply aspect-video w-full bg-black; }
+    .video-modal__frame iframe { @apply size-full border-0; }
+    html.has-video-modal { @apply overflow-hidden; }
+    /* Videos YouTube does not allow to be embedded: a clear "Watch on YouTube" card / in-player fallback */
+    .video-card__yt { @apply absolute bottom-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 font-display text-[0.8rem] font-bold text-[#B00000] shadow; }
+    .video-modal__fallback { @apply relative grid aspect-video w-full place-items-center overflow-hidden bg-black; }
+    .video-modal__fallback-img { @apply absolute inset-0 size-full object-cover opacity-45; }
+    .video-modal__fallback-body { @apply relative z-10 flex max-w-md flex-col items-center gap-4 px-6 text-center; }
+    .video-modal__fallback-text { @apply font-display text-base font-semibold text-white sm:text-lg; }
+
+    /* Homepage About + Why choose us band (OneWayTrip_Taxi_Homepage_Mockup.jpg): photo | About | Why choose us (2 × 2) */
+    .intro-band { @apply bg-white py-7; }
+    .intro-band__inner { @apply mx-auto grid w-full max-w-[1500px] items-start gap-7 px-4 sm:grid-cols-[280px_minmax(0,1fr)] sm:px-6 lg:grid-cols-[19%_minmax(0,0.72fr)_minmax(0,1fr)] lg:gap-x-8 lg:px-8 xl:grid-cols-[20%_minmax(0,0.6fr)_minmax(0,1fr)]; }
+    .intro-band__inner--no-why { @apply lg:grid-cols-[20%_minmax(0,1fr)]; }
+    .intro-band__media { @apply relative isolate mr-3 mb-3 max-w-[280px] lg:max-w-none; }
+    .intro-band__accent { @apply absolute -right-3 -bottom-3 -z-10 h-[85%] w-[85%] rounded-2xl bg-sun; }
+    .intro-band__img { @apply aspect-[268/218] w-full rounded-[14px] shadow-[0_10px_24px_-14px_rgb(8_13_24/0.45)]; }
+    .intro-band__about { @apply min-w-0; }
+    .intro-band__title { @apply mt-1 text-[1.6rem] leading-tight font-extrabold tracking-[-0.02em] text-[#111827] sm:text-[1.9rem]; }
+    .intro-band__tagline { @apply mt-1 font-display text-[0.98rem] font-bold text-[#C40000]; }
+    .intro-band__text { @apply mt-1.5 text-[0.95rem] leading-relaxed text-[#444]; }
+    .intro-band__list { @apply mt-2.5 grid grid-cols-[auto_auto] justify-start gap-x-5 gap-y-1.5 text-[0.875rem] font-medium text-ink; }
+    .intro-band__list li { @apply flex items-center gap-2; }
+    .intro-band__tick { @apply grid size-[18px] shrink-0 place-items-center rounded-full bg-[#FFECEC] text-[#E60000]; }
+    .intro-band__cta { @apply mt-3.5; }
+    .intro-band__why { @apply min-w-0 sm:col-span-2 lg:col-span-1 lg:self-stretch lg:border-l lg:border-line lg:pl-8; }
+    .intro-band__features { @apply mt-5 grid gap-y-6 sm:grid-cols-2; }
+    .intro-band__features li { @apply flex items-start gap-3; }
+    .intro-band__features li:nth-child(odd) { @apply sm:pr-4; }
+    .intro-band__features li:nth-child(even) { @apply sm:border-l sm:border-line sm:pl-4; }
+    .intro-band__icon { @apply grid size-12 shrink-0 place-items-center rounded-xl bg-[#FFECEC] text-[#E60000]; }
+    .intro-band__feature { @apply font-display text-[1.05rem] leading-snug font-bold text-[#111827]; }
+    .intro-band__desc { @apply mt-1 text-[0.86rem] leading-snug text-[#555]; }
+    /* Heading style shared with the services heading */
+    .intro-title { @apply mt-1.5 text-[1.6rem] leading-[1.15] font-extrabold tracking-[-0.02em] text-[#111827] sm:text-[1.85rem]; }
+    .intro-title--lg { @apply sm:text-[2rem] xl:text-[2.15rem]; }
+
+    /* Homepage services (reference mockup): heading row + vehicle photo tiles with an icon bar */
+    .svc-band { @apply py-7 sm:py-8; }
+    .svc-wide { @apply max-w-[1500px]; } /* services band uses the same width as the About band (mockup) */
+    .svc-head { @apply mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:gap-8; }
+    .svc-head__title { @apply shrink-0; }
+    .svc-head__lead { @apply flex-1 text-[0.98rem] leading-relaxed text-ink-soft lg:mb-1.5 lg:flex lg:items-center lg:gap-6 lg:before:block lg:before:h-px lg:before:w-12 lg:before:shrink-0 lg:before:bg-[#D9CFC0]; }
+    .svc-head .text-link { @apply lg:mb-1.5; }
+    .svc-grid { @apply grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5; }
+    .svc-tile { @apply flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white shadow-[0_8px_20px_-16px_rgb(8_13_24/0.35)] hover:border-[#E60000]/35; }
+    .svc-tile__media { @apply block aspect-[5/2] overflow-hidden bg-mint; }
+    .svc-tile__bar { @apply flex flex-1 items-center gap-3.5 px-4 py-3; }
+    .svc-tile__icon { @apply grid size-11 shrink-0 place-items-center rounded-lg bg-[#FFECEC] text-[#E60000]; }
+    .svc-tile__name { @apply font-display text-[1.2rem] font-bold text-[#111827] xl:text-[1.3rem]; }
+
+    /* Photo galleries (homepage + district pages) and the shared lightbox */
+    .photo-gallery { @apply grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4; }
+    .photo-gallery__item { @apply relative block overflow-hidden rounded-xl bg-night focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-gold; }
+    .photo-gallery__img { @apply aspect-[4/3] w-full; }
+    .photo-gallery__caption { @apply absolute inset-x-0 bottom-0 flex flex-col gap-0.5 bg-[linear-gradient(180deg,transparent,rgb(8_13_24/0.82))] px-3 pt-8 pb-2.5 text-white; }
+    .photo-gallery__caption strong { @apply font-display text-[0.92rem] leading-tight font-bold; }
+    .photo-gallery__caption span { @apply line-clamp-1 text-[0.78rem] text-white/80; }
+    .lightbox__img { @apply block max-h-[78vh] w-full bg-black object-contain; }
+
+    /* District page: cars offered in the district */
+    .car-grid { @apply grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4; }
+    .car-card { @apply flex h-full flex-col overflow-hidden rounded-xl border border-line bg-white; }
+    .car-card__media { @apply relative block aspect-[16/10] overflow-hidden bg-[#FFF4DF]; }
+    .car-card__body { @apply flex flex-1 flex-col gap-2 p-5; }
+    .car-card__name { @apply font-display text-lg font-extrabold text-[#111827]; }
+    .car-card__facts { @apply flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold text-[#475569]; }
+    .car-card__rate { @apply font-display text-[0.95rem] font-bold text-[#B00000]; }
+
+    /* District page: drop points, curated routes and FAQs */
+    .place-list { @apply grid gap-3 sm:grid-cols-2; }
+    .route-chip { @apply flex items-center justify-between gap-3 rounded-xl border border-line bg-white px-5 py-4 font-display font-bold text-[#111827] hover:border-[#D71920]/40; }
+    .faq-list { @apply divide-y divide-line overflow-hidden rounded-2xl border border-line bg-white; }
+    .faq-list summary { @apply flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-5 font-display text-[1.05rem] font-bold text-[#111827] [&::-webkit-details-marker]:hidden; }
+    .faq-list details[open] summary .faq-list__icon { @apply rotate-45; }
+    .faq-list__icon { @apply grid size-8 shrink-0 place-items-center rounded-full bg-gold-100 text-gold transition-transform duration-200; }
+    .faq-list__answer { @apply px-6 pb-6 text-[0.98rem] leading-relaxed text-[#475569]; }
+
+    /* Footer (reference design, compact): white, red/yellow swooshes, column separators, cream contact card, deep-red bar */
+    .site-footer { @apply relative isolate overflow-hidden border-t border-[#EFEAE4] bg-white text-[0.9rem] text-[#222222]; }
+    .site-footer__swoosh { @apply pointer-events-none absolute top-0 left-0 z-0 h-[30px] w-[min(26vw,360px)] lg:h-[34px]; }
+    .site-footer__grid { @apply relative z-10 grid grid-cols-2 gap-x-6 gap-y-7 pt-10 pb-7 lg:grid-cols-[1.35fr_0.8fr_0.92fr_1.45fr] lg:gap-x-7 lg:pt-7 lg:pb-4; }
+    .site-footer__brand { @apply col-span-2 lg:col-span-1; }
+    .site-footer .brand-logo { @apply h-auto w-[170px] min-[360px]:h-auto sm:h-auto 2xl:h-auto; }
+    .site-footer__tagline { @apply mt-1.5 font-display text-[1.05rem] font-extrabold text-[#E60000]; }
+    .site-footer__about { @apply mt-1 max-w-[23rem] text-[0.86rem] leading-[1.5] text-[#333333]; }
+    .site-footer__trust { @apply mt-3 flex items-stretch; }
+    .site-footer__trust li { @apply flex flex-col items-center gap-1 px-3.5 text-center font-display text-[0.72rem] leading-tight font-bold text-[#151515] first:pl-0 [&+li]:border-l [&+li]:border-[#E5DDD2]; }
+    .site-footer__trust .icon { @apply text-[#E60000]; }
+    .site-footer__col { @apply lg:border-l lg:border-[#E8E0D5] lg:pl-7; }
+    .site-footer__col--contact { @apply col-span-2 lg:col-span-1; }
+    .footer-heading { @apply font-display text-lg leading-tight font-extrabold text-[#151515] after:mt-1.5 after:block after:h-[3px] after:w-14 after:rounded-full after:bg-[linear-gradient(90deg,#E60000_55%,#FFC400_55%)]; }
+    .footer-list { @apply mt-3 space-y-1 text-[0.9rem]; }
+    .footer-list--services { @apply space-y-[3px]; }
+    .footer-link { @apply inline-block bg-[linear-gradient(#E60000,#E60000)] bg-[length:0%_1.5px] bg-left-bottom bg-no-repeat text-[#222222] transition-[color,background-size] duration-200 hover:bg-[length:100%_1.5px] hover:text-[#E60000] max-lg:py-0.5; }
+    .footer-link--strong { @apply font-bold text-[#151515]; }
+    .footer-link--icon { @apply inline-flex items-center gap-2.5; }
+    .footer-link__icon { @apply shrink-0 text-[#E60000]; }
+    .site-footer__contact { @apply rounded-2xl border border-[#F5E6C8] bg-[#FFF4DF] px-5 py-3; }
+    .site-footer__contact-list { @apply mt-2 grid gap-1 text-[0.86rem] leading-snug; }
+    .site-footer__contact-list li { @apply flex items-center gap-2.5; }
+    .site-footer__hours { @apply font-bold text-[#151515]; }
+    .footer-icon { @apply grid size-7 shrink-0 place-items-center rounded-lg bg-white text-[#E60000] shadow-[0_1px_3px_rgb(21_21_21/0.08)]; }
+    .footer-social { @apply grid size-8 place-items-center rounded-full border border-[#E9DFD2] bg-white text-[#E60000] transition-colors duration-200 hover:border-[#E60000] hover:bg-[#E60000] hover:text-white; }
+    .footer-cta { @apply mt-2.5 inline-flex h-[42px] items-center gap-2 rounded-lg bg-[linear-gradient(180deg,#F00000,#C80000)] px-6 font-display text-[0.95rem] font-bold text-white shadow-[0_6px_14px_rgb(230_0_0/0.22)] transition-colors duration-200 hover:bg-none hover:bg-[#A90000]; }
+    .site-footer__bar { @apply relative isolate overflow-hidden bg-[linear-gradient(90deg,#A90000,#BE0000_55%,#A90000)] text-white; }
+    .site-footer__bar-inner { @apply relative z-10 flex flex-col items-center gap-1.5 py-3 text-center max-sm:px-8 text-[0.84rem] lg:h-11 lg:flex-row lg:gap-6 lg:py-0 lg:pr-44 lg:text-left; }
+    .site-footer__car { @apply hidden h-8 w-[92px] shrink-0 lg:block; }
+    .site-footer__copy { @apply lg:flex-1; }
+    .site-footer__legal-list { @apply flex flex-wrap items-center justify-center gap-y-1 lg:border-l lg:border-white/45 lg:pl-8; }
+    .site-footer__legal-list li { @apply px-2.5 sm:[&+li]:border-l sm:[&+li]:border-white/45 sm:px-3 lg:px-5 lg:last:pr-0; }
+    .site-footer__legal { @apply text-white/95 transition-colors duration-200 hover:text-[#FFC400]; }
+    .site-footer__bar-swoosh { @apply pointer-events-none absolute right-0 bottom-0 z-0 h-full w-[min(14vw,220px)] max-sm:w-12; }
+    /* All 38 districts band, directly above the footer: white, red headings, yellow highlights (#E60000 / #A90000 / #FFC400) */
+    .tn-districts { @apply relative border-t border-[#EFEAE4] bg-[#FFFCF7]; }
+    .tn-districts__head { @apply mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between lg:mb-6; }
+    .tn-districts__eyebrow { @apply inline-flex items-center gap-2.5 font-display text-[0.7rem] font-bold tracking-[0.18em] text-[#151515] uppercase before:h-[3px] before:w-6 before:rounded-full before:bg-[#FFC400]; }
+    .tn-districts__title { @apply mt-1.5 font-display text-[1.35rem] leading-tight font-extrabold tracking-[-0.015em] text-[#E60000] sm:text-[1.6rem] xl:text-[1.8rem]; }
+    .tn-districts__all { @apply inline-flex shrink-0 items-center gap-1.5 self-start rounded-lg bg-[#E60000] px-4 py-2 font-display text-sm font-bold text-white transition-colors duration-200 hover:bg-[#A90000] sm:self-auto; }
+    .tn-districts__grid { @apply grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-8; }
+    .tn-district { @apply flex h-full items-center gap-2 rounded-lg border border-[#ECE6DE] bg-white px-2.5 py-2 transition-colors duration-200 hover:border-[#E60000]/45 hover:bg-[#FFF8E6]; }
+    .tn-district__icon { @apply relative grid size-5 shrink-0 place-items-center text-[#E60000] after:absolute after:-top-0.5 after:-right-0.5 after:size-1.5 after:rounded-full after:bg-[#FFC400]; }
+    .tn-district__name { @apply min-w-0 font-display text-[0.8rem] leading-tight font-bold text-[#151515] min-[400px]:text-[0.84rem] sm:text-[0.875rem]; }
+  .tn-district__tag { @apply ml-1 rounded bg-[#FFC400] px-1 py-px align-middle text-[0.62rem] font-extrabold tracking-wide text-[#151515]; }
+
+    /* Header */
+    .topbar { @apply hidden bg-forest text-[0.82rem] text-white/75 xl:block; }
+    .topbar a { @apply hover:text-white; }
+    .nav-link { @apply relative flex items-center gap-1 px-2 py-3 text-[1.05rem] font-semibold whitespace-nowrap text-ink/80 hover:text-forest xl:px-1.5 xl:py-2 xl:text-[0.93rem] 2xl:px-2.5 2xl:text-[0.97rem]; }
+    .nav-link[aria-current] { @apply font-bold text-forest xl:after:absolute xl:after:right-2 xl:after:-bottom-1 xl:after:left-2 xl:after:h-[3px] xl:after:rounded-full xl:after:bg-gold; }
+    .nav-sub-toggle { @apply hidden size-8 place-items-center rounded-md text-forest hover:bg-ivory xl:grid; }
+    .nav-sub-toggle[aria-expanded="true"] .icon { @apply rotate-180; }
 }
 
 /* Header shadow once the page scrolls */
-.site-header.is-scrolled { @apply shadow-[0_10px_30px_-18px_rgb(6_43_85/0.35)]; }
+.site-header.is-scrolled { @apply shadow-[0_10px_30px_-18px_rgb(31_35_38/0.35)]; }
 
-/* Mobile menu */
+/* Services submenu: always listed inside the mobile menu; on desktop it opens on click (data-submenu). */
+@media (min-width: 1280px) {
+    .nav-sub { @apply invisible absolute top-full left-0 z-50 mt-2 w-64 rounded-xl border border-line bg-white p-2 opacity-0 shadow-lift; }
+    .nav-sub.is-open { @apply visible opacity-100; }
+}
+
+/* Mobile menu (opens instantly, no sliding animation) */
 @media (max-width: 1279px) {
-    .nav-panel { @apply invisible fixed inset-x-0 top-[72px] bottom-0 translate-x-full overflow-y-auto bg-white px-5 py-6 transition duration-300; }
-    .nav-open .nav-panel { @apply visible translate-x-0; }
+    .nav-panel { @apply invisible fixed inset-x-0 top-[72px] bottom-0 overflow-y-auto bg-white px-5 py-6 opacity-0; }
+    .nav-open .nav-panel { @apply visible opacity-100; }
     .nav-open { overflow: hidden; }
 }
 
-/* Hero slide transitions */
-.hero-slide { @apply invisible absolute inset-0 opacity-0 transition-opacity duration-700; }
+/* Hero slides switch without animation */
+.hero-slide { @apply invisible absolute inset-0 opacity-0; }
 .hero-slide.is-active { @apply visible relative opacity-100; }
 
 /* Live quote */
@@ -238,5 +541,58 @@
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }
 
-/* Booking form: required markers in navy (unlayered so it wins over the red utility on the shared field component) */
+/* Booking form: required markers in charcoal (unlayered so it wins over the red utility on the shared field component) */
 .booking-form .form-label [aria-hidden] { color: var(--color-navy); }
+
+/* ── Scrolling offers ticker (homepage, below the header) — scoped to .offer-ticker ───────────────────────── */
+.offer-ticker {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, #4A1486 0%, #7B1FA2 38%, #A3168F 70%, #C2185B 100%);
+    color: #fff;
+    box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .12);
+}
+.offer-ticker::before, .offer-ticker::after { /* soft fade at both edges */
+    content: ""; position: absolute; top: 0; bottom: 0; z-index: 1; width: 28px; pointer-events: none;
+}
+.offer-ticker::before { left: 0; background: linear-gradient(90deg, #4A1486, rgba(74, 20, 134, 0)); }
+.offer-ticker::after { right: 0; background: linear-gradient(270deg, #C2185B, rgba(194, 24, 91, 0)); }
+.offer-ticker__viewport { overflow: hidden; }
+.offer-ticker__track {
+    display: flex; width: max-content;
+    animation: offer-ticker-scroll var(--offer-ticker-duration, 40s) linear infinite;
+    will-change: transform;
+}
+.offer-ticker:hover .offer-ticker__track, .offer-ticker:focus-within .offer-ticker__track { animation-play-state: paused; }
+.offer-ticker__list {
+    display: flex; flex-shrink: 0; align-items: center; justify-content: space-around;
+    min-width: 100vw; margin: 0; padding: 0; list-style: none; /* each copy at least screen-wide: no gap on wide screens */
+}
+.offer-ticker__item {
+    display: inline-flex; align-items: center; gap: .45rem; flex-shrink: 0;
+    padding: .5rem 2.25rem; white-space: nowrap;
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif; font-size: .8125rem; font-weight: 600; line-height: 1.25;
+}
+.offer-ticker__item::after { /* separator between messages */
+    content: ""; width: 6px; height: 6px; margin-left: 2.25rem; margin-right: -2.25rem; border-radius: 999px; background: #FFD54A; opacity: .85;
+}
+.offer-ticker__icon { font-size: 1rem; line-height: 1; }
+.offer-ticker__highlight { color: #FFD54A; font-weight: 800; letter-spacing: .01em; }
+.offer-ticker__dash { color: rgba(255, 255, 255, .7); }
+.offer-ticker__text { color: #fff; }
+.offer-ticker__link { display: inline-flex; align-items: center; gap: .45rem; color: inherit; text-decoration: none; border-radius: 4px; }
+.offer-ticker__link:hover .offer-ticker__text, .offer-ticker__link:focus-visible .offer-ticker__text { text-decoration: underline; text-underline-offset: 3px; }
+.offer-ticker__link:focus-visible { outline: 2px solid #FFD54A; outline-offset: 3px; }
+@media (min-width: 768px) {
+    .offer-ticker__item { padding-block: .55rem; font-size: .875rem; }
+}
+@keyframes offer-ticker-scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+    /* No movement: show the messages once, wrapped and centred. */
+    .offer-ticker__track { width: auto; animation: none !important; transform: none; }
+    .offer-ticker__list { flex-wrap: wrap; justify-content: center; min-width: 0; width: 100%; }
+    .offer-ticker__list[aria-hidden="true"] { display: none; }
+    .offer-ticker__item { padding: .35rem 1rem; white-space: normal; }
+    .offer-ticker__item::after { display: none; }
+    .offer-ticker::before, .offer-ticker::after { display: none; }
+}

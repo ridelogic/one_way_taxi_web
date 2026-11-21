@@ -8,7 +8,7 @@
         @method('PUT')
         <x-admin.input name="name" label="Name" :value="$user->name" required autocomplete="name" />
         <x-admin.input name="email" label="Email" type="email" :value="$user->email" required autocomplete="username" />
-        <hr style="border:0;border-top:1px solid #e3e8f0;margin:8px 0 18px">
+        <hr style="border:0;border-top:1px solid var(--a-line);margin:8px 0 18px">
         <div class="afield @error('password') has-error @enderror">
             <label for="password">New password</label>
             <input id="password" type="password" name="password" autocomplete="new-password">

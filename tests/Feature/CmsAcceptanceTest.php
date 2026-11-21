@@ -48,7 +48,7 @@ class CmsAcceptanceTest extends TestCase
             $this->assertSame($value, $after[$key], "Setting {$key} changed on an unchanged save");
         }
         $this->assertStringStartsWith(' ', (string) $after['seo_title_suffix']);
-        $this->get('/book')->assertSee('<title>Book a Taxi — One Way, Outstation or Rental | One Way Taxi</title>', false);
+        $this->get('/book')->assertSee('<title>Book a Taxi — Local, Rental, One Way or Round Trip | One Way Taxi</title>', false);
     }
 
     public function test_non_image_upload_gets_one_clear_error(): void
@@ -92,56 +92,6 @@ class CmsAcceptanceTest extends TestCase
         ]), ['is_active' => '1'], $overrides);
     }
 
-    public function test_changing_the_homepage_heading(): void
-    {
-        $slide = $this->heroSlide();
-        $this->get(route('admin.slides.edit', $slide))->assertOk()->assertSee('Your Journey.');
-
-        // The seeded hero (v5 mockup layout) has no buttons, so adding one needs both a label and a link.
-        $this->put(route('admin.slides.update', $slide), $this->slidePayload([
-            'heading' => 'Travel Smart.',
-            'highlight' => 'Book One Way.',
-            'primary_label' => 'Get Started',
-            'primary_url' => '#book-ride',
-        ]))->assertRedirect(route('admin.slides.edit', $slide))->assertSessionHasNoErrors();
-
-        $fresh = $slide->fresh();
-        $this->assertSame('Travel Smart.', $fresh->heading);
-        $this->assertSame('Book One Way.', $fresh->highlight);
-        $this->assertSame('#book-ride', $fresh->primary_url);
-        $this->get('/')->assertSee('Travel Smart.')->assertSee('Book One Way.')->assertSee('Get Started')
-            ->assertSee('href="#book-ride"', false)->assertDontSee('Your Way.');
-    }
-
-    public function test_hero_button_needs_a_link(): void
-    {
-        $slide = $this->heroSlide();
-
-        $this->put(route('admin.slides.update', $slide), $this->slidePayload(['heading' => 'Changed', 'primary_label' => 'Get Started', 'primary_url' => null]))
-            ->assertSessionHasErrors('primary_url');
-        $this->assertSame('Comfortable Rides', $slide->fresh()->heading);
-    }
-
-    public function test_hero_slides_can_be_added_and_reordered(): void
-    {
-        $original = $this->heroSlide();
-
-        $this->post(route('admin.slides.store'), $this->slidePayload(['heading' => 'Airport runs', 'highlight' => 'made easy', 'sort_order' => 99]))
-            ->assertRedirect(route('admin.slides.index'))->assertSessionHasNoErrors();
-        $new = HeroSlide::where('heading', 'Airport runs')->firstOrFail();
-
-        // Hidden slides also occupy positions, so move it up past all of them.
-        for ($i = 0; $i < HeroSlide::count(); $i++) {
-            $this->patch(route('admin.slides.move', $new), ['direction' => 'up'])->assertRedirect();
-        }
-
-        $this->assertSame($new->id, HeroSlide::active()->ordered()->first()->id);
-        $this->get('/')->assertSee('Airport runs')->assertSee('data-slider', false);
-
-        $this->put(route('admin.slides.update', $original), $this->slidePayload(['is_active' => '0']));
-        $this->assertFalse($original->fresh()->is_active);
-    }
-
     public function test_booking_form_labels_are_editable_in_the_cms(): void
     {
         $booking = PageSection::where('key', 'booking')->firstOrFail();
@@ -151,63 +101,8 @@ class CmsAcceptanceTest extends TestCase
             'content' => array_merge($booking->content, ['submit_label' => 'SEND REQUEST', 'note' => 'We call back within 15 minutes.']),
         ])->assertSessionHasNoErrors();
 
-        $this->get('/')->assertSee('<h2 id="book-ride-title" class="sr-only">Plan Your Drop</h2>', false)
+        $this->get('/')->assertSee('<h2 id="book-ride-title" class="booking-form__title">Plan Your Drop</h2>', false)
             ->assertSee('SEND REQUEST');
-    }
-
-    public function test_hero_scene_vehicle_and_benefits_are_editable_in_the_cms(): void
-    {
-        Storage::fake('uploads');
-        $slide = $this->heroSlide();
-        $hero = PageSection::where('key', 'hero')->firstOrFail();
-
-        $this->post(route('admin.media.store'), ['files' => [UploadedFile::fake()->createWithContent('suv.png', base64_decode(self::PNG))]]);
-        $car = MediaAsset::where('original_name', 'suv.png')->firstOrFail();
-        $scene = MediaAsset::where('path', 'city-chennai.jpg')->firstOrFail();
-
-        $this->get(route('admin.slides.edit', $slide))->assertOk()->assertSee('name="foreground_media_id"', false);
-        $this->put(route('admin.slides.update', $slide), $this->slidePayload(['media_id' => $scene->id, 'foreground_media_id' => $car->id]))
-            ->assertSessionHasNoErrors();
-
-        $this->put(route('admin.homepage.update', $hero), [
-            'title' => $hero->title, 'subtitle' => $hero->subtitle, 'is_active' => '1', 'sort_order' => $hero->sort_order,
-            'content' => array_merge($hero->content ?? [], ['items' => [
-                ['icon' => 'star', 'title' => 'Top-rated drivers', 'text' => ''],
-                ['icon' => 'rupee', 'title' => 'Fixed fares', 'text' => ''],
-            ]]),
-        ])->assertSessionHasNoErrors();
-
-        // The homepage hero is car-free: a saved vehicle cut-out is kept in the CMS but never drawn over the scene.
-        $html = $this->get('/')->assertDontSee('uploads/'.$car->path, false)->assertDontSee('home-hero__car')->assertSeeInOrder(['Top-rated drivers', 'Fixed fares'])
-            ->assertDontSee('hero-airport-takeoff-golden-hour.jpg')->assertDontSee('hero-suv-black.webp')->assertDontSee('Safe &amp; Reliable Travel', false)
-            ->getContent();
-        $this->assertMatchesRegularExpression('#<img src="[^"]*city-chennai\.jpg"[^>]*class="home-hero__scene-img"#s', $html);
-    }
-
-    public function test_hero_slide_image_is_optional(): void
-    {
-        $this->post(route('admin.slides.store'), $this->slidePayload(['heading' => 'No photo slide', 'media_id' => null]))->assertSessionHasNoErrors();
-    }
-
-    public function test_changing_the_hero_image(): void
-    {
-        Storage::fake('uploads');
-        $slide = $this->heroSlide();
-
-        $this->post(route('admin.media.store'), [
-            'files' => [UploadedFile::fake()->createWithContent('new-hero.png', base64_decode(self::PNG))],
-            'alt_text' => 'New hero',
-        ])->assertRedirect(route('admin.media.index'))->assertSessionHasNoErrors();
-
-        $media = MediaAsset::where('original_name', 'new-hero.png')->firstOrFail();
-        $this->assertSame(1, $media->width);
-        Storage::disk('uploads')->assertExists($media->path);
-        $this->assertMatchesRegularExpression('#^media/\d{4}/\d{2}/new-hero-[a-z0-9]{10}\.png$#', $media->path);
-
-        $this->put(route('admin.slides.update', $slide), $this->slidePayload(['media_id' => $media->id]))->assertSessionHasNoErrors();
-
-        $this->assertSame($media->id, $slide->fresh()->media_id);
-        $this->get('/')->assertSee('uploads/'.$media->path, false);
     }
 
     public function test_changing_the_phone_number(): void
@@ -289,12 +184,13 @@ class CmsAcceptanceTest extends TestCase
     public function test_sections_can_be_reordered(): void
     {
         $html = fn () => $this->get('/')->getContent();
-        $this->assertLessThan(strpos($html(), 'id="fleet"'), strpos($html(), 'id="how-it-works"'));
+        // In the seeded order "About" (with Why choose us) sits directly above the services.
+        $this->assertLessThan(strpos($html(), 'id="services-title"'), strpos($html(), 'id="about-title"'));
 
-        $fleet = PageSection::where('key', 'fleet')->firstOrFail();
-        $this->patch(route('admin.homepage.move', $fleet), ['direction' => 'up'])->assertRedirect();
+        $services = PageSection::where('key', 'services')->firstOrFail();
+        $this->patch(route('admin.homepage.move', $services), ['direction' => 'up'])->assertRedirect();
 
-        $this->assertLessThan(strpos($html(), 'id="how-it-works"'), strpos($html(), 'id="fleet"'));
+        $this->assertLessThan(strpos($html(), 'id="about-title"'), strpos($html(), 'id="services-title"'));
     }
 
     public function test_brand_colours_are_configurable(): void

@@ -45,7 +45,10 @@ class City extends Model
         return $query->orderBy('sort_order')->orderBy('name');
     }
 
-    /** Match free text typed by a customer ("chennai", "Chennai, Tamil Nadu") to an active city. */
+    /**
+     * Match free text typed by a customer ("chennai", "Chennai, Tamil Nadu", "Pondicherry") to an active city,
+     * by name, slug or an alias from config/cities.php.
+     */
     public static function resolve(?string $text): ?self
     {
         $text = trim((string) $text);
@@ -53,11 +56,42 @@ class City extends Model
             return null;
         }
 
-        $name = trim(explode(',', $text)[0]);
+        $name = mb_strtolower(trim(explode(',', $text)[0]));
+        $aliasSlug = static::slugForAlias($name);
 
         return static::active()
-            ->where(fn (Builder $q) => $q->whereRaw('LOWER(name) = ?', [mb_strtolower($name)])->orWhereRaw('LOWER(slug) = ?', [mb_strtolower($name)]))
+            ->where(fn (Builder $q) => $q->whereRaw('LOWER(name) = ?', [$name])
+                ->orWhereRaw('LOWER(slug) = ?', [$name])
+                ->when($aliasSlug, fn (Builder $q) => $q->orWhere('slug', $aliasSlug)))
             ->first();
+    }
+
+    /** The city slug an alias belongs to ("pondicherry" → "puducherry"), if any. */
+    private static function slugForAlias(string $lowerName): ?string
+    {
+        foreach ((array) config('cities.aliases', []) as $slug => $aliases) {
+            foreach ((array) $aliases as $alias) {
+                if (mb_strtolower($alias) === $lowerName) {
+                    return (string) $slug;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /** @return list<string> Other names this city is known by (config/cities.php). */
+    public function aliases(): array
+    {
+        return array_values((array) config('cities.aliases.'.$this->slug, []));
+    }
+
+    /** Hint shown next to the city in location suggestions: the state, plus any other names. */
+    public function suggestionHint(): string
+    {
+        $aliases = $this->aliases();
+
+        return trim(($this->state ?? '').($aliases ? ' · also '.implode(', ', $aliases) : ''), ' ·');
     }
 
     public function label(): string

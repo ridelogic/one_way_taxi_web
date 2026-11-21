@@ -13,7 +13,7 @@
             <tbody>
                 @forelse ($services as $service)
                     <tr>
-                        <td><span style="color:#f58500"><x-icon :name="$service->icon" :size="22" /></span></td>
+                        <td><span style="color:var(--a-accent)"><x-icon :name="$service->icon" :size="22" /></span></td>
                         <td class="strong">{{ $service->title }}<br><small class="muted">{{ \Illuminate\Support\Str::limit($service->short_description, 70) }}</small></td>
                         <td><a href="{{ route('services.show', $service->slug) }}" target="_blank" rel="noopener">/services/{{ $service->slug }}</a></td>
                         <td>{{ $service->show_on_home ? 'Yes' : '—' }}</td>

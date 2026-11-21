@@ -7,8 +7,13 @@
         $hero = $sections->get('hero');
         // The hero contains the booking form; everything else (including the statistics)
         // renders in the order set in Admin → Homepage sections.
-        $flowSections = $sections->toBase()->except(['hero', 'booking'])->sortBy('sort_order');
+        // The "Ready for Your Next Journey?" CTA ('cta') has been removed from the website and is never rendered.
+        $flowSections = $sections->toBase()->except(['hero', 'booking', 'cta'])->sortBy('sort_order');
     @endphp
+
+    {{-- Scrolling offers ticker: directly below the header, above the hero. Only enabled, currently valid
+         announcements (Admin → Promotional Announcements); renders nothing when there are none. --}}
+    <x-offer-ticker :announcements="$announcements ?? collect()" />
 
     <x-hero-slider
         :slides="$slides"

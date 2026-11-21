@@ -1,7 +1,7 @@
 <section class="section bg-white" id="corporate" aria-labelledby="corporate-title">
     <div class="container-site grid items-center gap-12 lg:grid-cols-2">
         <div class="overflow-hidden rounded-[2rem] border-[6px] border-white shadow-lift">
-            <x-img :media="$section->media" fallback="images/demo/fleet-premium-sedan.jpg" alt="" class="aspect-[5/4] w-full" />
+            <x-img :media="$section->media" fallback="images/demo/corporate-executive-arrival.jpg" alt="" class="aspect-[5/4] w-full" />
         </div>
         <div>
             <x-section-heading eyebrow="Corporate" :title="$section->title" :subtitle="$section->subtitle" align="left" id="corporate-title" />

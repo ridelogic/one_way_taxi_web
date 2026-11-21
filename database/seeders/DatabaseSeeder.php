@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             CatalogSeeder::class,
             ContentSeeder::class,
             HomepageLayoutSeeder::class,
+            DistrictPageSeeder::class,
+            TerritoryPageSeeder::class, // Union Territory pages (Puducherry) — separate from the 38 Tamil Nadu districts
         ]);
     }
 }

@@ -2,33 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\City;
-use App\Models\VehicleCategory;
-use App\Support\Seo;
-use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
+/**
+ * The website no longer has a Fleet section. Vehicle categories still power the booking form and the
+ * fare estimates (Admin → Vehicles and Fare Rules), so the old /fleet addresses permanently redirect to the
+ * booking page, where visitors choose their vehicle — bookmarks and search results never hit a dead page.
+ */
 class FleetController extends Controller
 {
-    public function index(): View
+    public function index(): RedirectResponse
     {
-        return view('fleet.index', [
-            'vehicles' => VehicleCategory::active()->with(['media', 'fareRule'])->ordered()->get(),
-            'seo' => Seo::make('Our Fleet — Sedans, SUVs & Innova Crysta', 'Choose from economy sedans, premium sedans, SUVs and Innova Crysta for your one-way or outstation trip.'),
-        ]);
+        return redirect()->route('booking.create', status: 301);
     }
 
-    public function show(VehicleCategory $vehicle): View
+    public function show(string $vehicle): RedirectResponse
     {
-        abort_unless($vehicle->is_active, 404);
-
-        $vehicle->load(['media', 'fareRule']);
-
-        return view('fleet.show', [
-            'vehicle' => $vehicle,
-            'others' => VehicleCategory::active()->with('media')->whereKeyNot($vehicle->id)->ordered()->get(),
-            'cities' => City::active()->ordered()->get(),
-            'vehicles' => VehicleCategory::active()->ordered()->get(),
-            'seo' => Seo::make($vehicle->seo_title ?: $vehicle->name.' Taxi', $vehicle->seo_description ?: $vehicle->short_description, $vehicle->media),
-        ]);
+        return redirect()->route('booking.create', status: 301);
     }
 }

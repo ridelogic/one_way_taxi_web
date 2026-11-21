@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-page-banner :title="$section?->title ?: 'Become a Partner'" :subtitle="$section?->subtitle ?: 'Drivers, owner-drivers and fleet owners — grow with us.'" :media="$section?->media" fallback="images/demo/partner-driver.jpg" :crumbs="['Become a Partner' => null]" />
+    <x-page-banner :title="$section?->title ?: 'Become a Partner'" :subtitle="$section?->subtitle ?: 'Drivers, owner-drivers and fleet owners — grow with us.'" :media="$section?->media" fallback="images/demo/partner-driver-at-wheel.jpg" :crumbs="['Become a Partner' => null]" />
 
     <section class="section pt-12!">
         <div class="container-site grid items-start gap-10 lg:grid-cols-[1fr_420px]">

@@ -126,7 +126,7 @@ class FareCalculator
 
     /**
      * Quick quote for the homepage widget, which has no vehicle selector: shows the route's
-     * published starting fare. Outstation round trips and rentals are always quoted by the team.
+     * published starting fare. Local, Rental and Round Trip bookings are always quoted by the team.
      */
     public function quickQuote(?City $pickup, ?City $destination, TripType $tripType, ?string $pickupText = null, ?string $destinationText = null): array
     {
@@ -151,6 +151,12 @@ class FareCalculator
             return $result;
         }
 
+        if ($tripType === TripType::Local) {
+            $result['message'] = 'Local trips are priced by distance and time within the city. Submit your request and our team will call you with a quote.';
+
+            return $result;
+        }
+
         $route = $this->findRoute($pickup?->id, $destination?->id);
         if (! $route) {
             $result['message'] = 'We don’t have a published fare for this route yet. Submit your request and our team will call you with a quote.';
@@ -171,7 +177,7 @@ class FareCalculator
         ]);
 
         if ($tripType === TripType::Outstation) {
-            $result['message'] = 'Shown: one-way starting fare for this route. Outstation round trips are quoted by our team based on days and distance.';
+            $result['message'] = 'Shown: one-way starting fare for this route. Round Trip fares are quoted by our team based on days and distance.';
         }
 
         return $result;

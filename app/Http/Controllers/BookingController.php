@@ -28,9 +28,9 @@ class BookingController extends Controller
     public function create(Request $request): View
     {
         $vehicles = VehicleCategory::active()->with('media')->ordered()->get();
-        // The homepage search offers "Round Trip": an outstation trip with a return date.
-        $isRoundTrip = $request->query('trip_type') === 'round_trip';
-        $tripType = $isRoundTrip ? TripType::Outstation : (TripType::tryFrom((string) $request->query('trip_type')) ?? TripType::OneWay);
+        // Booking links use trip_type=round_trip for Round Trip (stored as 'outstation'); unknown values fall back to One Way.
+        $tripType = TripType::fromInput($request->query('trip_type'));
+        $isRoundTrip = $tripType === TripType::Outstation;
         $travelDate = $this->validDate($request->query('travel_date'));
         $returnDate = $this->validDate($request->query('return_date'));
 
@@ -59,7 +59,7 @@ class BookingController extends Controller
                 'travel_time' => preg_match('/^\d{2}:\d{2}$/', (string) $request->query('travel_time')) ? $request->query('travel_time') : null,
                 'rental_package' => in_array($request->query('rental_package'), settings()->lines('rental_packages'), true) ? $request->query('rental_package') : null,
             ],
-            'seo' => Seo::make('Book a Taxi — One Way, Outstation or Rental', 'Request a one-way, outstation or rental taxi with an instant fare estimate. Our team confirms every booking by phone.'),
+            'seo' => Seo::make('Book a Taxi — Local, Rental, One Way or Round Trip', 'Book a Local, Rental, One Way or Round Trip taxi with a fare estimate where available. Our team confirms every booking by phone.'),
         ]);
     }
 

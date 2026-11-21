@@ -5,6 +5,7 @@ use App\Http\Controllers\BookingController;
 use App\Http\Controllers\BusinessEnquiryController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\FaqController;
+use App\Http\Controllers\DistrictController;
 use App\Http\Controllers\FleetController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
@@ -24,11 +25,16 @@ Route::get('/', HomeController::class)->name('home');
 Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
 Route::get('/services/{service:slug}', [ServiceController::class, 'show'])->name('services.show');
 
+Route::get('/tamil-nadu', [DistrictController::class, 'index'])->name('districts.index');
+Route::get('/tamil-nadu/{district:slug}', [DistrictController::class, 'show'])->name('districts.show');
+// Union Territory pages (e.g. Puducherry) use the same page system but are not part of Tamil Nadu: /{slug}.
+Route::get('/{district:slug}', [DistrictController::class, 'show'])
+    ->whereIn('district', \App\Models\DistrictPage::TERRITORY_SLUGS)->name('territories.show');
 Route::get('/routes', [RouteController::class, 'index'])->name('routes.index');
 Route::get('/routes/{taxiRoute:slug}', [RouteController::class, 'show'])->name('routes.show');
 
 Route::get('/fleet', [FleetController::class, 'index'])->name('fleet.index');
-Route::get('/fleet/{vehicle:slug}', [FleetController::class, 'show'])->name('fleet.show');
+Route::get('/fleet/{vehicle}', [FleetController::class, 'show'])->name('fleet.show'); // retired page: redirects to booking
 
 Route::get('/faqs', FaqController::class)->name('faqs');
 
@@ -47,7 +53,7 @@ Route::post('/corporate', [BusinessEnquiryController::class, 'storeCorporate'])-
 Route::get('/become-a-partner', [BusinessEnquiryController::class, 'partner'])->name('partner');
 Route::post('/become-a-partner', [BusinessEnquiryController::class, 'storePartner'])->middleware('throttle:contact')->name('partner.store');
 Route::get('/download-app', [BusinessEnquiryController::class, 'app'])->name('app');
-Route::redirect('/cabs', '/fleet', 301);
+Route::redirect('/cabs', '/book', 301);
 
 Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
@@ -63,6 +69,16 @@ Route::prefix('admin')->name('admin.')->middleware('admin.headers')->group(funct
     Route::middleware('guest')->group(function () {
         Route::get('login', [Admin\AuthController::class, 'create'])->name('login');
         Route::post('login', [Admin\AuthController::class, 'store'])->middleware('throttle:5,1')->name('login.store');
+
+        // First-time setup: the website owner creates their own admin account (closed once an owner exists).
+        Route::get('setup', [Admin\SetupController::class, 'create'])->name('setup');
+        Route::post('setup', [Admin\SetupController::class, 'store'])->middleware('throttle:admin-setup')->name('setup.store');
+
+        // Forgot password: single-use, expiring reset link emailed to the admin's registered address.
+        Route::get('forgot-password', [Admin\PasswordResetController::class, 'request'])->name('password.request');
+        Route::post('forgot-password', [Admin\PasswordResetController::class, 'email'])->middleware('throttle:admin-password')->name('password.email');
+        Route::get('reset-password/{token}', [Admin\PasswordResetController::class, 'edit'])->name('password.reset');
+        Route::post('reset-password', [Admin\PasswordResetController::class, 'update'])->middleware('throttle:admin-password')->name('password.update');
     });
 
     Route::middleware(['auth', 'admin'])->group(function () {
@@ -72,8 +88,7 @@ Route::prefix('admin')->name('admin.')->middleware('admin.headers')->group(funct
 
         Route::get('/', Admin\DashboardController::class)->name('dashboard');
 
-        Route::patch('slides/{slide}/move', [Admin\HeroSlideController::class, 'move'])->name('slides.move');
-        Route::resource('slides', Admin\HeroSlideController::class)->except('show');
+        // Homepage Content: videos, photos and homepage sections (the hero banner is fixed and not edited here).
         Route::patch('homepage/{section}/move', [Admin\HomeSectionController::class, 'move'])->name('homepage.move');
         Route::get('homepage', [Admin\HomeSectionController::class, 'index'])->name('homepage.index');
         Route::get('homepage/{section}/edit', [Admin\HomeSectionController::class, 'edit'])->name('homepage.edit');
@@ -88,6 +103,32 @@ Route::prefix('admin')->name('admin.')->middleware('admin.headers')->group(funct
         Route::resource('media', Admin\MediaController::class)->except(['create', 'show']);
 
         Route::resource('cities', Admin\CityController::class)->except('show');
+        // District Management: one screen per district with tabs (details, videos, photos, SEO, cars, services, routes, FAQs).
+        $tabs = 'videos|photos|seo|cars|services|routes|faqs';
+        Route::get('districts/{district}/tab/{tab}', [Admin\DistrictCmsController::class, 'show'])->where('tab', $tabs)->name('districts.tab');
+        Route::put('districts/{district}/tab/{tab}', [Admin\DistrictCmsController::class, 'update'])->where('tab', 'seo|services|routes')->name('districts.tab.update');
+        Route::post('districts/{district}/cars', [Admin\DistrictVehicleController::class, 'store'])->name('districts.cars.store');
+        Route::get('district-cars/{car}/edit', [Admin\DistrictVehicleController::class, 'edit'])->name('district-cars.edit');
+        Route::put('district-cars/{car}', [Admin\DistrictVehicleController::class, 'update'])->name('district-cars.update');
+        Route::patch('district-cars/{car}/toggle', [Admin\DistrictVehicleController::class, 'toggle'])->name('district-cars.toggle');
+        Route::delete('district-cars/{car}', [Admin\DistrictVehicleController::class, 'destroy'])->name('district-cars.destroy');
+        Route::post('districts/{district}/routes', [Admin\DistrictRouteController::class, 'store'])->name('districts.routes.store');
+        Route::put('district-routes/{districtRoute}', [Admin\DistrictRouteController::class, 'update'])->name('district-routes.update');
+        Route::delete('district-routes/{districtRoute}', [Admin\DistrictRouteController::class, 'destroy'])->name('district-routes.destroy');
+        Route::post('districts/{district}/faqs', [Admin\DistrictFaqController::class, 'store'])->name('districts.faqs.store');
+        Route::put('district-faqs/{faq}', [Admin\DistrictFaqController::class, 'update'])->name('district-faqs.update');
+        Route::delete('district-faqs/{faq}', [Admin\DistrictFaqController::class, 'destroy'])->name('district-faqs.destroy');
+        Route::delete('districts/{district}/videos/{video}', [Admin\PromoVideoController::class, 'detach'])->name('districts.videos.detach');
+        Route::delete('districts/{district}/photos/{photo}', [Admin\GalleryPhotoController::class, 'detach'])->name('districts.photos.detach');
+        Route::resource('districts', Admin\DistrictPageController::class)->except('show');
+        Route::patch('districts/{district}/toggle', [Admin\DistrictPageController::class, 'toggle'])->name('districts.toggle');
+
+        // Shared media: one record per video / photo, shown on the homepage and/or any selected districts.
+        Route::get('videos/check', [Admin\PromoVideoController::class, 'check'])->name('videos.check');
+        Route::resource('videos', Admin\PromoVideoController::class)->except('show');
+        Route::patch('videos/{video}/toggle', [Admin\PromoVideoController::class, 'toggle'])->name('videos.toggle');
+        Route::resource('photos', Admin\GalleryPhotoController::class)->except(['show', 'create']);
+        Route::patch('photos/{photo}/toggle', [Admin\GalleryPhotoController::class, 'toggle'])->name('photos.toggle');
         Route::resource('routes', Admin\TaxiRouteController::class)->except('show')->parameters(['routes' => 'taxiRoute']);
         Route::resource('vehicles', Admin\VehicleController::class)->except('show');
         Route::get('fares', [Admin\FareRuleController::class, 'index'])->name('fares.index');
@@ -101,6 +142,10 @@ Route::prefix('admin')->name('admin.')->middleware('admin.headers')->group(funct
 
         Route::resource('services', Admin\ServiceController::class)->except('show');
         Route::resource('faqs', Admin\FaqController::class)->except('show');
+        // Promotional Announcements: the homepage offers ticker (disabled by default, admin enables each one).
+        Route::get('announcements/{announcement}/preview', [Admin\PromoAnnouncementController::class, 'preview'])->name('announcements.preview');
+        Route::patch('announcements/{announcement}/toggle', [Admin\PromoAnnouncementController::class, 'toggle'])->name('announcements.toggle');
+        Route::resource('announcements', Admin\PromoAnnouncementController::class)->except('show');
         Route::resource('testimonials', Admin\TestimonialController::class)->except('show');
         Route::resource('navigation', Admin\NavigationController::class)->except('show')->parameters(['navigation' => 'item']);
 

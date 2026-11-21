@@ -6,7 +6,7 @@
     <div class="page-head">
         <div>
             <h2 style="margin:0">Homepage sections</h2>
-            <p>Edit, reorder (↑ ↓) and show/hide every homepage section. The hero headline and photo are managed in <a href="{{ route('admin.slides.index') }}">Hero</a>; the hero and booking card always stay at the top.</p>
+            <p>Edit, reorder (↑ ↓) and show/hide every homepage section. The approved hero banner and booking card always stay at the top and are not edited here.</p>
         </div>
         <div class="page-head__actions">
             <a class="abtn" href="{{ route('home') }}" target="_blank" rel="noopener"><x-icon name="eye" :size="16" /> View homepage</a>

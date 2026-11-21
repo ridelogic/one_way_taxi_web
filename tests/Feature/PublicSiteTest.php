@@ -18,37 +18,58 @@ class PublicSiteTest extends TestCase
         // Content from the seeded homepage (HomepageLayoutSeeder v14 navy/blue reference design).
         $this->get('/')
             ->assertOk()
-            ->assertSee(':root{--color-gold:#0D6EFD;--color-forest:#062B55;--color-fresh:#0D6EFD}', false)
-            ->assertSeeInOrder(['Comfortable Rides', '<span class="home-hero__accent">Every Journey</span>'], false)
-            ->assertSee('images/demo/hero-airport-taxi-golden-hour.jpg')
+            ->assertSee(':root{--color-gold:#E60000;--color-forest:#080D18;--color-fresh:#B8030F}', false)
+            ->assertSeeInOrder(['Find Your Perfect Taxi', 'for <span class="home-hero__accent">Every Journey</span>'], false)
+            ->assertSee('Reliable, comfortable and affordable taxi services across Tamil Nadu and beyond.')
+            ->assertSee('images/demo/onewaytrip-hero-banner.jpg')->assertDontSee('hero-black-sedan-city-skyline.jpg')
+            ->assertDontSee('site-header--dark', false)->assertDontSee('Sign Up')
             ->assertSee('Call 24/7')
-            // Sections in the reference order
+            // Header menu
+            ->assertSeeInOrder(['>Home</a>', '>Services</a>', '>Routes &amp; Fares</a>', '>About Us</a>', '>Contact</a>'], false)
+            // Sections in order (homepage mockup): hero + booking, About beside Why choose us, services, stats, districts
             ->assertSeeInOrder([
-                'Safe &amp; Secure Travel', '24/7 Customer Support', 'Pan India Service', 'id="book-ride"',
-                'Our Taxi Services', 'One Way Taxi', 'Outstation Taxi', 'Airport Transfers', 'Corporate Travel',
-                'Why Choose One Way Taxi?', 'Learn More', 'Transparent Pricing', 'Verified Drivers', 'Well Maintained Vehicles', '24/7 Support',
-                'Happy Customers', 'Active Drivers', 'Cities Covered', 'Successful Rides',
+                'Safe &amp; Secure', 'Verified Drivers', 'On-Time Service', 'id="book-ride"',
+                'images/demo/about-woman-in-car-mockup.jpg', 'About One Way Taxi', 'Learn More About Us',
+                'Why Choose One Way Taxi?', 'Transparent Pricing', 'Verified Drivers', 'Well Maintained Vehicles', '24/7 Support',
+                'Our Taxi Services', 'One Way Taxi', 'Round Trip Taxi', 'Airport Transfers', 'Rental Taxi',
+                'Book Your Taxi Across Tamil Nadu', 'Explore Taxi Services',
                 'How It Works', 'Enter Trip Details', 'Choose a Vehicle', 'Confirm &amp; Ride',
-                'Our Fleet', 'Hatchback / Mini', 'Sedan', 'SUV', 'Innova Crysta', 'Tempo Traveller',
-                'india-map-hd.png', 'Taxi Service Across India',
-                'Book Anytime, Anywhere',
                 'What Our Customers Say',
-                'Ready for Your Next Journey?', 'Book Your Taxi',
-                'Quick Links', 'Our Services', 'Contact Us', 'Privacy Policy', 'Terms &amp; Conditions',
+                'Book Anytime, Anywhere',
+                'Talk to Us', 'Send a message',
+                'Taxi Services Across Tamil Nadu', 'Quick Links', 'Taxi Services', 'Contact Us', 'Privacy Policy', 'Terms &amp; Conditions',
             ], false)
-            // Four service cards: local and rental trips stay on the Services page
-            ->assertDontSee('Hourly packages for errands')
-            // Statistics are illustrative until verified
-            ->assertSeeInOrder(['10,000+', '500+', '100+', '1,00,000+', 'Illustrative figures'])
-            // App banner: no store links or QR code until real URLs are configured
-            ->assertSee('Coming soon to')->assertSee('QR code appears here once the app is published')
-            ->assertDontSee('Scan to download')
+            // The "Ready for Your Next Journey?" CTA has been removed from the website
+            ->assertDontSee('Ready for Your Next Journey?')->assertDontSee('Book in minutes')->assertDontSee('id="cta-title"', false)
+            // Contact section: hero-red "Talk to Us" panel beside the original white message form
+            ->assertSee('<div class="contact-panel">', false)
+            ->assertSee('<form method="POST" action="'.route('contact.store').'" class="relative rounded-2xl border border-line bg-white p-7 sm:p-10" novalidate>', false)
+            // Four service cards, one per trip type (airport and corporate stay on the Services page)
+            ->assertDontSee('Corporate Travel</h3>', false)
+            // No statistics strip on the homepage (mockup); the section record is kept, only hidden
+            ->assertDontSee('Happy Customers')->assertDontSee('Illustrative figures')
+            // Book Anytime, Anywhere banner replaces the mobile-app promotion; its store buttons are not links until URLs are set
+            ->assertSee('images/book-anytime-anywhere-banner.jpg', false)->assertDontSee('app-band__hit', false)
+            ->assertDontSee('QR code appears here once the app is published')->assertDontSee('Coming soon to')
             // Seeded testimonials are samples: shown only in demo mode, and labelled
             ->assertSee('Sample Customer A')->assertSee('Placeholder content')
-            // Sections from the previous design are hidden
-            ->assertDontSee('Most Booked One-Way Taxi Routes')
+            // Sections from the previous design stay hidden (Popular routes returned in the v18 premium redesign)
             ->assertDontSee('Frequently Asked Questions')
+            // Removed homepage sections (records kept; route and district pages unaffected)
+            ->assertDontSee('Most Booked One-Way Taxi Routes')->assertDontSee('Taxi Service Across India')->assertDontSee('india-map-hd.png')
+            // The website has no Fleet section or Fleet links
+            ->assertDontSee('id="fleet"', false)->assertDontSee('href="'.url('/fleet'), false)->assertDontSee('Our Fleet')
             ->assertDontSee('Wide Fleet Options');
+    }
+
+    public function test_book_anytime_banner_links_its_store_buttons_once_urls_are_set(): void
+    {
+        settings()->setMany(['app_play_store_url' => 'https://play.google.com/store/apps/details?id=com.example.onewaytaxi']);
+
+        $this->get('/')->assertOk()
+            ->assertSee('class="app-band__hit app-band__hit--play"', false)
+            ->assertSee('https://play.google.com/store/apps/details?id=com.example.onewaytaxi', false)
+            ->assertDontSee('app-band__hit--ios', false); // no App Store URL yet
     }
 
     public function test_sample_testimonials_are_hidden_outside_demo_mode(): void
@@ -56,9 +77,7 @@ class PublicSiteTest extends TestCase
         \App\Models\SiteSetting::where('key', 'demo_mode')->update(['value' => '0']);
         app(\App\Support\Settings::class)->flush();
 
-        $this->get('/')->assertOk()->assertDontSee('Sample Customer A')->assertDontSee('What Our Customers Say')
-            // Unverified statistics stay labelled even when demo mode is off
-            ->assertSee('Illustrative figures');
+        $this->get('/')->assertOk()->assertDontSee('Sample Customer A')->assertDontSee('What Our Customers Say');
     }
 
     /** @return array<string, array{0: string}> */
@@ -73,8 +92,6 @@ class PublicSiteTest extends TestCase
             'corporate taxi' => ['/services/corporate-taxi'],
             'routes' => ['/routes'],
             'route detail' => ['/routes/chennai-to-coimbatore-taxi'],
-            'fleet' => ['/fleet'],
-            'vehicle detail' => ['/fleet/suv'],
             'faqs' => ['/faqs'],
             'contact' => ['/contact'],
             'booking' => ['/book'],
@@ -86,7 +103,7 @@ class PublicSiteTest extends TestCase
             'partner' => ['/become-a-partner'],
             'download app' => ['/download-app'],
             'rentals' => ['/services/rentals'],
-            'bike taxi' => ['/services/bike-taxi'],
+            'local taxi' => ['/services/local-taxi'], // Bike Taxi is withdrawn (its page redirects to /services)
         ];
     }
 
@@ -94,6 +111,14 @@ class PublicSiteTest extends TestCase
     public function test_public_pages_load(string $url): void
     {
         $this->get($url)->assertOk()->assertSee('<link rel="canonical"', false);
+    }
+
+    public function test_retired_fleet_pages_redirect_to_booking(): void
+    {
+        foreach (['/fleet', '/fleet/suv', '/fleet/no-such-vehicle', '/cabs'] as $url) {
+            $this->get($url)->assertStatus(301)->assertRedirect(route('booking.create'));
+        }
+        $this->get('/sitemap.xml')->assertOk()->assertDontSee('/fleet');
     }
 
     public function test_every_header_and_footer_link_resolves(): void
@@ -154,5 +179,65 @@ class PublicSiteTest extends TestCase
         ])->assertRedirect('/contact');
 
         $this->assertDatabaseHas('contact_messages', ['name' => 'Asha']);
+    }
+
+    public function test_services_dropdown_hides_corporate_bike_and_auto_but_keeps_their_pages(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+        preg_match('#<ul id="nav-services".*?</ul>#s', $html, $m);
+        $dropdown = $m[0] ?? '';
+
+        foreach (['one-way-taxi', 'outstation-taxi', 'airport-transfers', 'rentals', 'local-taxi'] as $slug) {
+            $this->assertStringContainsString('href="'.route('services.show', $slug).'"', $dropdown, $slug);
+        }
+        foreach (['corporate-taxi' => 'Corporate Travel', 'bike-taxi' => 'Bike Taxi', 'auto-taxi' => 'Auto Taxi'] as $slug => $title) {
+            $this->assertStringNotContainsString(route('services.show', $slug), $dropdown, $slug);
+            $this->assertStringNotContainsString($title, $dropdown, $title);
+        }
+        $this->get(route('services.show', 'corporate-taxi'))->assertOk(); // Corporate page is kept, only off the menu
+        $this->assertStringContainsString('data-submenu-toggle', $html); // dropdown stays (5 services remain)
+        foreach (['/routes', '/about', '/contact', '/services'] as $url) {
+            $this->get($url)->assertOk();
+        }
+    }
+
+    public function test_bike_and_auto_taxi_are_withdrawn_from_the_public_website_but_kept_in_the_database(): void
+    {
+        $services = $this->get('/services')->assertOk()->getContent();
+        $home = $this->get('/')->assertOk()->getContent();
+        $sitemap = $this->get('/sitemap.xml')->assertOk()->getContent();
+
+        foreach (['bike-taxi' => 'Bike Taxi', 'auto-taxi' => 'Auto Taxi'] as $slug => $title) {
+            foreach ([$services, $home, $sitemap] as $html) {
+                $this->assertStringNotContainsString(route('services.show', $slug), $html);
+            }
+            $this->assertStringNotContainsString('>'.$title.'</h2>', $services);
+            $this->get(route('services.show', $slug))->assertRedirect(route('services.index'))->assertStatus(301);
+            $this->assertDatabaseHas('services', ['slug' => $slug]); // record kept
+        }
+
+        // The remaining six services fill the grid: 3 columns × 2 rows on desktop.
+        $this->assertSame(6, substr_count($services, 'class="svc-card"'));
+        foreach (['One Way Taxi', 'Round Trip Taxi', 'Airport Transfers', 'Rental Taxi', 'Local Taxi', 'Corporate Travel'] as $title) {
+            $this->assertStringContainsString('>'.$title.'</h2>', $services);
+        }
+        // "Other services" on a service page never offers them either.
+        $this->get(route('services.show', 'one-way-taxi'))->assertOk()
+            ->assertDontSee(route('services.show', 'bike-taxi'), false)->assertDontSee(route('services.show', 'auto-taxi'), false);
+    }
+
+    public function test_journey_cta_is_removed_from_every_public_page(): void
+    {
+        $urls = ['/', '/tamil-nadu', '/routes', '/services', '/puducherry', route('pages.show', 'about')];
+        foreach (\App\Models\DistrictPage::published()->get() as $district) {
+            $urls[] = $district->url(); // all 39 location pages
+        }
+
+        foreach (array_unique($urls) as $url) {
+            $this->get($url)->assertOk()
+                ->assertDontSee('Ready for your next journey?')->assertDontSee('Ready for Your Next Journey?')
+                ->assertDontSee('id="cta-title"', false)->assertDontSee('journey-cta', false)
+                ->assertSee('<footer class="site-footer">', false); // the rest of the page (footer) still renders
+        }
     }
 }

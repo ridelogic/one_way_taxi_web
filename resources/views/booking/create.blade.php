@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <x-page-banner title="Book a Taxi" subtitle="One-way drops, outstation trips and rentals. See an estimate instantly — our team calls to confirm every booking." :crumbs="['Book a Taxi' => null]" />
+    <x-page-banner title="Book a Taxi" subtitle="Local, Rental, One Way and Round Trip taxis. See an estimate where available — our team calls to confirm every booking." :crumbs="['Book a Taxi' => null]" />
 
     @php
         $fromWidget = old('source') === 'widget';
@@ -20,13 +20,17 @@
                     @foreach (\App\Enums\TripType::cases() as $type)
                         <label class="trip-tab">
                             <input type="radio" name="trip_type" value="{{ $type->value }}" @checked($trip === $type->value) data-trip-type>
-                            <span><x-icon :name="$type->icon()" :size="16" class="hidden sm:block" /> {{ $type === \App\Enums\TripType::OneWay ? 'One Way' : $type->label() }}</span>
+                            <span><x-icon :name="$type->icon()" :size="16" class="hidden sm:block" /> {{ $type->label() }}</span>
                         </label>
                     @endforeach
                 </div>
 
+                <p class="mt-4 text-sm text-ink-soft">
+                    @foreach (\App\Enums\TripType::cases() as $type)<span data-trip-show="{{ $type->value }}" @if ($trip !== $type->value) hidden @endif><strong class="text-forest">{{ $type->label() }}:</strong> {{ $type->description() }}</span>@endforeach
+                </p>
+
                 @if (! empty($isRoundTrip))
-                    <p class="mt-5 flex items-start gap-2 rounded-xl bg-mint px-4 py-3 text-sm text-ink"><x-icon name="swap" :size="18" class="mt-0.5 shrink-0 text-gold" /> Round trips are booked as an Outstation trip with your return date. Our team confirms the final fare by phone.</p>
+                    <p class="mt-5 flex items-start gap-2 rounded-xl bg-mint px-4 py-3 text-sm text-ink"><x-icon name="swap" :size="18" class="mt-0.5 shrink-0 text-gold" /> Round Trip selected — add your return date. Our team confirms the final fare by phone.</p>
                 @endif
 
                 @if (! $fromWidget && $errors->any())
@@ -35,17 +39,17 @@
 
                 <datalist id="city-options">
                     @foreach ($cities as $city)
-                        <option value="{{ $city->name }}">{{ $city->state }}</option>
+                        <option value="{{ $city->name }}">{{ $city->suggestionHint() }}</option>
                     @endforeach
                 </datalist>
 
                 <h2 class="mt-8 text-xl font-bold">Trip details</h2>
                 <div class="mt-4 grid gap-5 sm:grid-cols-2">
-                    <x-form.field name="pickup_location" label="Pickup city" icon="map-pin" required :error="$err('pickup_location')">
-                        <input id="pickup_location" type="text" name="pickup_location" list="city-options" value="{{ $value('pickup_location') }}" placeholder="Enter pickup city" required maxlength="120" autocomplete="off" class="form-control form-control-icon" data-estimate-input>
+                    <x-form.field name="pickup_location" label="Pickup location" icon="map-pin" required :error="$err('pickup_location')">
+                        <input id="pickup_location" type="text" name="pickup_location" list="city-options" value="{{ $value('pickup_location') }}" placeholder="Enter pickup city or area" required maxlength="120" autocomplete="off" class="form-control form-control-icon" data-estimate-input>
                     </x-form.field>
-                    <x-form.field name="destination_location" label="Destination city" icon="flag" required :error="$err('destination_location')" data-trip-show="one_way outstation">
-                        <input id="destination_location" type="text" name="destination_location" list="city-options" value="{{ $value('destination_location') }}" placeholder="Enter destination city" required maxlength="120" autocomplete="off" class="form-control form-control-icon" data-estimate-input>
+                    <x-form.field name="destination_location" label="Drop location" icon="flag" required :error="$err('destination_location')" data-trip-show="local one_way outstation">
+                        <input id="destination_location" type="text" name="destination_location" list="city-options" value="{{ $value('destination_location') }}" placeholder="Enter drop city or area" required maxlength="120" autocomplete="off" class="form-control form-control-icon" data-estimate-input>
                     </x-form.field>
                     <x-form.field name="rental_package" label="Rental package" icon="clock" required :error="$err('rental_package')" data-trip-show="rental">
                         <select id="rental_package" name="rental_package" required class="form-control form-control-icon">
@@ -69,7 +73,7 @@
                     <x-form.field name="travel_time" label="Travel time" icon="clock" required :error="$err('travel_time')">
                         <input id="travel_time" type="time" name="travel_time" value="{{ $value('travel_time') }}" required class="form-control form-control-icon">
                     </x-form.field>
-                    <x-form.field name="return_date" label="Return date (optional)" icon="calendar" :error="$err('return_date')" data-trip-show="outstation">
+                    <x-form.field name="return_date" label="Return date" icon="calendar" :error="$err('return_date')" data-trip-show="outstation">
                         <input id="return_date" type="date" name="return_date" value="{{ $value('return_date') }}" min="{{ now()->toDateString() }}" class="form-control form-control-icon">
                     </x-form.field>
                     <x-form.field name="passengers" label="Passengers (optional)" icon="users" :error="$err('passengers')">
@@ -78,7 +82,7 @@
                     <x-form.field name="pickup_address" label="Pickup address (optional)" icon="home" :error="$err('pickup_address')">
                         <input id="pickup_address" type="text" name="pickup_address" value="{{ $value('pickup_address') }}" maxlength="255" placeholder="House / hotel / station" class="form-control form-control-icon">
                     </x-form.field>
-                    <x-form.field name="drop_address" label="Drop address (optional)" icon="map" :error="$err('drop_address')" data-trip-show="one_way outstation">
+                    <x-form.field name="drop_address" label="Drop address (optional)" icon="map" :error="$err('drop_address')" data-trip-show="local one_way outstation">
                         <input id="drop_address" type="text" name="drop_address" value="{{ $value('drop_address') }}" maxlength="255" class="form-control form-control-icon">
                     </x-form.field>
                 </div>

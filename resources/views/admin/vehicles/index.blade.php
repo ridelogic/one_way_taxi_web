@@ -1,10 +1,10 @@
 @extends('admin.layout')
 
-@section('title', 'Fleet')
+@section('title', 'Vehicle Types')
 
 @section('content')
     <div class="page-head">
-        <p>Vehicle categories shown on the Fleet page and in booking forms.</p>
+        <p>Vehicle categories offered in the booking form and used for fare estimates.</p>
         <a class="abtn abtn--primary" href="{{ route('admin.vehicles.create') }}"><x-icon name="plus" :size="16" /> Add vehicle</a>
     </div>
 

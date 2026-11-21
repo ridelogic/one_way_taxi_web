@@ -11,7 +11,7 @@ class CorporateEnquiry extends Model
     public const REQUIREMENTS = [
         'employee_commute' => 'Employee transport',
         'airport' => 'Airport transfers',
-        'outstation' => 'Outstation / intercity travel',
+        'outstation' => 'One Way / Round Trip intercity travel',
         'events' => 'Events & guest transport',
         'monthly_rental' => 'Monthly car rental',
         'other' => 'Other',

@@ -3,7 +3,7 @@
 @section('title', $vehicle->exists ? 'Edit vehicle' : 'Add vehicle')
 
 @section('content')
-    <a href="{{ route('admin.vehicles.index') }}">← Fleet</a>
+    <a href="{{ route('admin.vehicles.index') }}">← Vehicle Types</a>
     <form method="POST" action="{{ $vehicle->exists ? route('admin.vehicles.update', $vehicle) : route('admin.vehicles.store') }}" style="margin-top:12px">
         @csrf
         @if ($vehicle->exists) @method('PUT') @endif

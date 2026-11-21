@@ -35,7 +35,7 @@
                 @endif
             </div>
             <aside class="lg:sticky lg:top-28">
-                <x-booking-card :cities="$cities" :vehicles="$vehicles" :prefill="['trip_type' => ['rentals' => 'rental', 'outstation-taxi' => 'outstation'][$service->slug] ?? 'one_way']" />
+                <x-booking-card :cities="$cities" :vehicles="$vehicles" :prefill="['trip_type' => ['local-taxi' => 'local', 'rentals' => 'rental', 'outstation-taxi' => 'outstation'][$service->slug] ?? 'one_way']" />
             </aside>
         </div>
     </section>
