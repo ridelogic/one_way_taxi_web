@@ -86,6 +86,20 @@
                     <div><dt>Vehicle</dt><dd>{{ $booking->vehicleCategory?->name ?? '—' }}</dd></div>
                     <div><dt>Passengers</dt><dd>{{ $booking->passengers ?: '—' }}</dd></div>
                     <div><dt>Configured route</dt><dd>@if ($booking->route)<a href="{{ route('admin.routes.edit', $booking->route) }}">{{ $booking->route->name() }}</a>@else No published route — quote manually @endif</dd></div>
+                    @if ($booking->distance_km)
+                        <div><dt>Road distance</dt><dd>{{ (float) $booking->distance_km }} km @if ($booking->duration_sec)· {{ intdiv($booking->duration_sec, 3600) ? intdiv($booking->duration_sec, 3600).' hr ' : '' }}{{ intdiv($booking->duration_sec % 3600, 60) }} min @endif (one way)</dd></div>
+                    @endif
+                    @if ($booking->fleet_model_id)
+                        <div><dt>Fleet dispatcher</dt><dd>
+                            @if ($booking->fleet_trip_id)
+                                Booking ID <strong>{{ $booking->fleet_trip_id }}</strong> in Manage Booking
+                            @elseif ($booking->fleet_sync_error)
+                                <span class="abadge abadge--red">Not sent</span> <small class="muted">{{ $booking->fleet_sync_error }}</small>
+                            @else
+                                <span class="muted">Not sent (no fleet fare for this trip) — add it in the admin panel</span>
+                            @endif
+                        </dd></div>
+                    @endif
                     <div><dt>IP address</dt><dd class="muted">{{ $booking->ip_address ?: '—' }}</dd></div>
                     <div class="span-all"><dt>Customer notes</dt><dd>{{ $booking->customer_notes ?: '—' }}</dd></div>
                 </dl>

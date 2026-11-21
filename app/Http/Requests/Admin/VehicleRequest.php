@@ -18,6 +18,7 @@ class VehicleRequest extends AdminRequest
             'media_id' => ['nullable', 'integer', Rule::exists('media_assets', 'id')],
             'passenger_capacity' => ['required', 'integer', 'min:1', 'max:60'],
             'luggage_capacity' => ['required', 'integer', 'min:0', 'max:60'],
+            'fleet_model_id' => ['nullable', 'integer', 'min:1'],
             'short_description' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:5000'],
             'features' => ['nullable', 'array', 'max:20'],

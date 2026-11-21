@@ -12,7 +12,7 @@ class VehicleCategory extends Model
 {
     protected $fillable = [
         'name', 'slug', 'category', 'example_models', 'media_id', 'passenger_capacity', 'luggage_capacity',
-        'short_description', 'description', 'features', 'sort_order', 'is_active', 'seo_title', 'seo_description',
+        'short_description', 'description', 'features', 'sort_order', 'is_active', 'seo_title', 'seo_description', 'fleet_model_id',
     ];
 
     protected function casts(): array

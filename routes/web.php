@@ -44,6 +44,7 @@ Route::post('/contact', [ContactController::class, 'store'])->middleware('thrott
 Route::get('/book', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/book', [BookingController::class, 'store'])->middleware('throttle:bookings')->name('booking.store');
 Route::post('/fare-estimate', [BookingController::class, 'estimate'])->middleware('throttle:fare-estimate')->name('booking.estimate');
+Route::get('/fare-estimate/rental-packages', [BookingController::class, 'rentalPackages'])->middleware('throttle:fare-estimate')->name('booking.rental-packages');
 Route::get('/booking/{reference}/confirmation', [BookingController::class, 'confirmation'])
     ->where('reference', 'OWT-[0-9]{6}-[A-Z0-9]{5}')
     ->name('booking.confirmation');

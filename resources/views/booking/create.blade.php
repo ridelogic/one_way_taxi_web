@@ -12,9 +12,15 @@
 
     <section class="section pt-12!">
         <div class="container-site grid items-start gap-10 lg:grid-cols-[1fr_380px]">
-            <form method="POST" action="{{ route('booking.store') }}" class="card p-6 sm:p-8" data-quote-form data-estimate-url="{{ route('booking.estimate') }}" novalidate>
+            <form method="POST" action="{{ route('booking.store') }}" class="card p-6 sm:p-8" data-quote-form data-estimate-url="{{ route('booking.estimate') }}"
+                @if ($googleMapsKey) data-maps-key="{{ $googleMapsKey }}" @endif
+                data-fleet-vehicles='@json((object) $fleetVehicleTypes)' data-packages-url="{{ route('booking.rental-packages') }}" novalidate>
                 @csrf
                 <input type="hidden" name="source" value="booking-page">
+                {{-- Filled from the Google Places suggestion and Directions route; the server re-checks them. --}}
+                @foreach (['pickup_lat', 'pickup_lng', 'drop_lat', 'drop_lng', 'route_km', 'route_sec', 'pickup_city'] as $hidden)
+                    <input type="hidden" name="{{ $hidden }}" value="{{ old($hidden) }}" data-fleet-hidden="{{ $hidden }}">
+                @endforeach
 
                 <div class="trip-tabs w-full sm:w-auto" role="radiogroup" aria-label="Trip type">
                     @foreach (\App\Enums\TripType::cases() as $type)
@@ -46,12 +52,17 @@
                 <h2 class="mt-8 text-xl font-bold">Trip details</h2>
                 <div class="mt-4 grid gap-5 sm:grid-cols-2">
                     <x-form.field name="pickup_location" label="Pickup location" icon="map-pin" required :error="$err('pickup_location')">
-                        <input id="pickup_location" type="text" name="pickup_location" list="city-options" value="{{ $value('pickup_location') }}" placeholder="Enter pickup city or area" required maxlength="120" autocomplete="off" class="form-control form-control-icon" data-estimate-input>
+                        <input id="pickup_location" type="text" name="pickup_location" list="city-options" value="{{ $value('pickup_location') }}" placeholder="Enter pickup city or area" required maxlength="255" autocomplete="off" class="form-control form-control-icon" data-estimate-input data-place="pickup">
                     </x-form.field>
                     <x-form.field name="destination_location" label="Drop location" icon="flag" required :error="$err('destination_location')" data-trip-show="local one_way outstation">
-                        <input id="destination_location" type="text" name="destination_location" list="city-options" value="{{ $value('destination_location') }}" placeholder="Enter drop city or area" required maxlength="120" autocomplete="off" class="form-control form-control-icon" data-estimate-input>
+                        <input id="destination_location" type="text" name="destination_location" list="city-options" value="{{ $value('destination_location') }}" placeholder="Enter drop city or area" required maxlength="255" autocomplete="off" class="form-control form-control-icon" data-estimate-input data-place="drop">
                     </x-form.field>
-                    <x-form.field name="rental_package" label="Rental package" icon="clock" required :error="$err('rental_package')" data-trip-show="rental">
+                    <x-form.field name="fleet_package_id" label="Rental package" icon="clock" required :error="$err('fleet_package_id')" data-trip-show="rental" data-fleet-package-field hidden>
+                        <select id="fleet_package_id" name="fleet_package_id" required disabled class="form-control form-control-icon" data-estimate-input data-selected="{{ old('fleet_package_id') }}">
+                            <option value="">Select vehicle and pickup first</option>
+                        </select>
+                    </x-form.field>
+                    <x-form.field name="rental_package" label="Rental package" icon="clock" required :error="$err('rental_package')" data-trip-show="rental" data-site-package-field>
                         <select id="rental_package" name="rental_package" required class="form-control form-control-icon">
                             <option value="">Select package</option>
                             @foreach (settings()->lines('rental_packages') as $package)
@@ -63,18 +74,18 @@
                         <select id="vehicle_category_id" name="vehicle_category_id" required class="form-control form-control-icon" data-estimate-input>
                             <option value="">Select vehicle</option>
                             @foreach ($vehicles as $vehicle)
-                                <option value="{{ $vehicle->id }}" @selected((string) $value('vehicle_category_id') === (string) $vehicle->id)>{{ $vehicle->name }} · {{ $vehicle->passenger_capacity }} seats</option>
+                                <option value="{{ $vehicle->id }}" @selected((string) $value('vehicle_category_id') === (string) $vehicle->id) @isset($fleetVehicleTypes[$vehicle->id]) data-fleet-types="{{ implode(' ', $fleetVehicleTypes[$vehicle->id]) }}" @endisset>{{ $vehicle->name }} · {{ $vehicle->passenger_capacity }} seats</option>
                             @endforeach
                         </select>
                     </x-form.field>
                     <x-form.field name="travel_date" label="Travel date" icon="calendar" required :error="$err('travel_date')">
-                        <input id="travel_date" type="date" name="travel_date" value="{{ $value('travel_date') }}" min="{{ now()->toDateString() }}" max="{{ now()->addYear()->toDateString() }}" required class="form-control form-control-icon">
+                        <input id="travel_date" type="date" name="travel_date" value="{{ $value('travel_date') }}" min="{{ now()->toDateString() }}" max="{{ now()->addYear()->toDateString() }}" required class="form-control form-control-icon" data-estimate-input>
                     </x-form.field>
                     <x-form.field name="travel_time" label="Travel time" icon="clock" required :error="$err('travel_time')">
                         <input id="travel_time" type="time" name="travel_time" value="{{ $value('travel_time') }}" required class="form-control form-control-icon">
                     </x-form.field>
                     <x-form.field name="return_date" label="Return date" icon="calendar" :error="$err('return_date')" data-trip-show="outstation">
-                        <input id="return_date" type="date" name="return_date" value="{{ $value('return_date') }}" min="{{ now()->toDateString() }}" class="form-control form-control-icon">
+                        <input id="return_date" type="date" name="return_date" value="{{ $value('return_date') }}" min="{{ now()->toDateString() }}" class="form-control form-control-icon" data-estimate-input>
                     </x-form.field>
                     <x-form.field name="passengers" label="Passengers (optional)" icon="users" :error="$err('passengers')">
                         <input id="passengers" type="number" name="passengers" value="{{ $value('passengers') }}" min="1" max="20" inputmode="numeric" class="form-control form-control-icon">

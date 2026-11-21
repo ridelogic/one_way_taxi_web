@@ -24,10 +24,32 @@ class FareEstimateRequest extends FormRequest
     {
         return [
             'trip_type' => ['required', Rule::enum(TripType::class)],
-            'pickup_location' => ['required', 'string', 'min:2', 'max:120'],
-            'destination_location' => ['nullable', 'required_unless:trip_type,rental', 'string', 'min:2', 'max:120'],
+            'pickup_location' => ['required', 'string', 'min:2', 'max:255'],
+            'destination_location' => ['nullable', 'required_unless:trip_type,rental', 'string', 'min:2', 'max:255'],
             'vehicle_category_id' => ['nullable', 'integer', Rule::exists('vehicle_categories', 'id')->where('is_active', true)],
+            // Map coordinates from the Google Places suggestion (fleet fares need them).
+            'pickup_lat' => ['nullable', 'numeric', 'between:-90,90'],
+            'pickup_lng' => ['nullable', 'numeric', 'between:-180,180'],
+            'drop_lat' => ['nullable', 'numeric', 'between:-90,90'],
+            'drop_lng' => ['nullable', 'numeric', 'between:-180,180'],
+            // Road distance / time measured by the browser; the server re-checks them before pricing.
+            'route_km' => ['nullable', 'numeric', 'min:0', 'max:5000'],
+            'route_sec' => ['nullable', 'integer', 'min:0', 'max:604800'],
+            'pickup_city' => ['nullable', 'string', 'max:120'],
+            'fleet_package_id' => ['nullable', 'integer', 'min:0'],
+            'travel_date' => ['nullable', 'date_format:Y-m-d'],
+            'travel_time' => ['nullable', 'date_format:H:i'],
+            'return_date' => ['nullable', 'date_format:Y-m-d'],
         ];
+    }
+
+    /** Fields the fleet fare calculator reads. */
+    public function fleetInput(): array
+    {
+        return $this->only([
+            'pickup_location', 'destination_location', 'pickup_lat', 'pickup_lng', 'drop_lat', 'drop_lng',
+            'route_km', 'route_sec', 'travel_date', 'travel_time', 'return_date', 'fleet_package_id',
+        ]);
     }
 
     /** @return array<int, callable> */

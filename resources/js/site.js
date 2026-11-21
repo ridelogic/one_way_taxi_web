@@ -228,7 +228,11 @@
             }
             var label = data.starting_from ? 'Starting from' : 'Estimated fare';
             var html = label + ': <strong>' + escapeHtml(data.total_formatted) + '</strong>';
-            html += '<br><small>' + escapeHtml(data.route_name) + ' · ' + escapeHtml(parseFloat(data.distance_km)) + ' km · ' + escapeHtml(data.duration) + '</small>';
+            var meta = [data.route_name, data.distance_km && parseFloat(data.distance_km) > 0 ? parseFloat(data.distance_km) + ' km' : '', data.duration].filter(Boolean);
+            if (meta.length) html += '<br><small>' + meta.map(escapeHtml).join(' · ') + '</small>';
+            if (data.lines && data.lines.length && !data.starting_from) {
+                html += '<br><small>' + data.lines.map(function (l) { return escapeHtml(l.label) + ': ' + escapeHtml(l.formatted); }).join('<br>') + '</small>';
+            }
             if (data.message) html += '<br><small>' + escapeHtml(data.message) + '</small>';
             if (data.excluded && data.excluded.length) html += '<br><small>Excludes: ' + data.excluded.map(escapeHtml).join(', ') + '</small>';
             if (data.is_sample) html += '<br><small><em>Sample fare — subject to confirmation.</em></small>';
@@ -252,6 +256,12 @@
             body.append('pickup_location', pickup);
             if (type !== 'rental') body.append('destination_location', dest);
             if (vehicle) body.append('vehicle_category_id', vehicle);
+            // Map coordinates, measured route, dates and rental package (used for fleet fares).
+            ['pickup_lat', 'pickup_lng', 'drop_lat', 'drop_lng', 'route_km', 'route_sec', 'travel_date', 'travel_time', 'return_date', 'fleet_package_id'].forEach(function (name) {
+                if ((name.indexOf('drop_') === 0 || name.indexOf('route_') === 0) && type === 'rental') return;
+                var v = field(name);
+                if (v) body.append(name, v);
+            });
             var token = form.querySelector('input[name="_token"]');
             fetch(url, {
                 method: 'POST', body: body, credentials: 'same-origin',
@@ -268,7 +278,144 @@
             el.addEventListener('input', function () { queue(500); });
         });
         form.addEventListener('trip-change', function () { queue(50); });
+        form.addEventListener('fleet-route', function () { queue(50); });
         update();
+    });
+
+    /* ---------- Fleet fares: Google Places + Directions + rental packages ----------
+       Same inputs as the admin Add Booking screen: map coordinates for pickup/drop, the driving distance and
+       time between them, and (Rental) a package from the fleet backend. The server re-checks everything. */
+    document.querySelectorAll('[data-quote-form][data-packages-url]').forEach(function (form) {
+        var key = form.getAttribute('data-maps-key');
+        var fleetVehicles = {};
+        try { fleetVehicles = JSON.parse(form.getAttribute('data-fleet-vehicles') || '{}'); } catch (e) { /* none linked */ }
+        var hidden = function (name) { return form.querySelector('[data-fleet-hidden="' + name + '"]'); };
+        var setHidden = function (name, value) { var el = hidden(name); if (el) el.value = value == null ? '' : value; };
+        var tripType = function () { var c = form.querySelector('[data-trip-type]:checked'); return c ? c.value : 'one_way'; };
+        var vehicleSelect = form.querySelector('[name="vehicle_category_id"]');
+        var packageField = form.querySelector('[data-fleet-package-field]');
+        var packageSelect = form.querySelector('[name="fleet_package_id"]');
+        var sitePackageField = form.querySelector('[data-site-package-field]');
+        var directions = null;
+
+        var isLinked = function () { return !!(vehicleSelect && fleetVehicles[vehicleSelect.value]); };
+
+        /* Rental: fleet packages for linked vehicles, the site's package list otherwise. */
+        var syncPackages = function () {
+            if (!packageField || !sitePackageField) return;
+            var fleetRental = tripType() === 'rental' && isLinked();
+            packageField.hidden = !fleetRental;
+            packageSelect.disabled = !fleetRental;
+            if (tripType() === 'rental') {
+                sitePackageField.hidden = fleetRental;
+                sitePackageField.querySelectorAll('select').forEach(function (s) { s.disabled = fleetRental; });
+            }
+            if (fleetRental) loadPackages();
+        };
+
+        var packagesRequest = 0;
+        var loadPackages = function () {
+            var id = ++packagesRequest;
+            var params = new URLSearchParams({ vehicle_category_id: vehicleSelect.value });
+            if (hidden('pickup_lat').value) { params.append('pickup_lat', hidden('pickup_lat').value); params.append('pickup_lng', hidden('pickup_lng').value); }
+            var keep = packageSelect.value || packageSelect.getAttribute('data-selected');
+            fetch(form.getAttribute('data-packages-url') + '?' + params.toString(), { headers: { 'Accept': 'application/json' }, credentials: 'same-origin' })
+                .then(function (r) { return r.ok ? r.json() : null; })
+                .then(function (data) {
+                    if (id !== packagesRequest || !data) return;
+                    packageSelect.innerHTML = '';
+                    var first = document.createElement('option');
+                    first.value = '';
+                    first.textContent = data.packages && data.packages.length ? 'Select package' : (data.message || 'No packages available');
+                    packageSelect.appendChild(first);
+                    (data.packages || []).forEach(function (p) {
+                        var o = document.createElement('option');
+                        o.value = p.id;
+                        o.textContent = p.label;
+                        if (String(p.id) === String(keep)) o.selected = true;
+                        packageSelect.appendChild(o);
+                    });
+                    packageSelect.dispatchEvent(new Event('change'));
+                })
+                .catch(function () { /* optional */ });
+        };
+
+        /* Vehicles not offered for the selected trip type (fleet motor_model enable_local / rental / outstation). */
+        var syncVehicles = function () {
+            if (!vehicleSelect) return;
+            var type = tripType();
+            Array.prototype.forEach.call(vehicleSelect.options, function (o) {
+                var types = o.getAttribute('data-fleet-types');
+                if (types === null) return;
+                var offered = (' ' + types + ' ').indexOf(' ' + type + ' ') > -1;
+                o.disabled = !offered;
+                if (!o.hasAttribute('data-label')) o.setAttribute('data-label', o.textContent);
+                o.textContent = o.getAttribute('data-label') + (offered ? '' : ' (not available for this trip)');
+            });
+            if (vehicleSelect.selectedOptions[0] && vehicleSelect.selectedOptions[0].disabled) vehicleSelect.value = '';
+        };
+
+        /* Driving distance and time, like calculateRoute() in the admin. */
+        var measure = function () {
+            setHidden('route_km', ''); setHidden('route_sec', '');
+            var pLat = hidden('pickup_lat').value, pLng = hidden('pickup_lng').value, dLat = hidden('drop_lat').value, dLng = hidden('drop_lng').value;
+            if (!pLat || !dLat || tripType() === 'rental' || !directions) { form.dispatchEvent(new Event('fleet-route')); return; }
+            directions.route({
+                origin: new google.maps.LatLng(parseFloat(pLat), parseFloat(pLng)),
+                destination: new google.maps.LatLng(parseFloat(dLat), parseFloat(dLng)),
+                travelMode: google.maps.TravelMode.DRIVING
+            }, function (result, status) {
+                if (status === 'OK' && result.routes[0]) {
+                    var leg = result.routes[0].legs[0];
+                    setHidden('route_km', ((leg.distance.value / 100) / 10).toFixed(2));
+                    setHidden('route_sec', leg.duration.value);
+                }
+                form.dispatchEvent(new Event('fleet-route'));
+            });
+        };
+
+        var attachPlaces = function () {
+            directions = new google.maps.DirectionsService();
+            form.querySelectorAll('[data-place]').forEach(function (input) {
+                var which = input.getAttribute('data-place'); // pickup | drop
+                input.removeAttribute('list'); // Google suggestions replace the city list
+                var ac = new google.maps.places.Autocomplete(input, { componentRestrictions: { country: 'in' }, fields: ['geometry', 'formatted_address', 'name', 'address_components'] });
+                var chosen = input.value;
+                ac.addListener('place_changed', function () {
+                    var place = ac.getPlace();
+                    if (!place || !place.geometry) return;
+                    if (place.name && place.formatted_address && place.formatted_address.indexOf(place.name) !== 0) input.value = place.name + ', ' + place.formatted_address;
+                    chosen = input.value;
+                    setHidden(which + '_lat', place.geometry.location.lat().toFixed(7));
+                    setHidden(which + '_lng', place.geometry.location.lng().toFixed(7));
+                    if (which === 'pickup') {
+                        var city = (place.address_components || []).filter(function (c) { return c.types.indexOf('locality') > -1; })[0];
+                        setHidden('pickup_city', city ? city.long_name : '');
+                        syncPackages();
+                    }
+                    measure();
+                });
+                // Typing after choosing a suggestion means the coordinates no longer match.
+                input.addEventListener('input', function () {
+                    if (input.value !== chosen) { setHidden(which + '_lat', ''); setHidden(which + '_lng', ''); setHidden('route_km', ''); setHidden('route_sec', ''); }
+                });
+            });
+            // Coordinates kept from a failed submit: measure again.
+            if (hidden('pickup_lat').value && hidden('drop_lat').value) measure();
+        };
+
+        if (key) {
+            window.__owtPlacesReady = function () { attachPlaces(); };
+            var s = document.createElement('script');
+            s.src = 'https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&libraries=places&callback=__owtPlacesReady&loading=async';
+            s.async = true;
+            document.head.appendChild(s);
+        }
+
+        if (vehicleSelect) vehicleSelect.addEventListener('change', syncPackages);
+        form.addEventListener('trip-change', function () { syncVehicles(); syncPackages(); measure(); });
+        syncVehicles();
+        syncPackages();
     });
 })();
 

@@ -17,6 +17,13 @@
                         <x-admin.input name="example_models" label="Example models" :value="$vehicle->example_models" />
                         <x-admin.input name="passenger_capacity" label="Passengers" type="number" min="1" max="60" :value="$vehicle->passenger_capacity" required />
                         <x-admin.input name="luggage_capacity" label="Luggage (bags)" type="number" min="0" max="60" :value="$vehicle->luggage_capacity" required />
+                        @if (is_array($fleetModels ?? null))
+                            <x-admin.select name="fleet_model_id" label="Fleet model (admin panel)" :options="$fleetModels" :value="$vehicle->fleet_model_id" placeholder="Not linked — use website fare rules"
+                                help="Linked vehicles are priced with the fleet admin's fares (Local, Rental, Outstation, zone fares) and bookings are sent to the dispatcher." />
+                        @else
+                            <x-admin.input name="fleet_model_id" label="Fleet model ID (admin panel)" type="number" min="1" :value="$vehicle->fleet_model_id"
+                                help="motor_model id in the fleet admin. The fleet connection is off or unreachable, so the list can't be shown." />
+                        @endif
                     </div>
                     <x-admin.input name="short_description" label="Short description" :value="$vehicle->short_description" maxlength="255" />
                     <x-admin.textarea name="description" label="Description" :value="$vehicle->description" rows="5" />

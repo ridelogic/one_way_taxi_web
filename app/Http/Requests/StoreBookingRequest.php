@@ -30,7 +30,10 @@ class StoreBookingRequest extends FareEstimateRequest
         $panel = $this->fromHomepagePanel();
 
         return array_merge(parent::rules(), [
-            'rental_package' => ['nullable', 'required_if:trip_type,rental', 'string', Rule::in(settings()->lines('rental_packages'))],
+            // Rental: a fleet package (fleet_package_id) when the vehicle is priced by the fleet backend, otherwise one of the site's packages.
+            'rental_package' => $this->filled('fleet_package_id')
+                ? ['nullable', 'string', 'max:120']
+                : ['nullable', 'required_if:trip_type,rental', 'string', Rule::in(settings()->lines('rental_packages'))],
             'pickup_address' => ['nullable', 'string', 'max:255'],
             'drop_address' => ['nullable', 'string', 'max:255'],
             'travel_date' => ['required', 'date_format:Y-m-d', 'after_or_equal:today', 'before_or_equal:'.now()->addYear()->toDateString()],
@@ -96,13 +99,13 @@ class StoreBookingRequest extends FareEstimateRequest
         // Rental has no destination; only Round Trip ('outstation') has a return date; only Rental has a package.
         $type = $this->input('trip_type');
         if ($type === TripType::Rental->value) {
-            $this->merge(['destination_location' => null]);
+            $this->merge(['destination_location' => null, 'drop_lat' => null, 'drop_lng' => null, 'route_km' => null, 'route_sec' => null]);
         }
         if ($type !== TripType::Outstation->value) {
             $this->merge(['return_date' => null]);
         }
         if ($type !== TripType::Rental->value) {
-            $this->merge(['rental_package' => null]);
+            $this->merge(['rental_package' => null, 'fleet_package_id' => null]);
         }
     }
 

@@ -16,6 +16,8 @@ class Booking extends Model
         'pickup_address', 'drop_address', 'taxi_route_id', 'vehicle_category_id', 'travel_date', 'travel_time',
         'passengers', 'customer_notes', 'estimated_fare', 'fare_breakdown', 'status', 'admin_notes',
         'contacted_at', 'confirmed_at', 'source', 'ip_address', 'user_agent',
+        'pickup_lat', 'pickup_lng', 'drop_lat', 'drop_lng', 'distance_km', 'duration_sec',
+        'fleet_model_id', 'fleet_trip_id', 'fleet_synced_at', 'fleet_sync_error',
     ];
 
     /** Customer data never leaks through accidental serialisation. */
@@ -33,6 +35,8 @@ class Booking extends Model
             'passengers' => 'integer',
             'contacted_at' => 'datetime',
             'confirmed_at' => 'datetime',
+            'fleet_synced_at' => 'datetime',
+            'distance_km' => 'decimal:2',
         ];
     }
 
