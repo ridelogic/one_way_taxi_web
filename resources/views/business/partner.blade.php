@@ -6,6 +6,13 @@
     <section class="section pt-12!">
         <div class="container-site grid items-start gap-10 lg:grid-cols-[1fr_420px]">
             <div>
+                <div class="mb-8 flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-gold bg-gold-50 p-5">
+                    <div>
+                        <strong class="block text-lg text-forest">Own a taxi and want to drive with us?</strong>
+                        <span class="text-sm text-ink-soft">Enroll online with your licence and vehicle documents — we verify and activate your driver account.</span>
+                    </div>
+                    <a href="{{ route('drivers.enroll') }}" class="btn btn-gold">Enroll as a driver <x-icon name="arrow-right" :size="18" /></a>
+                </div>
                 @if ($section?->get('body'))
                     <p class="text-lg leading-relaxed text-ink-soft">{{ $section->get('body') }}</p>
                 @endif

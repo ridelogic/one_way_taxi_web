@@ -17,7 +17,7 @@ class Booking extends Model
         'passengers', 'customer_notes', 'estimated_fare', 'fare_breakdown', 'status', 'admin_notes',
         'contacted_at', 'confirmed_at', 'source', 'ip_address', 'user_agent',
         'pickup_lat', 'pickup_lng', 'drop_lat', 'drop_lng', 'distance_km', 'duration_sec',
-        'fleet_model_id', 'fleet_trip_id', 'fleet_synced_at', 'fleet_sync_error',
+        'fleet_model_id', 'fleet_enquiry_id', 'fleet_trip_id', 'fleet_synced_at', 'fleet_sync_error',
     ];
 
     /** Customer data never leaks through accidental serialisation. */

@@ -45,6 +45,11 @@ Route::get('/book', [BookingController::class, 'create'])->name('booking.create'
 Route::post('/book', [BookingController::class, 'store'])->middleware('throttle:bookings')->name('booking.store');
 Route::post('/fare-estimate', [BookingController::class, 'estimate'])->middleware('throttle:fare-estimate')->name('booking.estimate');
 Route::get('/fare-estimate/rental-packages', [BookingController::class, 'rentalPackages'])->middleware('throttle:fare-estimate')->name('booking.rental-packages');
+
+// Driver + taxi enrollment → fleet admin (driver created Deactive until the admin activates it)
+Route::get('/drive-with-us', [\App\Http\Controllers\DriverEnrollmentController::class, 'create'])->name('drivers.enroll');
+Route::post('/drive-with-us', [\App\Http\Controllers\DriverEnrollmentController::class, 'store'])->middleware('throttle:contact')->name('drivers.enroll.store');
+Route::get('/drive-with-us/thanks', [\App\Http\Controllers\DriverEnrollmentController::class, 'thanks'])->name('drivers.enroll.thanks');
 Route::get('/booking/{reference}/confirmation', [BookingController::class, 'confirmation'])
     ->where('reference', 'OWT-[0-9]{6}-[A-Z0-9]{5}')
     ->name('booking.confirmation');
@@ -139,6 +144,8 @@ Route::prefix('admin')->name('admin.')->middleware('admin.headers')->group(funct
         Route::resource('bookings', Admin\BookingController::class)->only(['index', 'show', 'update', 'destroy']);
         Route::resource('corporate-enquiries', Admin\CorporateEnquiryController::class)->only(['index', 'show', 'update', 'destroy'])->parameters(['corporate-enquiries' => 'enquiry']);
         Route::resource('partner-enquiries', Admin\PartnerEnquiryController::class)->only(['index', 'show', 'update', 'destroy'])->parameters(['partner-enquiries' => 'enquiry']);
+        Route::get('driver-enrollments', [Admin\DriverEnrollmentController::class, 'index'])->name('driver-enrollments.index');
+        Route::post('driver-enrollments/{enrollment}/resend', [Admin\DriverEnrollmentController::class, 'resend'])->name('driver-enrollments.resend');
         Route::resource('messages', Admin\ContactMessageController::class)->only(['index', 'show', 'destroy']);
 
         Route::resource('services', Admin\ServiceController::class)->except('show');

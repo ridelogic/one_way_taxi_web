@@ -7,12 +7,15 @@ use Illuminate\Support\Str;
 use MongoDB\BSON\UTCDateTime;
 
 /**
- * Creates a website booking in the fleet MongoDB so it shows in the dispatcher's Manage Booking list —
- * a port of Model_FleeteraTaxidispatch::addbooking() for a single "Book Later" booking (no auto dispatch),
- * with booking_from = 0 (website) and bookby = 1 (passenger), as the old website booking used.
+ * Saves a website booking in the fleet MongoDB as an enquiry (collection enquiry_logs), shaped exactly like a
+ * passengers_logs trip — a port of Model_FleeteraTaxidispatch::addbooking() for a single "Book Later" booking,
+ * with booking_from = 0 (website) and bookby = 1 (passenger). The dispatcher reviews it under
+ * Dispatcher → Manage Enquiry and moves it to Manage Trips (passengers_logs) — see Model_Enquiry in the admin.
  */
 class FleetBookingService
 {
+    public const COLLECTION = 'enquiry_logs';
+
     public function __construct(
         private readonly FleetMongo $mongo,
         private readonly FleetSettings $settings,
@@ -23,7 +26,7 @@ class FleetBookingService
     /**
      * @param  array{name: ?string, phone: string, email: ?string, pickup_location: string, drop_location: ?string, pickup_lat: float, pickup_lng: float, drop_lat: ?float, drop_lng: ?float, pickup_at: CarbonImmutable, passengers: ?int, notes: ?string, city_name: ?string, reference: string}  $b
      * @param  array  $fleet  the 'fleet' part of FleetFareService::estimate()
-     * @return int the passengers_logs _id (trip id)
+     * @return int the enquiry_logs _id (enquiry id)
      */
     public function create(array $b, array $fleet): int
     {
@@ -48,9 +51,11 @@ class FleetBookingService
         $isOutstation = $tripType === FleetFareService::OUTSTATION;
         $isRoundTrip = $isOutstation && (int) $fleet['os_trip_type'] === 2;
 
-        $logId = $this->mongo->nextId('passengers_logs');
+        $logId = $this->mongo->nextId(self::COLLECTION);
         $doc = [
             '_id' => $logId,
+            'enquiry_status' => 'P',      // P pending → M moved to Manage Trips / C cancelled (admin Manage Enquiry)
+            'enquiry_source' => 'website',
             'booking_key' => strtoupper(Str::random(15)),
             'booking_otp' => (int) $this->settings->get('enable_odometer', 0) === 1 ? (string) random_int(1000, 9999) : '',
             'passengers_id' => $passengerId,
@@ -95,8 +100,8 @@ class FleetBookingService
             'createdate' => $this->date($now),
             'logs' => [[
                 'log_userid' => 0,
-                'log_message' => "Booking Id {$logId} is created.",
-                'log_booking' => "Booking Id {$logId} is created from the website ({$b['reference']}).",
+                'log_message' => "Enquiry {$logId} is received from the website.",
+                'log_booking' => "Enquiry {$logId} is received from the website ({$b['reference']}).",
                 'log_createdate' => $this->date($now),
             ]],
             'distance_unit' => $this->settings->unitName(),
@@ -176,25 +181,8 @@ class FleetBookingService
         // Denormalised info the dispatcher screens read (Model_Commonmodel::get_trip_location()).
         $doc += $this->tripLocationInfo($passengerId, $companyId);
 
-        $this->mongo->collection('passengers_logs')->insertOne($doc);
-
-        $this->mongo->collection('passengers')->updateOne(['_id' => $passengerId], ['$inc' => ['total_trip_count' => 1]]);
-
-        $last = $this->mongo->aggregate('passengers_logs', [
-            ['$unwind' => '$split_details'],
-            ['$project' => ['split_id' => '$split_details.split_id']],
-            ['$sort' => ['split_id' => -1]],
-            ['$limit' => 1],
-        ]);
-        $this->mongo->collection('passengers_logs')->updateOne(['_id' => $logId], ['$push' => ['split_details' => [
-            'split_id' => (int) ($last[0]['split_id'] ?? 0) + 1,
-            'friends_p_id' => $passengerId,
-            'fare_percentage' => 100,
-            'createdate' => $this->date($now),
-            'approve_status' => 'A',
-            'appx_amount' => 0, 'transaction_id' => null, 'sub_total' => 0, 'tax' => 0, 'paid_amount' => 0,
-            'payment_status' => 0, 'braintree_payment_status' => 1, 'settlement_status' => 1, 'notification_status' => 0,
-        ]]]);
+        // Trip count and split details are added when the dispatcher moves the enquiry to Manage Trips.
+        $this->mongo->collection(self::COLLECTION)->insertOne($doc);
 
         return $logId;
     }

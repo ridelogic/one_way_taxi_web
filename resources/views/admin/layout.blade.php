@@ -2,7 +2,7 @@
     // Simple six-item sidebar. Each item covers a group of screens; groups with several screens get a tab bar.
     $nav = [
         ['Dashboard', 'admin.dashboard', 'grid', ['admin.dashboard']],
-        ['Bookings', 'admin.bookings.index', 'clipboard-check', ['admin.bookings.*', 'admin.corporate-enquiries.*', 'admin.partner-enquiries.*', 'admin.messages.*']],
+        ['Bookings', 'admin.bookings.index', 'clipboard-check', ['admin.bookings.*', 'admin.corporate-enquiries.*', 'admin.partner-enquiries.*', 'admin.driver-enrollments.*', 'admin.messages.*']],
         ['District Management', 'admin.districts.index', 'map-pin', ['admin.districts.*', 'admin.district-cars.*', 'admin.district-routes.*', 'admin.district-faqs.*']],
         ['Homepage Content', 'admin.videos.index', 'home', ['admin.videos.*', 'admin.photos.*', 'admin.homepage.*']],
         ['Promotional Announcements', 'admin.announcements.index', 'bell', ['admin.announcements.*']],
@@ -14,6 +14,7 @@
             ['Bookings', 'admin.bookings.index', 'admin.bookings.*'],
             ['Corporate enquiries', 'admin.corporate-enquiries.index', 'admin.corporate-enquiries.*'],
             ['Driver registrations', 'admin.partner-enquiries.index', 'admin.partner-enquiries.*'],
+            ['Driver enrollments', 'admin.driver-enrollments.index', 'admin.driver-enrollments.*'],
             ['Messages', 'admin.messages.index', 'admin.messages.*'],
         ],
         'Homepage Content' => [

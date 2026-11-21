@@ -196,7 +196,8 @@ class BookingController extends Controller
     }
 
     /**
-     * Also create the booking in the fleet MongoDB (dispatcher Manage Booking). The website booking is already
+     * Also save the booking in the fleet MongoDB as an enquiry (dispatcher → Manage Enquiry, from where it is moved
+     * to Manage Trips). The website booking is already
      * saved, so a failure here never loses the customer's request — it is recorded on the booking for the team.
      */
     private function pushToFleet(Booking $booking, array $fleet, ?string $pickupCity): void
@@ -207,7 +208,7 @@ class BookingController extends Controller
 
         try {
             $tz = config('fleet.timezone');
-            $tripId = $this->fleetBookings->create([
+            $enquiryId = $this->fleetBookings->create([
                 'reference' => $booking->reference,
                 'name' => $booking->customer_name,
                 'phone' => $booking->customer_phone,
@@ -224,7 +225,7 @@ class BookingController extends Controller
                 'city_name' => $pickupCity ?: $booking->pickupCity?->name,
             ], $fleet);
 
-            $booking->forceFill(['fleet_trip_id' => $tripId, 'fleet_synced_at' => now(), 'fleet_sync_error' => null])->save();
+            $booking->forceFill(['fleet_enquiry_id' => $enquiryId, 'fleet_synced_at' => now(), 'fleet_sync_error' => null])->save();
         } catch (\Throwable $e) {
             Log::error('Fleet booking push failed', ['reference' => $booking->reference, 'error' => $e->getMessage()]);
             $booking->forceFill(['fleet_sync_error' => Str::limit($e->getMessage(), 490)])->save();

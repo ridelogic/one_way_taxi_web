@@ -56,6 +56,7 @@
                 @if ($settings->get('phone'))
                     <a href="{{ $settings->telLink() }}" class="btn btn-outline"><x-icon name="phone" :size="18" /> {{ $settings->get('phone') }}</a>
                 @endif
+                <a href="{{ route('drivers.enroll') }}" class="btn btn-outline"><x-icon name="user" :size="18" /> Drive With Us</a>
                 <a href="{{ route('booking.create') }}" class="btn btn-gold">Book a Taxi <x-icon name="arrow-right" :size="18" /></a>
             </div>
         </nav>
@@ -68,6 +69,7 @@
                     <span class="leading-tight"><span class="block text-[0.68rem] font-semibold tracking-[0.12em] text-ink-soft uppercase">Call 24/7</span><span class="block font-display text-[0.92rem] font-bold whitespace-nowrap text-forest">{{ $settings->get('phone') }}</span></span>
                 </a>
             @endif
+            <a href="{{ route('drivers.enroll') }}" class="btn btn-outline hidden px-5 xl:inline-flex" title="Driver & taxi enrollment"><x-icon name="user" :size="18" /> Drive With Us</a>
             <a href="{{ route('booking.create') }}" class="btn btn-gold hidden px-6 sm:inline-flex">Book a Taxi <x-icon name="arrow-right" :size="18" /></a>
             <button class="grid size-11 place-items-center rounded-lg border border-line text-forest xl:hidden" type="button" aria-controls="main-nav" aria-expanded="false" aria-label="Open menu" data-nav-toggle>
                 <x-icon name="menu" :size="24" class="[.nav-open_&]:hidden" />

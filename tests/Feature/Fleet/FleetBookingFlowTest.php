@@ -89,7 +89,8 @@ class FleetBookingFlowTest extends TestCase
 
         $booking = Booking::latest('id')->first();
         $this->assertSame('2078.00', $booking->estimated_fare);
-        $this->assertSame(501, (int) $booking->fleet_trip_id);
+        $this->assertSame(501, (int) $booking->fleet_enquiry_id);
+        $this->assertNull($booking->fleet_trip_id); // set only once the dispatcher moves it to Manage Trips
         $this->assertSame('10.00', $booking->distance_km);
         $this->assertSame(1, (int) $booking->fleet_model_id);
         $this->assertSame('fleet', $booking->fare_breakdown['source']);

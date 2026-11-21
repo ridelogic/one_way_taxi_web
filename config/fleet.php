@@ -37,6 +37,12 @@ return [
     // Seconds to cache siteinfo settings and the vehicle model list.
     'cache_seconds' => (int) env('FLEET_CACHE_SECONDS', 300),
 
+    // Driver enrollment: the website sends the form to the fleet admin's /driverenroll/submit endpoint, which creates
+    // the driver + taxi with the admin's own code, Deactive (status D). The key must match the admin's
+    // DRIVER_ENROLL_API_KEY (or WEB_API_KEY when that is not defined).
+    'admin_url' => rtrim((string) env('FLEET_ADMIN_URL', ''), '/'),
+    'enroll_key' => env('FLEET_ENROLL_KEY', ''),
+
     // Also create website bookings in MongoDB (dispatcher Manage Booking). The MySQL copy is always kept.
     'push_bookings' => (bool) env('FLEET_PUSH_BOOKINGS', true),
 ];

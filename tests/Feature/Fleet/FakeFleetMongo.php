@@ -11,8 +11,11 @@ use App\Services\Fleet\FleetMongo;
  */
 class FakeFleetMongo extends FleetMongo
 {
-    /** @param  array<string, array<int, array>>  $data  collection => documents */
-    public function __construct(public array $data = []) {}
+    /**
+     * @param  array<string, array<int, array>>  $data  collection => documents
+     * @param  array<string, array<int, array>>  $aggregates  collection => canned aggregate() result
+     */
+    public function __construct(public array $data = [], public array $aggregates = []) {}
 
     public function available(): bool
     {
@@ -42,7 +45,7 @@ class FakeFleetMongo extends FleetMongo
 
     public function aggregate(string $collection, array $pipeline): array
     {
-        return [];
+        return $this->aggregates[$collection] ?? [];
     }
 
     private function matches(array $doc, array $filter): bool

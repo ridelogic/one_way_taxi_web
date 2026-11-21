@@ -92,7 +92,9 @@
                     @if ($booking->fleet_model_id)
                         <div><dt>Fleet dispatcher</dt><dd>
                             @if ($booking->fleet_trip_id)
-                                Booking ID <strong>{{ $booking->fleet_trip_id }}</strong> in Manage Booking
+                                Trip ID <strong>{{ $booking->fleet_trip_id }}</strong> in Manage Trips
+                            @elseif ($booking->fleet_enquiry_id)
+                                Enquiry ID <strong>{{ $booking->fleet_enquiry_id }}</strong> in Dispatcher → Manage Enquiry
                             @elseif ($booking->fleet_sync_error)
                                 <span class="abadge abadge--red">Not sent</span> <small class="muted">{{ $booking->fleet_sync_error }}</small>
                             @else
